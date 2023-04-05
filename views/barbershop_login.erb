@@ -1,0 +1,13 @@
+<h1>Enter login and password</h1>
+
+<%= @dinaed %> <!-- Переменная будет содержать и теги @dinaed='<p>Access is denied</p>' -->
+
+<form action="/login" method="POST">
+
+  Enter your login: <br/>
+  <input type="text" name="login"/><br/>
+  Enter your password: <br/>
+  <input type="password" name="password"/><br/>
+  <input type="submit"/>
+
+</form>

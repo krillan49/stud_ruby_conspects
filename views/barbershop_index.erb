@@ -1,0 +1,17 @@
+<h1>Welcome to Barbershop</h1>
+<p>We are open</p>
+
+<p><a href="/login">Login page</a></p>
+
+<form action="/" method="POST">
+
+	Enter your name: <br>
+	<input type="text" name="user_name" value="<%= @user_name %>"> <br> <!-- value="..." вставляем переменные в значение, чтобы при необходимости повторного ввода они автоматически заполняли поля, в которые пользователь ввел значения -->
+	Enter your phone number: <br>
+	<input type="text" name="phone" value="<%= @phone %>"> <br>
+	Enter date and time of your visit: <br>
+	<input type="text" name="date_time" value="<%= @date_time %>"> <br>
+
+	<input type="submit">
+
+</form>

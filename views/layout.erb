@@ -1,0 +1,24 @@
+<!-- layout.erb - это базовая страница/шаблон, имя зарезервировано. Он будет всегда использоваться Синатрой по умолчанию и добавлять параметр метода erb в точку yield -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>layout</title>
+    <link href="/barbershop_styles.css" rel="stylesheet" media="all" />
+  	<!-- /barbershop_styles.css  - используем относительный путь от корня сайта(папка public видимо тоже корень) -->
+  </head>
+  <body>
+
+    <h1 style="color: lightblue;">layout.erb используeтся. Этот блок будет на всех страницах</h1>
+
+    <div><!-- блок сообщения об ошибке -->
+      <%if @error then %> <!-- Если переменная @error определена то...  -->
+        <div style="color: red;"><%=@error%></div> <!-- ...отображается данный блок -->
+      <% end %>
+		</div>
+
+    <%= yield %> <!-- Сюда добавляется код из метода erb -->
+
+  </body>
+</html>

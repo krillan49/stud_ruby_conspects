@@ -1,0 +1,15 @@
+<h1>Тут вы можете оставить свое сообщение</h1>
+
+<%= @message2 %>
+
+<form action="/contacts" method="POST" role="form">
+
+  <label>Ваша почта</label><br>
+  <input name="email" type="text" value="<%= @email %>"><br>
+
+  <label>Ваше сообщение</label><br>
+  <textarea name="user_message"><%= @user_message %></textarea><br> <!-- тут ранее введенное значение ставим уже в тело тега -->
+
+  <button type="submit" class="btn btn-primary">Отправить данные</button>
+
+</form>
