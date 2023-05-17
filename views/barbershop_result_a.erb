@@ -1,6 +1,6 @@
 <h2>RESULT-A:</h2>
-<% @file.each_line do |line| %>
-  <%= line %>
+<% @file.each_line do |line| %> <!-- Можно применять к переменной любой рубикод -->
+  <%= line %>  <!-- это отображается на странице -->
 <% end %>
 
-<%= @file.close %>
+<% @file.close %>

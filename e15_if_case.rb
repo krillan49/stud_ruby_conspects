@@ -57,9 +57,10 @@ end
 
 # Допольнительно. Во всех языкаx у 'or' и  '||' разные приоритеты, Ruby - не исключение. Для интерпрератора это выглядит так
 p false or true #=> false <= (p false) or true
-p false || true #=> true <= (p false || true)
+p false || true #=> true <= p (false || true)
 # Если обернуть оба выражения в скобки, то будет true true
 
+puts
 # Множественное присвоение при помощи оператора and
 a = 1 and b = 2
 p [a,b] #=> [1, 2]
@@ -147,6 +148,11 @@ if a > b then puts "Одна строка" else puts "Другая строка"
 # Несколько условий:
 puts (a < b && c != 5) ? "go party" : 'stay home'
 
+# Тернареый оператор с более чем 2мя условиями
+arr == arr.sort ? 'yes, ascending' : arr == arr.sort.reverse ? 'yes, descending' : 'no'
+# условие в условии(скобки не обязательны)
+x>0 ? (y>0 ? 1 : 4) : (y>0 ? 2 : 3)
+
 
 puts
 # У тернарного оператора в ruby один из самых низких приоритетов, ниже — только у операций присваивания, управляющих конструкций, блоков и т.д. Об этом важно помнить, когда его используете:
@@ -154,11 +160,6 @@ condition = true
 result = 'first ' + condition ? 'second' : '2'  #=> in `+': no implicit conversion of true into String (TypeError)
 # Используйте скобки:
 result = 'first ' + (condition ? 'second' : '2') #=> "first second"
-
-
-puts
-# Тернареый оператор с более чем 2мя условиями
-arr == arr.sort ? 'yes, ascending' : arr == arr.sort.reverse ? 'yes, descending' : 'no'
 
 
 puts
@@ -242,3 +243,18 @@ case
   puts "x equal one" when x == 1
   puts "x equal two" when x == 2
 end
+
+
+# case in - проверяет принадлежность обоих значений по порядку расположения
+def quadrant(x, y)
+  case [x, y]
+    in [0.., 0..] then 1
+    in [..0, 0..] then 2
+    in [..0, ..0] then 3
+    in [0.., ..0] then 4
+  end
+end
+p quadrant(5, 3) #=> 1
+p quadrant(-20, 3) #=> 2
+p quadrant(-1, -1) #=> 3
+p quadrant(5, -1) #=> 4

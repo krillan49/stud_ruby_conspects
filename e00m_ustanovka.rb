@@ -29,22 +29,22 @@ puts '                                    Установка и настройк
 
 # 9. Теперь вам нужно обновить ваши SSL-сертификаты. На данный момент у вас нет SSL-сертификатов, поэтому есть большое изменение, заключающееся в том, что некоторые из ваших драгоценных камней не будут работать (например, если они обращаются к серверу через https, например, хипчат). Теперь пришло время установить эти сертификаты. Запустите этот скрипт(ниже) , чтобы загрузить cacert.pem. Убедитесь, что вы добавили переменную SSL_CERT_FILE в свою среду, указывающую на загруженный файл cacert.pem.
 
-require 'net/http'
-
-ruby_install_dir = 'e:\programs\Ruby31-x64'
-cacert_file = "#{ruby_install_dir}\\cacert.pem"
-
-Net::HTTP.start("curl.haxx.se") do |http|
-  resp = http.get("/ca/cacert.pem")
-  if resp.code == "200"
-    open(cacert_file, "wb") { |file| file.write(resp.body) }
-    puts "\n\nA bundle of certificate authorities has been installed to"
-    puts "#{cacert_file}\n"
-    puts "* Please set SSL_CERT_FILE in your current command prompt session with:"
-    puts "     set SSL_CERT_FILE=#{cacert_file}"
-    puts "* To make this a permanent setting, add it to Environment Variables"
-    puts "  under Control Panel -> Advanced -> Environment Variables"
-  else
-    abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
-  end
-end
+# require 'net/http'
+#
+# ruby_install_dir = 'e:\programs\Ruby31-x64'
+# cacert_file = "#{ruby_install_dir}\\cacert.pem"
+#
+# Net::HTTP.start("curl.haxx.se") do |http|
+#   resp = http.get("/ca/cacert.pem")
+#   if resp.code == "200"
+#     open(cacert_file, "wb") { |file| file.write(resp.body) }
+#     puts "\n\nA bundle of certificate authorities has been installed to"
+#     puts "#{cacert_file}\n"
+#     puts "* Please set SSL_CERT_FILE in your current command prompt session with:"
+#     puts "     set SSL_CERT_FILE=#{cacert_file}"
+#     puts "* To make this a permanent setting, add it to Environment Variables"
+#     puts "  under Control Panel -> Advanced -> Environment Variables"
+#   else
+#     abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
+#   end
+# end

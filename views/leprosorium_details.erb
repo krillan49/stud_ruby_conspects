@@ -1,0 +1,30 @@
+<h4>Post details:</h4>
+
+<br>
+<p>  <!-- Выводим данные поста из запрса таблицы постов -->
+	<%= @row['content'] %>
+	<br><br>
+	Added by <b><%= @row['author'] %></b> at <%= @row['created_date'] %>
+</p>
+
+
+<br>
+<h4>Comments:</h4>
+<br>
+
+<!-- Уже написанные комментарии из запроса выбравшего комментарии для конкретного поста -->
+<% @comments.each do |comment| %>
+	<p>
+		<%= comment['content'] %>
+		<br><br>
+		<span style="font-size: 80%; color: #999;">Added at <%= comment['created_date'] %></span>
+	</p>
+	<hr>
+<% end %>
+
+<!-- Форма для того чтобы оставить комментарии к посту -->
+<form action="/details/<%= @row['id'] %>" method="POST"><!-- Мы не можем просто написать один адрес(тк много страниц) в значении атрибута action, соотв будем генерировать автоматически вставляя id из запроса. Теперь это путь такой же как наша страница соотв пост запрос этой формы сможет обработать post '/details/:post_id' -->
+	<textarea name="content" rows="6" placeholder="Напишите ваш комментарий"></textarea>
+	<br>
+ 	<button type="submit">Add comment</button>
+</form>

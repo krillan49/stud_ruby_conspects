@@ -10,11 +10,8 @@ class Hash
     res=obj.map {|k,v|
       if v.class==Hash or v.class==Array
         v.map {|key, val|
-          if k.class==Symbol && key.class==Symbol
-            newk=(k.to_s+'_'+key.to_s).to_sym
-          else
-            newk=k.to_s+'_'+key.to_s
-          end
+          newk=k.to_s+'_'+key.to_s
+          newk=newk.to_sym if k.class==Symbol && key.class==Symbol
           [newk, val]
         }
       else
@@ -25,20 +22,18 @@ class Hash
     if res.any?{|e| e.class==Hash or e.class==Array}
       res=flattened_keys(res.each_slice(2).to_a)
     else
-      return res.each_slice(2).to_a.to_h
+      res.each_slice(2).to_a.to_h
     end
 
   end
 end
 
 unflat = {id: 1, info: {name: 'example'}}
-p unflat.flattened_keys # equals {id: 1, info_name: 'example'}
-
+p unflat.flattened_keys # {id: 1, info_name: 'example'}
 unflat = {id: 1, info: {name: 'example', more_info: {count: 1}}}
-p unflat.flattened_keys # equals {id: 1, info_name: 'example', info_more_info_count: 1}
-
+p unflat.flattened_keys # {id: 1, info_name: 'example', info_more_info_count: 1}
 unflat = {a: 1, 'b' => 2, info: {id: 1, 'name' => 'example'}}
-p unflat.flattened_keys # equals {a: 1, 'b' => 2, info_id: 1, 'info_name' => 'example'}
+p unflat.flattened_keys # {a: 1, 'b' => 2, info_id: 1, 'info_name' => 'example'}
 
 
 puts
@@ -97,7 +92,7 @@ class Node
   end
 end
 
-def push(head, data)
+def push(head, data)  # отдельные методы
 	node=Node.new(data)
   node.next=head
   node
@@ -105,8 +100,7 @@ def push(head, data)
 end
 
 def build_one_two_three
-  push(push(Node.new(3), 2), 1)
-  # push(push(push(3), 2), 1)   альт
+  push(push(push(3), 2), 1)
 end
 def build_one_two_three_four_five_six
   node=nil

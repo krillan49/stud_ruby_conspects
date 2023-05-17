@@ -111,10 +111,10 @@ puts 'I am after the begin block.'
 #=> I am before the raise. #=> I am rescued. #=> I am after the begin block.
 
 begin
-   raise 'A test exception.'
+  raise 'A test exception.'
 rescue Exception => e
-   puts e.message
-   puts e.backtrace.inspect
+  puts e.message
+  puts e.backtrace.inspect
 end
 #=> A test exception.
 #=> ["E:/doc/ruby_exemples/test2.rb:2:in `<main>'"]

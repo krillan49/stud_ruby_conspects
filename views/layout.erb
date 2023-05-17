@@ -5,16 +5,23 @@
   <head>
     <meta charset="utf-8">
     <title>layout</title>
-    <link href="/barbershop_styles.css" rel="stylesheet" media="all" />
-  	<!-- /barbershop_styles.css  - используем относительный путь от корня сайта(папка public видимо тоже корень) -->
+    <link href="/barbershop_styles.css" rel="stylesheet" media="all">
+  	<!-- /barbershop_styles.css  - используем относительный путь от корня сайта(папка public тоже как корень) -->
+    <!-- main.css - так нельзя называть, лучше - styles.css -->
   </head>
   <body>
 
-    <h1 style="color: lightblue;">layout.erb используeтся. Этот блок будет на всех страницах</h1>
+    <h2 style="color: lightblue;">
+      layout.erb используeтся. Этот блок будет на всех страницах<br>
+      <a href="/">Главная</a><br>
+      <a href="/showusers">Показать вывод из БД(Барбершоп)</a><br>
+      <a href="/new">Написать пост(Лепрозорий)</a><br>
+      layout.erb используeтся. Этот блок будет на всех страницах
+    </h2>
 
     <div><!-- блок сообщения об ошибке -->
-      <%if @error then %> <!-- Если переменная @error определена то...  -->
-        <div style="color: red;"><%=@error%></div> <!-- ...отображается данный блок -->
+      <% if @error && @error!='' %> <!-- Если переменная @error определена и не равна пустой строке то...  -->
+        <div style="color: red;"><%= @error %></div> <!-- ...отображается данный блок -->
       <% end %>
 		</div>
 

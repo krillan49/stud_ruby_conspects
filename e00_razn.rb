@@ -24,6 +24,7 @@ characters = ["Konata", "Kagami", "Tsukasa"]
 require 'ipaddr'
 IPAddr.new(ip).ipv4?
 
+
 # Хэширование MD%5(https://ruby-doc.org/stdlib-3.0.0/libdoc/digest/rdoc/Digest/MD5.html)
 require 'digest'
 Digest::MD5.hexdigest('12345') #=> "827ccb0eea8a706c4c34a16891f84e7b"   # хэширование
@@ -74,8 +75,8 @@ require 'matrix'
 
 # Нахождение координат(индексов) элемента 2д массива
 require 'matrix'
-arr = [ [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0] ]
-Matrix[*arr].index 1 #=> [2, 2]
+arr = [ [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 'e', 0], [0, 0, 0, 0] ]
+p Matrix[*arr].index('e') #=> [2, 2]
 
 
 # Метод max_by (Enumerable)
@@ -101,7 +102,7 @@ amount=127
 hh={ H: 50, Q: 25, D: 10, N: 5, P: 1 }
 p hh.each_with_object({}) { |(k, v), h| h[k], amount = amount/v, amount%v if amount >= v } #=> {:H=>2, :Q=>1, :P=>2}
 
-# with_object. Метод хорошо соцетается с combination тк тот возврядает не массив
+# with_object. Метод хорошо сочетается с combination тк тот возврядает не массив
 a = [0, 1, 2]
 p a.repeated_combination(2).with_object([]) {|com, arr| arr << com } #=> [[0, 0], [0, 1], [0, 2], [1, 1], [1, 2], [2, 2]]
 (0..n).to_a.repeated_combination(2).to_a

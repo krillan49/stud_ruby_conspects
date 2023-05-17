@@ -5,12 +5,33 @@
 
 <form action="/" method="POST">
 
-	Enter your name: <br>
-	<input type="text" name="user_name" value="<%= @user_name %>"> <br> <!-- value="..." вставляем переменные в значение, чтобы при необходимости повторного ввода они автоматически заполняли поля, в которые пользователь ввел значения -->
-	Enter your phone number: <br>
-	<input type="text" name="phone" value="<%= @phone %>"> <br>
-	Enter date and time of your visit: <br>
-	<input type="text" name="date_time" value="<%= @date_time %>"> <br>
+	<label>Ваше имя</label><br>
+	<input type="text" name="user_name" value="<%= @user_name %>"><br> <!-- value="..." вставляем переменные в значение, чтобы при необходимости повторного ввода они автоматически заполняли поля, в которые пользователь ввел значения -->
+	<label>Ваш телефон</label><br>
+	<input type="text" name="phone" value="<%= @phone %>"><br>
+
+	<label>Когда вас ждать?</label><br>
+	<input type="datetime-local" name="date_time" value="<%= @date_time %>"><br> <!-- в value переменная вставляется аналогично и для поля datetime-local, а незаполненное тоже считается пустой сторокой -->
+
+	<label>Ваш парикмахер:</label><br>
+	<select name="barber">
+		<!-- Cохраняем выбранное значение при помощи атрибута selected(в виде String) тега option и условного оператора -->
+
+		<!-- 1. Такой вариант считается хардкодингом и подходит для работы только с переменными из одного обработчика -->
+		<!--
+		<option <%= 'selected' if @barber=='Jessie Pinkman' %>>Jessie Pinkman</option>
+    <option <%= 'selected' if @barber=='Walter White' %>>Walter White</option>
+    <option <%= 'selected' if @barber=='Gus Fring' %>>Gus Fring</option>
+		-->
+
+		<!-- 2. Способ для работы с методом before(селектор заполняется из него при исполнении запроса гет). Тут у нас есть переменная из запроса post - @barber и переменная из метода before - @barbers, которая будет доступна и в гет и в пост запросах -->
+		<% @barbers.each do |row| %>
+      <option <%= 'selected' if @barber==row['name'] %>><%=row['name']%></option>
+    <% end %>
+  </select><br>
+
+	<label>Выберите цвет</label><br>
+	<input type="color" name="color"><br> <!-- сохраняет как хэш например #22c9bd -->
 
 	<input type="submit">
 
