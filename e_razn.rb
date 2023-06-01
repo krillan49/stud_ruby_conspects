@@ -4,6 +4,9 @@ puts '                                                 Готовые решен
 
 # https://mathworld.wolfram.com/TowerofHanoi.html  (Tower of Hanoi)
 
+# В руби принято делать отступы 2мя пробелами а не табуляцией(втф??)
+# Стоит писать скобки для параметров методов по кодстаилу
+
 
 file=File.open ARGV[0]
 cnt=file.gets.chomp.to_i

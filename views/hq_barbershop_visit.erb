@@ -1,0 +1,30 @@
+<h1>Welcome to BarbershopHQ</h1>
+
+<form action="/visit" method="POST">
+
+	<label>Ваше имя</label><br>
+	<input type="text" name="username" value="<%= @username %>"><br>
+
+	<label>Ваш телефон</label><br>
+	<input type="text" name="phone" value="<%= @phone %>"><br>
+
+	<label>Когда вас ждать?</label><br>
+	<input type="datetime-local" name="datetime" value="<%= @datetime %>"><br>
+
+	<label>Ваш парикмахер:</label><br>
+	<select name="barber">
+		<% @barbers.each do |row| %>
+			<!-- 1. Нативный вариант тоже работеат (??) -->
+      <!-- <option <%= 'selected' if @barber==row['name'] %>><%=row['name']%></option> -->
+
+			<!-- 2. Вывод через синтаксис ActiveRecord -->
+			<option <%= 'selected' if @barber == row.name %>><%=row.name%></option>
+    <% end %>
+  </select><br>
+
+	<label>Выберите цвет</label><br>
+	<input type="color" name="color"><br>
+
+	<input type="submit">
+
+</form>

@@ -1,0 +1,28 @@
+<h1>Welcome to BarbershopHQ</h1>
+
+<form action="/visit" method="POST">
+
+	<label>Ваше имя</label><br>
+	<input type="text" name="client[name]" value="<%= @c.name %>"><br>
+  <!-- client[name] - где name это название столбца в миграции и таблице -->
+	<!-- @c.name - заполняем value при помощи активрекордс, где метод имя колонки -->
+
+	<label>Ваш телефон</label><br>
+	<input type="text" name="client[phone]" value="<%= @c.phone %>"><br>
+
+	<label>Когда вас ждать?</label><br>
+	<input type="datetime-local" name="client[datestamp]" value="<%= @c.datestamp %>"><br>
+
+	<label>Ваш парикмахер:</label><br>
+	<select name="client[barber]">
+		<% @barbers.each do |row| %>
+			<option <%= 'selected' if @barber == row.name %>><%=row.name%></option>
+    <% end %>
+  </select><br>
+
+	<label>Выберите цвет</label><br>
+	<input type="color" name="client[color]"><br>
+
+	<input type="submit">
+
+</form>

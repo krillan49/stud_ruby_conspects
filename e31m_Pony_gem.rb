@@ -10,7 +10,7 @@ puts '                                    Pony gem. send email in Ruby'
 
 require 'pony'  # подключение
 
-# Pony использует /usr/sbin/sendmailдля отправки почты, если она доступна, в противном случае он использует SMTP для локального хоста.
+# Pony использует /usr/sbin/sendmail для отправки почты, если она доступна, в противном случае он использует SMTP для локального хоста.
 # Это можно переопределить, если указать опцию via:
 Pony.mail(:to => 'you@example.com', :via => :smtp) # sends via SMTP
 Pony.mail(:to => 'you@example.com', :via => :sendmail) # sends via sendmail
