@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JS + HTML main</title>
+  <script src="scripts.js"></script> <!-- подклюсаем джаваскрипт фаил, теперь можем использовать код из него тут -->
+</head>
+
+
+<body>
+  <div>
+    <a href="javascript2.html">To page2</a>
+  </div>
+
+  <!-- При нажатии простой кнопки весь код обрабатывается браузером, никаких запрпосов не происходит -->
+  <!-- Функции с одним именем размещенные на разных страницах никак не влияют друг на друга, тк обрабатываются каждая на своей странице. Разные страницы для браузера это как разные приложения независимые друг от друга -->
+
+  <h4>Функция 1.1 записаная в теге script ниже</h4>
+  <button onclick="some()">Click me!</button>
+  <!-- В JS функция вызывается по хэндлеру/событию(обработчик) -->
+  <!-- onclick - атрибут обработчика/хендлера в значении которого находится имя функции(тут "some()") которую мы хотим исполнить нажатием -->
+  <script>
+    function some() {
+      alert("Hello world!");
+    }
+  </script>
+
+  <h4>Функция 1.2 из фаила scripts.js</h4>
+  <button onclick="something()">Click me!</button>
+
+  <h4>Функция 1.3 c переменной x+=1</h4>
+  <button onclick="perx()">Click me!</button>
+
+
+  <h4>Функция 2.1 c localStorage</h4>
+  <button onclick="localst()">Click me!</button>
+
+
+</body>
+</html>

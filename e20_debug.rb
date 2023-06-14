@@ -16,8 +16,8 @@ puts nil #== puts(пустая строка)
 puts nil.inspect #=> nil
 p nil #=> nil
 puts "" #== puts(пустая строка)
-puts "".inspect #=> nil
-p "" #=> nil
+puts "".inspect #=> ""
+p "" #=> ""
 
 # Для тех, кто работает с фреймворком Ruby on Rails, полезна будет следующая конструкция:
 something = '123'

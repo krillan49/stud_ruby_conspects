@@ -101,7 +101,7 @@ get '/' do   # гет обработчик возвращает страницу
 end
 
 post '/' do # в пути пишется тоже самое('/') что и в значении атрибута action в теге формы в .erb фаиле
-  login0 = params[:aaa] # локальная переменная может использоваться только в теле запроса, например для интерполяции ее значения в другую переменную или наполнения БД. Если поместить ее в представление, то выдаст ошибку, тк вызов локальной переменной которая не определена вызывает ошибку.
+  login0 = params[:aaa] # локальная переменная может использоваться только в теле запроса, например для интерполяции ее значения в другую переменную или наполнения БД. Если поместить ее в представление, то выдаст ошибку, тк вызов локальной переменной которая не определена вызывает ошибку(тк локаотная переменная не переносится в представление)
 
   # Для того чтобы использовать переменную в представлении - ее нужно задавать с @:
   @login = params[:aaa] # Обращаемся к параметрам через метод-хэш 'params' который есть в синатре, этот метод работает как хэш, в котором: key - это значение атрибута 'name' поля в формате символа(тут :aaa), а value это то что пользователь ввел/выбрал в поле; соответсвенно в нашу переменную присваивается значение хэша(введенное в поле пользователем). Теперь значение переменнай @login будет отображаться в представлении в котором она указана.
@@ -118,21 +118,21 @@ puts
 # Добавляем функциональность(обращение к разному виду/представлению в зависимости от правильности логина и пароля)
 
 post '/' do
-  @login = params[:aaa]
+  @login    = params[:aaa]
   @password = params[:bbb]
 
-  if @login=='admin' && @password=='secret' # если условие срабатывает(введенные пароль и логин соответсвуют) то ...
+  if @login == 'admin' && @password == 'secret' # если условие срабатывает(введенные пароль и логин соответсвуют) то ...
     erb :a_welcome # ... возвращаем вид welcome в котором содержится ссылка на страницу contacts
-  elsif @login=='admin' && @password=='admin'
+  elsif @login == 'admin' && @password == 'admin'
     @denied='Haha, nice try! Access is denied!' # можно задать другое значение переменной
     erb :a_index
   else
-    @denied='Access is denied' # если условие неверно появляется доп строка на странице(если в фаиле index есть соотв строка)
+    @denied = 'Access is denied' # если условие неверно появляется доп строка на странице(если в фаиле index есть соотв строка)
     erb :a_index # тк мы возвращаем вид index то переменная @denied должна быть в нем, чтобы отобразиться
   end
 end
 
-get '/contacts' do # адрес который будет открываться по ссылке из welcome.erb(<a href="/contacts">Contacts</a>). Тк ссылка активирует переход, соотв браузер посылает гет-запрос, соотв ему нужен и обработчик
+get '/contacts' do # адрес который будет открываться по ссылке из welcome.erb(<a href="/contacts">Contacts</a>). Тк ссылка активирует переход на URL адрес, соотв браузер посылает гет-запрос, соотв ему нужен и обработчик
   "Contacts: +7 000 000-00-00"
 end
 
@@ -140,19 +140,19 @@ end
 # Если на сайте нужно сделать несколько страниц на которых особо ничего не происходит(например тех что просто запланированы или просто страницы особо ничего не содержащие) то можно обойтись одним новым представлением для всех
 # Создаем вид message.erb в котором пишем такой код чтоб все отображанемое на странице передавалось только через переменные
 get '/faq' do
-  @title='FAQ'
-  @message='test page1'
+  @title = 'FAQ'
+  @message = 'test page1'
   erb :a_message
 end
 get '/something' do # В итоге мы создали 2 разные страницы за которые отвечает одно представление message.erb
-  @title='Something'
-  @message='test page2'
+  @title = 'Something'
+  @message = 'test page2'
   erb :a_message
 end
 # Так же мы можем обобщить содержание этих страниц в отдельном методе если оно однотипное
 def under_construction
-  @title='Under construction'
-  @message='This page is under construction'
+  @title = 'Under construction'
+  @message = 'This page is under construction'
   erb :a_message
 end
 get '/some' do
@@ -212,16 +212,12 @@ post '/login' do
   @login    = params[:login]
   @password = params[:password]
 
-  if @login=='admin' && @password=='secret'
+  if @login == 'admin' && @password == 'secret'
     erb :barbershop_admin  # возвращаем вид admin на страницу login(без отдельной страницы соотв нельзя зайти случайно)
   else
-    @dinaed='<p>Access is denied</p>' # можно в рубифаиле вводить текст вместе с тегами тогда не нужно их вводить в erb фаиле достаточно будет ввести <%= @dinaed %>
+    @dinaed = '<p>Access is denied</p>' # можно в рубифаиле вводить текст вместе с тегами тогда не нужно их вводить в erb фаиле достаточно будет ввести <%= @dinaed %>
     erb :barbershop_login
   end
-end
-
-get '/admin' do # Доп страница для отдельного отображения вида admin без пароля
-  erb :barbershop_admin
 end
 
 
@@ -251,7 +247,7 @@ end
 
 # Сообщение об ошибке(пример вложенного в erb кода Ruby). В layout для нее есть код, проверяющий переменную.
 get '/about' do
-  @error='Какаято ошибка!!!' # Оппределяем переменную @error и в коде вида layout, она будет работать
+  @error = 'Какаято ошибка!!!' # Оппределяем переменную @error и в коде вида layout, она будет работать
   erb :barbershop_about
 end
 
@@ -284,9 +280,9 @@ end
 # Для того чтобы пользователь не заполнял все поля заново, если какоето забыто, нужно поставить значение заполненных полей в аргумент value в html-элементе этого поля при помощи синтаксиса <%= ... %> добавив прямо в значение аргумента value переменную
 post '/' do
   @user_name = params[:user_name]
-	@phone = params[:phone]
+	@phone     = params[:phone]
 	@date_time = params[:date_time]
-  @barber = params[:barber]
+  @barber    = params[:barber]
 
   # хеш для удобства, значения повторяют значения атрибутов name
 	hh = { user_name: 'Введите имя', phone: 'Введите телефон', date_time: 'Введите дату и время' }
@@ -294,6 +290,7 @@ post '/' do
 	@error = hh.select{|key,_| params[key]==''}.values.join(", ") # объединяем сообщения о незаполненных полях в строку и присваиваем в переменную, либо пустую строку если незаполненных значений нет
 
   return erb :barbershop_index if @error!='' # возвращаем вид в зависимости от того какое значение приняла переменная
+
   @message = "Dear #{@user_name}, we'll be waiting for you at #{@date_time}"
   erb :barbershop_message
 end
@@ -311,11 +308,11 @@ get '/contacts' do
 end
 
 post '/contacts' do
-	@email = params[:email]   # (например) VasiaPupkin@gmail.com
+	@email        = params[:email]   # (например) VasiaPupkin@gmail.com
 	@user_message = params[:user_message]
 
 	hh = { email: 'Введите почту', user_message: 'Введите сообщение' }
-	@error = hh.select{|k,_| params[k]==''}.values.join(', ')
+	@error = hh.select{|k,_| params[k] == ''}.values.join(', ')
 
 	if @error == ''
 		@message2 = "<p style=\"color: green;\">Сообщение принято, ответ будет прислан на вашу почту по адресу #{@email}</p>"
@@ -369,11 +366,11 @@ end
 
 post '/' do
   @user_name = params[:user_name]
-	@phone = params[:phone]
+	@phone     = params[:phone]
 	@date_time = params[:date_time]
-  @barber = params[:barber]
+  @barber    = params[:barber]
 
-  db = SQLite3::Database.new('barbershop.db') # тут приходится запускать бд каждый раз прописывая
+  db = SQLite3::Database.new('barbershop.db') # тут приходится заново запускать БД
   db.execute 'INSERT INTO Users ( username, phone, datestamp, barber ) VALUES (?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber] # записываем в базу данных данные введенные пользователем
   db.close
 
@@ -391,7 +388,7 @@ def get_db
 end
 
 configure do
-	db = get_db() # вызываем метод и присваиваем бд в переменную
+	db = get_db() # вызываем метод и присваиваем БД в переменную
 	db.execute 'CREATE TABLE IF NOT EXISTS "Users"
   ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT)'
 	db.close
@@ -403,11 +400,11 @@ end
 
 post '/' do
   @user_name = params[:user_name]
-	@phone = params[:phone]
+	@phone     = params[:phone]
 	@date_time = params[:date_time]
-  @barber = params[:barber]
+  @barber    = params[:barber]
 
-  db = get_db() # вызываем метод и присваиваем бд в переменную
+  db = get_db() # вызываем метод и присваиваем БД в переменную
   db.execute 'INSERT INTO Users ( username, phone, datestamp, barber ) VALUES (?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber]
   db.close
 
@@ -462,7 +459,7 @@ def get_db
 end
 
 # before (в sinatra) - каждый раз исполняет код в теле метода before перед(в теле обработчика??) любым запросом(get/post/...) - соотв код(напр переменные) из before будет доступен во всех обработчиках и соотв представлениях ими возвращамых. Удобно если один и тот же код необходимо использовать в нескольких запросах и возвращаемых ими представлениях
-# Для Барбершоп у нас есть 2 обработчика корневой страницы(get '/' и post '/') и если заполнять селектор в barbershop_index значениями из БД из таблицы парикмахеров то там в коде будет переменная @barbers из запроса get '/' о которой запрос post '/' ничего не знает, соотв возникнет ошибка при нажатии на кнопку отправки формы. Поэтому лучше использовать метод before и задать переменную в нем вместо того что задавать ее в запросе гет, так она будет доступна из всех запросов.
+# Для Барбершоп у нас есть 2 обработчика корневой страницы(get '/' и post '/') оба возвращают barbershop_index в котором есть селектор со значениями из БД из таблицы парикмахеров соотв и там и там в коде будет нужна переменная @barbers, соотв если не присвоить ее в какомто запрсе может быть ошибка и удобнее присвоить ее в before чем 2 раза - в каждом обрабочике.
 before do
   db = get_db()
 	@barbers = db.execute('SELECT * FROM Barbers') # Теперь эта переменная будет доступна во всех представлениях
@@ -477,7 +474,7 @@ configure do
   # создаем 2ю таблицу для парикмахеров для селектора в форме
   db.execute 'CREATE TABLE IF NOT EXISTS "Barbers" ( "id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" TEXT )'
 
-  seed_db(db, ['Jessie Pinkman', 'Walter White', 'Gus Fring', 'Mike Ehrmantraut']) # вызываем метод с параметрами объекта БД и списком парикмахеров в виде массива(миграция для заполнения таблицы ? тк добавит только тех которых нет в нашей таблице изначально, те это способ добавить новых парикмахеров)
+  seed_db(db, ['Jessie Pinkman', 'Walter White', 'Gus Fring', 'Mike Ehrmantraut']) # вызываем метод с параметрами: объект БД и списком парикмахеров в виде массива(миграция для заполнения таблицы ? тк добавит только тех которых нет в нашей таблице изначально, те это способ добавить новых парикмахеров)
 
   db.close # закрываем только после обработки функции
 end
@@ -491,15 +488,15 @@ post '/' do
   # теперь переменная @barbers с результатом запроса из before сможет работать тут
 
   @user_name = params[:user_name]
-	@phone = params[:phone]
+	@phone     = params[:phone]
 	@date_time = params[:date_time]
-  @barber = params[:barber]
-  @color = params[:color]
+  @barber    = params[:barber]
+  @color     = params[:color]
 
 	hh = { user_name: 'Введите имя', phone: 'Введите телефон', date_time: 'Введите дату и время' }
-	@error = hh.select{|key,_| params[key]==''}.values.join(", ")
+	@error = hh.select{|key,_| params[key] == ''}.values.join(", ")
 
-  return erb :barbershop_index if @error!=''
+  return erb :barbershop_index if @error != ''
 
   db = get_db()
   db.execute 'INSERT INTO Users ( username, phone, datestamp, barber, color ) VALUES (?, ?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber, @color]
@@ -547,7 +544,7 @@ end
 
 post '/new' do
 	content = params[:content]
-  author = params[:author]
+  author  = params[:author]
 
 	if content.size <= 0
 		@error = 'Введите текст'
@@ -565,7 +562,7 @@ end
 puts
 puts '                                             redirect/redirect to'
 
-# Метод redirect отправляет HTTP-заголовок для перенаправления клиента на заданный URL-адрес, передаваемый аргумент должен быть полным URL-адресом с хостом (например http://example.com/path, не просто /path).
+# redirect - метод отправляет HTTP-заголовок для перенаправления клиента на заданный URL-адрес, передаваемый аргумент должен быть полным URL-адресом с хостом (например http://example.com/path, не просто /path).
 # to - метод преобразует путь в полный URL-адрес вашего приложения Sinatra, позволяя использовать полученный URL-адрес в файлах redirect. Например, to('/path')станет http://yoursinatraapp/path.
 
 # Метод redirect to в Синатре используется для перенаправления пользователя на другую страницу. Когда метод вызывается, Синатра отправляет HTTP-заголовок Location с указанием нового местоположения и статус кодом 302 (Found).

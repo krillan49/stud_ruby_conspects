@@ -15,7 +15,7 @@
 	<select name="barber">
 		<% @barbers.each do |row| %>
 			<!-- 1. Нативный вариант тоже работеат (??) -->
-      <!-- <option <%= 'selected' if @barber==row['name'] %>><%=row['name']%></option> -->
+      <!-- <option <%= 'selected' if @barber == row['name'] %>><%=row['name']%></option> -->
 
 			<!-- 2. Вывод через синтаксис ActiveRecord -->
 			<option <%= 'selected' if @barber == row.name %>><%=row.name%></option>
@@ -23,7 +23,7 @@
   </select><br>
 
 	<label>Выберите цвет</label><br>
-	<input type="color" name="color"><br>
+	<input type="color" name="color" value="<%= @color %>"><br>
 
 	<input type="submit">
 

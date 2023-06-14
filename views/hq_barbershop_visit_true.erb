@@ -16,12 +16,12 @@
 	<label>Ваш парикмахер:</label><br>
 	<select name="client[barber]">
 		<% @barbers.each do |row| %>
-			<option <%= 'selected' if @barber == row.name %>><%=row.name%></option>
+			<option <%= 'selected' if @c.barber == row.name %>><%= row.name %></option>
     <% end %>
   </select><br>
 
 	<label>Выберите цвет</label><br>
-	<input type="color" name="client[color]"><br>
+	<input type="color" name="client[color]" value="<%= @c.color %>"><br>
 
 	<input type="submit">
 

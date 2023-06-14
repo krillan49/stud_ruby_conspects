@@ -196,6 +196,20 @@ p basic_op('+', 3, 2) #=> 5
 
 
 puts
+# с attr_accessor
+class Character
+  attr_accessor :strength
+  def initialize
+    @strength = 5
+  end
+end
+char = Character.new
+p old = char.send(:strength) # 5
+p char.send("strength=", 1 + old) # 6
+p char.send(:strength) # 6
+
+
+puts
 puts '                                      Мета-программирование. method_missing'
 
 # method_missing(резервированное название метода) принимает значение при обращении к несуществующему методу класса, значением будет имя этого несуществующего метода

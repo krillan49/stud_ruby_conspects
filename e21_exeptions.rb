@@ -5,7 +5,7 @@ puts '                                  Отслеживание ошибок (E
 
 # Программа останавливается, если возникает исключение. Таким образом, исключения используются для обработки различных типов ошибок, которые могут возникнуть во время выполнения программы, и предпринимают соответствующие действия вместо полной остановки программы.
 
-(t[i-1].count{|el| el=='O~'} rescue 0)+(t[i+1].count{|el| el=='~O'} rescue 0)
+(t[i-1].count{|el| el=='O~'} rescue 0) + (t[i+1].count{|el| el=='~O'} rescue 0)
 
 
 puts
@@ -63,7 +63,7 @@ rescue
   fname = "ruby_exemples/text/simple.txt"
   retry # Это переместит элемент управления в начало begin
 end
-#=> "File opened successfully\n""Работа с файлами это распространенная вещь в программировании. Нам постоянно ..."
+#=> "File opened successfully\n" "Работа с файлами это распространенная вещь в программировании. Нам постоянно ..."
 # Исключение произошло при открытии. Пошел rescue, fname было переназначено. По повторной попытке пошел к началу начала. На этот раз файл успешно открывается. Продолжение основного процесса.
 # если файл с повторно замененным именем не существует, этот пример кода повторяется бесконечно. Будьте осторожны, если вы используете повторную попытку для процесса исключения
 
@@ -114,7 +114,7 @@ begin
   raise 'A test exception.'
 rescue Exception => e
   puts e.message
-  puts e.backtrace.inspect
+  puts e.backtrace.inspect  # ?? путь к месту ошибки ??
 end
 #=> A test exception.
 #=> ["E:/doc/ruby_exemples/test2.rb:2:in `<main>'"]
@@ -166,7 +166,7 @@ end
 
 
 puts
-puts '                                                 Catch и Throw(?)'
+puts '                                                 Catch и Throw'
 
 # Хотя механизм исключений raise и rescue отлично подходит для отказа от выполнения, когда что-то идет не так, иногда нужна возможность выпрыгнуть из какой-то глубоко вложенной конструкции во время обычной обработки. Вот где catch и throw пригодится.
 
@@ -176,38 +176,30 @@ puts '                                                 Catch и Throw(?)'
 throw :lablename
 #.. это не будет выполнено
 catch :lablename do
-#.. соответствующий catch будет выполнен после обнаружения throw.
+  #.. соответствующий catch будет выполнен после обнаружения throw.
 end
 
 # Синтаксис 2
-throw :lablename condition
+throw :lablename condition # ?? throw :lablename if something
 #.. это не будет выполнено
 catch :lablename do
-#.. соответствующий catch будет выполнен после обнаружения throw.
+  #.. соответствующий catch будет выполнен после обнаружения throw.
 end
 
-# (НЕПОНЯТНО)В следующем примере используется catch для прекращения взаимодействия с пользователем, если '!' вводится в ответ на любое приглашение.
-def promptAndGet(prompt)
+
+# В следующем примере используется catch для прекращения взаимодействия с пользователем, если '!' вводится в ответ на любое приглашение.
+def promptAndGet(prompt)  # 2. Пошло исполнение
   print prompt
-  res = readline.chomp
-  throw :quitRequested if res == "!"
-  return res
+  res = gets.strip
+  throw :quitRequested if res == "!"  # 3. Проверяем данные на условие, если соответствует прыгаем на 4а иначе идем на 4б
+  return res   # 4б.
 end
 
-catch :quitRequested do
-  name = promptAndGet("Name: ")
-  age = promptAndGet("Age: ")
-  sex = promptAndGet("Sex: ")
-  # ..
-  # process information
+catch :quitRequested do  # 4а. Прыгаем сюда и заново вызываем метод(переходим к шагу 2)
+  promptAndGet("Name: ")
 end
-promptAndGet("Name:")
 
-# Вы должны попробовать вышеуказанную программу на своем компьютере, потому что она требует ручного взаимодействия. Это даст следующий результат —
-#Name: Ruby on Rails
-#Age: 3
-#Sex: !
-#Name:Just Ruby
+name = promptAndGet("Name: ") # 1. Вызываем метод
 
 
 puts
@@ -231,7 +223,7 @@ p compute #=> "Do not compute"
 
 # Обычная функция:
 def problem x
-  x*50+6 rescue 'Error'
+  x * 50 + 6 rescue 'Error'
 end
 problem 'fff' #=> 'Error'
 
@@ -240,6 +232,7 @@ puts
 puts '                                         Class Exception(Классы исключений)(?)'
 
 # Стандартные классы и модули Ruby вызывают исключения. Все классы исключений образуют иерархию с классом Exception наверху. Следующий уровень содержит семь различных типов: Interrupt,  NoMemoryError,  SignalException,  ScriptError,  StandardError,  SystemExit. ScriptError, и StandardError имеют ряд подклассов. На этом уровне есть еще одно исключение, Fatal, но интерпретатор Ruby использует его только внутри себя.
+
 # Если мы создадим свои собственные классы исключений, они должны быть подклассами либо класса Exception, либо одного из его потомков.
 
 # Создаем наш класс исключений

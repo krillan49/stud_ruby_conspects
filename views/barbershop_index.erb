@@ -19,19 +19,19 @@
 
 		<!-- 1. Такой вариант считается хардкодингом и подходит для работы только с переменными из одного обработчика -->
 		<!--
-		<option <%= 'selected' if @barber=='Jessie Pinkman' %>>Jessie Pinkman</option>
-    <option <%= 'selected' if @barber=='Walter White' %>>Walter White</option>
-    <option <%= 'selected' if @barber=='Gus Fring' %>>Gus Fring</option>
+		<option <%= 'selected' if @barber == 'Jessie Pinkman' %>>Jessie Pinkman</option>
+    <option <%= 'selected' if @barber == 'Walter White' %>>Walter White</option>
+    <option <%= 'selected' if @barber == 'Gus Fring' %>>Gus Fring</option>
 		-->
 
 		<!-- 2. Способ для работы с методом before(селектор заполняется из него при исполнении запроса гет). Тут у нас есть переменная из запроса post - @barber и переменная из метода before - @barbers, которая будет доступна и в гет и в пост запросах -->
 		<% @barbers.each do |row| %>
-      <option <%= 'selected' if @barber==row['name'] %>><%=row['name']%></option>
+      <option <%= 'selected' if @barber == row['name'] %>><%=row['name']%></option>
     <% end %>
   </select><br>
 
 	<label>Выберите цвет</label><br>
-	<input type="color" name="color"><br> <!-- сохраняет как хэш например #22c9bd -->
+	<input type="color" name="color" value="<%= @color %>"><br> <!-- сохраняет как хэш например #22c9bd -->
 
 	<input type="submit">
 

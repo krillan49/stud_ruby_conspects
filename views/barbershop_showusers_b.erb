@@ -6,7 +6,7 @@
 <table border="1" width="1100px" style="font-size: 2rem;">
   <caption>Таблица 1:  Все колонки</caption>
   <thead>
-    <tr><%= '<th>'+@results[0].keys.join('</th><th>')+'</th>' %></tr>
+    <tr><%= '<th>' + @results[0].keys.join('</th><th>') + '</th>' %></tr>
   </thead>
   <tbody>
     <!-- тк это итератор то любой код внутри будет выполняться столько раз сколько будет итераций те равно числу строк запроса -->
