@@ -44,8 +44,8 @@ require 'sinatra/activerecord' # подключение гема activerecord
 # 2. после строк подключения пишем это в начале app.rb
 set :database, { adapter: 'sqlite3', database: 'barbershop_ac.db' } # так в ActiveRecord создается подключение к БД(аналог для SQLite3::Database.new 'barbershop_ac.db'), где adapter: 'sqlite3' это используемая СУБД, а 2й аргумент наша БД
 
-# 3. Создадим модель - класс который будет представлять нашу сущность(entity). Модель/сущность описывает наши события/строки в таблице - то с чем мы работаем(примеры сущностей: клиент, парикмахер, пост в блоге, комментарий итд). Класс сущности называется в единственном числе, тк объекты класса сущности будут содержать иформацию об одном экземпляре сущности(тут о конкретном клиенте) те о том что будет находится в одной строке БД.
-class Client < ActiveRecord::Base # тут создаем сущность клиент: создаем класс который будет наследовать у ActiveRecord::Base (класс Base из модуля/наймспэйса ActiveRecord)
+# 3. Создадим модель - класс который будет представлять нашу сущность(entity). Модель/сущность описывает наши события/строки в таблице(тут clients) - то с чем мы работаем(примеры сущностей: клиент, парикмахер, пост в блоге, комментарий итд). Класс сущности называется в единственном числе, тк объекты класса сущности будут содержать иформацию об одном экземпляре сущности(тут о конкретном клиенте) те о том что будет находится в одной строке БД.
+class Client < ActiveRecord::Base # тут создаем сущность клиент: создаем класс который будет наследовать у ActiveRecord::Base
   # класс унаследовал все необходимые методы для работы с БД из класса Base модуля ActiveRecord, те произошла настройка ActiveRecord для нашей сущности
 end
 
@@ -56,8 +56,6 @@ puts '                                          rake, Rakefile, миграции
 # При помощи rake мы будем создавать таблицы(и их миграции) с нашими сущностями и управлять ими.
 
 # Миграция - это очередная версия нашей базы данных. По аналогии с Git где существуют версии всего приложения +- тоже существует и для БД. У нас будут существовать различные версии наших БД и они будут вместе с кодом переходить из одной версии в другую, как раз при помощи механизма миграций
-
-# Миграция - это то - что мы создаем в нашей программе для переноса в соответствующие структуры БД. Когда мы даем команду rake db:migrate - это подготовленное нечто мигрирует (переносится) в БД, то есть там создается соответствующая структура
 
 # Rakefile(rakefile, rakefile.rb, Rakefile.rb) - произошёл от СИшного Makefile(заменили M на R - мэйкфаил руби). В этот руби-фаил прописываются определенные команды, которые мы можем исполнить. Он подключает различные нэймспэйсы. Он нужен для команды rake при помощи которой мы делаем миграцию.
 
@@ -102,9 +100,9 @@ rake db:version             # Retrieves the current schema version number
 
 # 1. Убеждаемся что есть все гемы(гемлист или просто). Создаем и заполняем фаилы: Rakefile и config.ru
 
-# 2. Заполняем app.rb и создаем модель/сущность как выше
+# 2. Заполняем app.rb и создаем модель/сущность как выше с именем как будет в нашей миграции только в единств числе
 
-# 3. Создаем фаил миграции. Вводим в консоли:
+# 3. Создаем фаил миграции - Вводим в консоли:
 rake db:create_migration NAME=create_clients #(пишем маленькими буквами без пробелов; clients - название миграции и таблицы, оно должно быть таким же как название модели только во множественном числе)
 #=> db/migrate/20230523033236_create_clients.rb  # У нас в приложении создаются данные каталоги с данным rb фаилом
 # 20230523033236 - дата и время создания фаила(специально чтоб миграции с одинаковыми именами отличались)
@@ -119,12 +117,12 @@ end
 class CreateClients < ActiveRecord::Migration[7.0]
   def change
     # далее аналог: db.execute 'CREATE TABLE IF NOT EXISTS "Users" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT, "color" TEXT)'
-    create_table :clients do |t| # Метод create_table принимает в виде символа параметр с названием таблицы(название таблицы обязательно во множественном числе) присваивает в переменную t и далее лямбду в которой мы задаем столбцы
+    create_table :clients do |t| # Метод(вызов) create_table принимает в виде символа параметр с названием таблицы(название таблицы обязательно во множественном числе) присваивает в переменную t и далее лямбду в которой мы задаем столбцы
 
       # столбец id INTEGER PRIMARY KEY AUTOINCREMENT будет создан автоматически
 
-      t.text :name  # в таблице clients будет создан столбец name с типом TEXT
-      t.text :phone
+      t.text :name       # метод text от объекта t принимает параметр с названием колонки в виде символа
+      t.text :phone      # теперь в таблице clients будет создан столбец phone с типом TEXT
       t.text :datestamp
       t.text :barber
       t.text :color
@@ -255,15 +253,6 @@ class Barber < ActiveRecord::Base
 end
 
 
-# примеры:
-get '/' do
-  @barbers = Barber.order "created_at DESC" # SELECT * FROM barbers ORDER BY created_at DESC.
-
-	erb :hq_barbershop_index
-end
-
-
-puts
 # Запись данных в таблицу
 before do
 	@barbers = Barber.all # используем запрос для всех обработчиков
@@ -312,11 +301,11 @@ end
 
 # 3. Сохранение данных в БД тру способом(без отдельных параметров и кучи переменных)
 get '/visit' do
+  # Чтобы данный способ работал нужно изменить значения атрибутов name в виде hq_barbershop_visit_true
 	erb :hq_barbershop_visit_true
 end
 
 post '/visit' do
-  # Чтобы данный способ работал нужно изменить значения атрибутов name в виде hq_barbershop_visit_true
   c = Client.new params[:client] # Вместо client можно написать что угодно(главное в виде написать тоже самое название  client[имя_столбца]). В итоге мы получаем хэш со всеми значениями полей обозначенными названиями колонок БД для них.
   # К нам на сервер так и передается например 'client[name]' потом уже обрабатывается и получается хэш(в классе Client ??)
   # params[:client] = name: 'Имя', phone: '98766876', datestamp: 'дата', barber: 'Вася', color: '#6d7a80'
@@ -384,7 +373,7 @@ post '/visit' do
   if @c.save # валидация проводится по условиям из модели, вносит или не вносит Client.new в базу и возвращает true или false
 		erb "<p>Thank you!</p>"
 	else
-    # В значения временной сущности добавляются пустые строки в незаполненных столбцах
+    # В значения временной сущности добавляются пустые строки в незаполненных столбцах(?)
 
     @error = @c.errors.full_messages.first #=> из хэша ошибок(errors) вернет массив значений(["Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank"] ?? почемуто 3 раза ??) и выберет из них первую, тоесть сообщит о первом из незаполненных полей.
 		erb :hq_barbershop_visit_true
@@ -422,10 +411,45 @@ get '/clients/:id' do
 end
 
 
+puts
+puts '                         Значения по умолчанию у столбца в миграции. Миграция добавления add_'
+
+# На примере Pizzashop
+
+# 1 содержание основного фаила
+require 'sinatra'
+require 'sinatra/reloader'
+require 'sinatra/activerecord'
+
+set :database, { adapter: 'sqlite3', database: 'pizzashop.db' }
+
+class Product < ActiveRecord::Base
+end
+
+# 2 миграция для создания таблицы с пицами
+rake db:create_migration NAME=create_products
+
+class CreateProducts < ActiveRecord::Migration[7.0]
+  def change
+    create_table :products do |t|
+      t.string :title
+      t.text :description
+      t.decimal :price
+      t.decimal :size, default: 20 # установка значения по умолчанию ключевым словом default
+      t.boolean :is_spicy
+      t.boolean :is_veg
+      t.boolean :is_best_offer
+      t.string :path_to_image
+
+      t.timestamps
+    end
+  end
+end
+
+rake db:migrate
+
 
 puts
-puts '                                         Миграция добавления add_'
-
 # Seed database - наполнение базы данных начальными значениями
 
 # 1. Миграция добаления, в отдельном фаиле заполняет уже созданную до того миграцию таблицы. Ее названия начинаются с Add
@@ -435,6 +459,8 @@ rake db:create_migration NAME=add_products
 # 2. Заполняем фаил миграции - создаем в нем сущности.
 class AddProducts < ActiveRecord::Migration[5.2]
   def change
+
+    # синтаксис метода create требует указания аргумента после вызова метода(тут 1й элемент хэша тк одного достаточно), а перевод строки считается окончанием инструкции, соотв для того чтоб начать аргументы с новой строки нужно взять их в круглые скобки(это уберет \n между методом и аргументом).
     Product.create :title => 'Гавайская',
       :description => 'Это гавайская пицца',
       :price => 350,
@@ -442,7 +468,7 @@ class AddProducts < ActiveRecord::Migration[5.2]
       :is_spicy => false,
       :is_veg => false,
       :is_best_offer => false,
-      :path_to_image => '/images/01.jpg'      # тут пишем путь к картинке в нашем приложении, чтобы потом добавить его в тег картинки img
+      :path_to_image => '/images/01.jpg'      # тут пишем путь к картинке в нашем приложении, чтобы потом добавить его в тег картинки img так: <img src="<%= pizza.path_to_image %>">
 
     Product.create :title => 'Пепперони',
       :description => 'Это пицца Пепперони',
@@ -452,21 +478,49 @@ class AddProducts < ActiveRecord::Migration[5.2]
       :is_veg => false,
       :is_best_offer => true,
       :path_to_image => '/images/02.jpg'
-
-    Product.create :title => 'Вегетарианская',
-      :description => 'Это вегетарианская пицца',
-      :price => 400,
-      :size => 30,
-      :is_spicy => false,
-      :is_veg => true,
-      :is_best_offer => false,
-      :path_to_image => '/images/03.jpg'
+      # Если нам нужно 2 картинки большую и маленькую для разных страниц, то лучше добавить в таблицу еще одну колонку например тут :path_to_big_image, это будет лучше чем уменьшать большие картинки на странице, тк это уменьшит нагрузку на станицу и не будет замедлять ее работу
   end
 end
 
 # 3. Запускаем миграцию
 rake db:migrate
 # В фаиле schema.rb изменяется только номер version: 2023_06_13_060331
+
+# 4. Дальнейшее заполнение основного фаила
+get '/' do
+	@products = Product.all
+	erb :pizzashop_index
+end
+
+
+puts
+puts '                              Форма со скрытым полем(использование JS)'
+
+# На примере Pizzashop - форма для отправки заказов
+
+# Модель для клиентов(и выполняем для него миграцию естественно)
+class Client < ActiveRecord::Base
+end
+
+# Тот случай когда только пост-обработчик. Тк для приема списка заказов пользователь только нажимает кнопку на главной странице, а данные берутся из локалсторэдж.
+post '/cart' do
+  @c = Client.new
+
+	@order_code = params[:orders] # "product_1=4,product_2=7,product_3=4,"
+	#"product_1=4,product_2=7,product_3=4," => [["1", "4"], ["2", "7"], ["3", "4"]]
+	order_list = params[:orders].split(',').map{|prod| prod.split('=')}.map{|a| [a[0][-1], a[1]]}
+	# => {obj1 => 4, ...} тоесть хэш где ключ сущность а значение число заказов на нее
+	@order_list = order_list.map{|k, v| [Product.find(k.to_i), v.to_i]}.to_h
+  
+	erb :pizzashop_orders
+end
+
+# обработчик подтверждения заказа и занесения в бд
+post '/order' do
+	@c = Client.new params[:client]
+	@c.save
+	erb "<p>Thank you!</p>"
+end
 
 
 

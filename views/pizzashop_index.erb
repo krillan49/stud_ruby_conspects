@@ -1,0 +1,53 @@
+<h2>Wellcome to Pizza Shop!</h2>
+
+<div>
+	<% @products.each do |pizza| %>
+			<div><%= pizza.title %></div>
+			<div>
+				<img src="<%= pizza.path_to_image %>" alt=""> <!-- Добавляем относительный путь картинки -->
+			</div>
+			<div><%= pizza.description %></div>
+			<div>Size: <%= pizza.size %> cm</div>
+			<div>Price: <%= pizza.price %> rub</div>
+			<div>
+				<button onclick="addToCart(<%= pizza.id %>)">Add to cart</button> <!-- Вставляем pizza.id в значение параметра функции. При нажатии увеличиваем в localstorage значение колличества конкретного продукта -->
+			</div>
+    <% end %>
+</div>
+
+
+<!-- Кнопка и поле для отправки данных о заказах(на уроке делали в шапке в виде layout). Существует много способов реализации такого функционала, но тут делаем самый простой вариант -->
+<div>
+
+	<form action="/cart" method="POST">
+		<!-- Скрытое(type="hidden") текстовое поле для ввода данных о заказе вида 'product_1=5,product_2=4,product_3=6,' чтобы передать его на сервер -->
+		<input type="hidden" name="orders" id="orders_input"> <!-- id="orders_input" - по этому селектору мы будем обращаться к полю через jquery, которое вставит в значение поля 'product_1=5,product_2=4,product_3=6,' -->
+
+		<!-- Кнопка отправки -->
+		<input type="submit" id="orders_button"> <!-- id="orders_button" - тк поле выше скрыто то добавим информацию о заказе в имя кнопки тем же способом что и выше -->
+	</form>
+
+</div>
+
+
+<!-- Нужно если форма выше находится в layout(но сам этот код ниже все равно будет написан тут в index) -->
+<!-- Чтобы при обновлении страницы данные 'product_1=5,product_2=4,product_3=6,' в поле <input type="text" name="orders" id="orders_input"> и колличество товаров в имени кнопки тоже обновлялись и вставлялись в значения поля/кнопки  -->
+<script>
+  $(function() {
+    update_orders_input();
+    update_orders_button();
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<!---->

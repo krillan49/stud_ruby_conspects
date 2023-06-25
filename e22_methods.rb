@@ -233,6 +233,39 @@ launch(par)
 
 
 puts
+puts '                                Proc. Процедуры и их виды(потом сопоставить с тем что ниже)'
+
+# Proc - процедура. Существует 3 типа процедур: анонимные методы, лямбда, блок
+
+# 1. Анонимный метод - это функция без имени
+proc = Proc.new { 'какойто_код' } # создание анонимного метода
+p proc.call #=> "какойто_код"  # вызов анонимной функции
+
+# 2. Ламбда функция - почти тоже самое что и анонимный метод
+
+# 3. Блок кода это по сути тоже анонимная функция, только передается по другому: через yield или &block.
+
+# Пример
+def three_ways(proc, lambda, &block) # запрашивает proc, lambda и block
+  proc.call
+  lambda.call
+  yield # like block.call  # puts "I'm a block, but could it be???"
+  puts "#{proc.inspect} #{lambda.inspect} #{block.inspect}"
+end
+
+anonymous = Proc.new { puts "I'm a Proc for sure." }
+nameless  = lambda { puts "But what about me?" }
+
+three_ways(anonymous, nameless) do
+  puts "I'm a block, but could it be???"
+end
+#=> I'm a Proc for sure.
+#=> But what about me?
+#=> I'm a block, but could it be???
+#<Proc:0x0000020841c7b2f8 E:/doc/ruby_exemples/test3.rb:14> #<Proc:0x0000020841c7a768 E:/doc/ruby_exemples/test3.rb:15 (lambda)> #<Proc:0x0000020841cb33d8 E:/doc/ruby_exemples/test3.rb:17>
+
+
+puts
 puts '                                yield (Передача блоков в функцию/функция обратного вызова)'
 
 # Блок - это совокупность фрагментов кода. Вы присваиваете имя блоку. Код в блоке всегда заключен в фигурные скобки ({}) или do ... end.
