@@ -38,4 +38,28 @@ def decode(s)
   end
 end
 p decode("atC5kcOuKAr!") # "Hello World!"
+p decode("EFhZINtl3rgKW9") # "What is this ?"
 p decode("yFNYhdmEdViBbxc40,ROYNxwfwvjg5CHUYUhiIkp2CMIvZ.1qPz") # "The quick brown fox jumped over the lazy developer."
+
+
+const dec = [
+  "a", "H", "q", "P", "u", "R", "v", "k", "M", "0", "7", "D", "o", "O", "1", "A", "U", "4", "9", "E", "W", "5", "C",
+  "V", "x", "l", "f", "c", "I", "Y", "6", ".", "?", " ", "G", "X", "y", "T", "w", "S", "3", "B", "n", "g", "K", "Z",
+  "z", "m", "N", "t", "j", "e", "J", "r", "i", "L", "s", "Q", "2", "8", ",", "F", "p", "h", "d", "b", "a"
+];
+
+device.decode = function (w) {
+  var counter = 1;
+  var res = ''
+  for (var i = 0; i < w.length; i++) {
+    if(dec.includes(w[i])) {
+      var ind = dec.indexOf(w[i]) + counter
+      if(ind > dec.length - 1) {
+        ind %= dec.length - 1;
+      }
+      res += dec[ind];
+    }
+    counter += 1;
+  }
+  return res;
+}

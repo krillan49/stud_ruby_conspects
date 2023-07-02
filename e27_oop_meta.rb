@@ -38,10 +38,10 @@ def make_lazy(func , *args)
 end
 make_lazy :add, 2, 3
 
-# Пример с применением метода класса
+# Пример с применением метода из класса
 class String
-  def each_char(a)
-    self.chars.map{|el| send a, el}.join
+  def each_char(method)
+    self.chars.map{|e| send method, e}.join
   end
 end
 
@@ -57,18 +57,18 @@ p dynamic_caller('zaphod beeblebrox', :upcase) #=> "ZAPHOD BEEBLEBROX"
 
 
 # Пример применения для встроенных методов
-action = @suspects[@name].include?(guess) ? :select! : :reject!
-@suspects.send(action) { |_, characters| characters.include?(guess) }
+action = suspects[name].include?(guess) ? :select! : :reject!
+suspects.send(action){|_, chars| chars.include?(guess)}
 
 
 # пример с аргументами для метода и параллельной передачей блока
 class Array
   def each_count(*args, &block)
-    raise ArgsBlockSametime if args!=[] and block
+    raise ArgsBlockSametime if args! = [] and block
     if block
       self.map{|e| block.call(e)}.tally
-    elsif args!=[]
-      args[0]=args[0].to_sym
+    elsif args != []
+      args[0] = args[0].to_sym
       self.map{|e| e.send(*args)}.tally
     else
       self.tally
@@ -86,7 +86,7 @@ cities.each_count(:length) {|city| city.length % 3 == 0} # raise ArgsBlockSameti
 # пример с передачей массива объектов и блоком для проверки
 class Array
   def invoke2(name, *args, &block) # мой вариант
-    res=[]
+    res = []
     self.each do |obj|
       if block
         res << obj.send(name, *args) if block.call(obj) # блок проверяет нужно ли вызывать метод(true/false)
@@ -98,8 +98,8 @@ class Array
   end
 
   def invoke(method, *args, &block)
-    #self.select(&block).map {|x| x.send(name, *args)}
-    select(&block).map {|item| item.send(method, *args) } # оптимальный вариант
+    #self.select(&block).map{|x| x.send(method, *args)}
+    select(&block).map{|item| item.send(method, *args) } # оптимальный вариант
   end
 end
 
@@ -120,11 +120,9 @@ puts '                                              define_method'
 send :define_method, "aaa" do   # можно заменить do end  на  {}
   puts "Hello, I'm new method"
 end
-aaa # Вызов обычный
-# Это равнозначно:
-def aaa
-  puts "Hello, I'm new method"
-end
+# вызываем метод define_method, передаем в него название "aaa" и блок, в итоге создается метод aaa с телом из блока
+aaa #=> Hello, I'm new method  # Вызов обычный
+send 'aaa' #=> Hello, I'm new method  # Вызов через send
 
 
 # Позволяет задавать имя метода значением и например определять его из консоли при помощи gets
@@ -132,7 +130,7 @@ method_name = gets.strip
 send :define_method, method_name do
   puts "Hello, I'm new method"
 end
-send method_name # в случае с переменной вызов через send
+send method_name # в случае с переменной вызов только через send если не в ручную
 
 
 puts
@@ -252,36 +250,33 @@ puts
 # Мктод миссинг с = в названии метода( с присвоением)
 class Hash
   def method_missing(method, *args) # *args то что идет после имени метода
-    return store_attribute(method, *args) if method.end_with?('=') # вызываем доп метод если имя метода с =
-    self[method]
-  end
-
-  private
-
-  def store_attribute(method, *args)
-    k=method.to_s.delete_suffix('=').to_sym # удаляем из имени метода знак =
-    self[k]=args[0]
+    if method.end_with?('=') # вызываем доп метод если имя метода с =
+      k = method.to_s.delete_suffix('=').to_sym # удаляем из имени метода знак =
+      self[k] = args[0]
+    else
+      self[method]
+    end
   end
 end
 
 hash = {:five => 5, :ten => 10}
-p hash[:five]# 5
-p hash.five# 5, "should access :five via method call"
+p hash[:five] # 5
+p hash.five # 5,
 
 hash.fifteen = 15
-p hash[:fifteen]# 15, "should access :fifteen normally when set like a method"
-p hash.fifteen# 15, "should access :fifteen via method call when set like a method"
+p hash[:fifteen] # 15,
+p hash.fifteen # 15,
 p hash # {:five=>5, :ten=>10, :fifteen=>15}
 
 
 puts
 # с методами класса
 class Num
-  NUMS={zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9}
-  @@arr=[]
+  NUMS = {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9}
+  @@arr = []
   def self.to_i
-    res=@@arr.join.to_i
-    @@arr=[]
+    res = @@arr.join.to_i
+    @@arr = []
     res
   end
   def self.method_missing(n)
@@ -290,16 +285,16 @@ class Num
   end
 end
 
-p Num.seven.to_i# 7
-p Num.one.two.three.to_i# 123
+p Num.seven.to_i # 7
+p Num.one.two.three.to_i # 123
 
 
 puts
 # Создаем псевдометоды в хэше-константе класса
 class Code
-  METHODS={}
+  METHODS = {}
 
-  def self.method_missing(method, arg=nil)
+  def self.method_missing(method, arg = nil)
     return store_attribute(method, arg) if method.to_s.end_with?('=')
     raise 'Method non exist' if !METHODS.keys.include?(method)
     METHODS[method]
@@ -308,15 +303,14 @@ class Code
   private
 
   def self.store_attribute(method, arg)
-    k=method.to_s.delete_suffix('=').to_sym
-    METHODS[k]=arg
+    k = method.to_s.delete_suffix('=').to_sym
+    METHODS[k] = arg
   end
 end
 
 Code.a = 10
 p Code::METHODS #=> {:a=>10}
 p Code.a #=> 10
-p Code.a == 10 #=> true
 
 
 
@@ -344,7 +338,7 @@ class Fixnum # класс можно например Integer в зависим�
   def method_missing(method, par)
     #p method #=> :call #=> :call # method по умолчанию(если после точки ничего не) имеет значение :call
     #p n #=> [2] #=> [3]
-    self+par # 3+. возвращаем сумму от которой снова может быть вызван method_missing
+    self + par # 3+. возвращаем сумму от которой снова может быть вызван method_missing
   end
 end
 
@@ -404,16 +398,16 @@ p M2::AA #=> "Hellow, im AA"
 
 
 puts
-puts '                      instance_eval(&block)(инициализация методов??). "obj=Obj.new do ..." '
+puts '                                         instance_eval(&block)'
 
 # https://www.youtube.com/watch?v=7D9wwPniszY   1h 31m
 
 class Recipe
   def initialize(name, &block)
-    @name=name
-    @ings=[]
-    @steps=[]
-    instance_eval(&block) # инициализируем новые методы(???)
+    @name = name
+    @ings = []
+    @steps = []
+    instance_eval(&block) # както обрабатывает и запускает все переданные методы ??
   end
 
   def ingredient(ing)
@@ -424,21 +418,19 @@ class Recipe
     @steps << step
   end
 
-  def to_s
-    steps=(@steps.empty? ? "" : @steps.map.with_index{|e,i| "#{i}.) "+e}.join("\n")+"\n")
-    "#{@name}\n#{'='*@name.size}\n#{@ings.join(', ')}\n\n#{steps}"
+  def show_result
+    [@ings, @steps]
   end
 end
 
 first_recipe = Recipe.new('mix') do
-  ingredient "salt"   # потенциальные несуществующие метобы передаются как блок(methodname(arg)) при помощи синтаксиса через do и видимо сразу запускаются от этого объекта(??)
+  ingredient "salt"   # передаем вызов метода с параметром в блоке
   ingredient "sugar"
-
   step "mix salt & sugar"
   step "throw it in the bin"
 end
 
-p first_recipe.to_s # "mix\n===\nsalt, sugar\n\n0.) mix salt & sugar\n1.) throw it in the bin\n"
+p first_recipe.show_result # [["salt", "sugar"], ["mix salt & sugar", "throw it in the bin"]]
 
 
 puts
@@ -452,8 +444,8 @@ Object.send(:remove_const, :SomeModuleName)
 puts
 puts '                                     Добавление методов класса в класс'
 
-def add_method_to(a_class)
-  a_class.class_eval do  # добавляем новый метод класса "m" в класс "String"
+def add_method_to(class_name)
+  class_name.class_eval do  # добавляем новый метод класса "m" в класс "String"
     def m; 'Hello!'; end
   end
 end
@@ -486,7 +478,7 @@ klass = Class.new(Object) do # при создании класса создае
   define_method(:some2) { 'hi2' } # такой синтаксис тоже норм
 
   define_method(:plus_one) do |param| # создаем метод экземпляра с параметром
-    param+1
+    param + 1
   end
 
   define_method('some_seter=') {|val| val } # создаем сеттер

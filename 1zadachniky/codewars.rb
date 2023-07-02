@@ -406,3 +406,52 @@ def edge_detection(image)
   end
   "#{width} " + result.slice_when{|a, b| a != b}.map{|arr| [arr[0], arr.size]}.flatten.join(' ')
 end
+
+
+puts
+# 3 kyu How many are smaller than me II?  https://www.codewars.com/kata/56a1c63f3bc6827e13000006
+require 'set'
+
+def smaller(arr)
+  p arr.size
+  p arr.uniq.size
+
+  counter = 0
+
+  set = Set.new
+  hh = {}
+  size = arr.size
+  res = []
+  arr.each.with_index do |n, i|
+
+    if set.include?(n)
+      counter += 1
+
+      new = 0
+    elsif !hh[n]
+      counter += size - i - 1
+
+      new = arr[i+1..-1].select{|e| e < n}.size
+      hh[n] = [new, i]
+    else
+      old = hh[n]
+
+      counter += i - old[1]
+
+      new = old[0] - arr[old[1]...i].select{|e| e < n}.size
+      if new <= 0
+        hh.delete(n)
+        set << n
+        new = 0
+      else
+        hh[n] = [new, i]
+      end
+    end
+
+    res << new
+  end
+  p counter #=> 185545628 если arr.size==49339 arr.uniq.size==2001
+  res
+end
+
+p smaller([5, 4, 7, 9, 2, 4, 1, 4, 5, 6])# [5, 2, 6, 6, 1, 1, 0, 0, 0, 0]

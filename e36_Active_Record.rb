@@ -112,6 +112,7 @@ class CreateClients < ActiveRecord::Migration[7.0]
   def change # метод созданный ActiveRecord, для того чтобы мы в нем создали миграцию (раньше вместо него в миграциях было 2 метода: up и down)
   end
 end
+# Если до запуска миграции хотим исправить название фаила то можно спокойно менять эту create_clients часть руками в самом имени фаила и внутри фаила соответсвенно
 
 # 4. Заполняем тело метода change(создаем макет таблицы):
 class CreateClients < ActiveRecord::Migration[7.0]
@@ -348,7 +349,7 @@ end
 
 # Если мы проверим незаполненного клиента в tux то:
 c = Client.new     #=> #<Client id: nil, name: nil, phone: nil, datestamp: nil, barber: nil, color: nil, created_at: nil, updated_at: nil>
-c.valid?           #=> false  - это метод валидации для tux
+c.valid?           #=> false
 c.errors.count     #=> 4 - выводит число незаполненных полей(ошибок)
 c.errors.messages  #=> {:name=>["can't be blank"], :phone=>["can't be blank"], :datestamp=>["can't be blank"], :color=>["can't be blank"]} - выводит сообщения об ошибках, мы можем использовать ее для вывода
 # Эти свойства мы так же можем использовать в обработчиках и методах основной программы.
@@ -373,7 +374,7 @@ post '/visit' do
   if @c.save # валидация проводится по условиям из модели, вносит или не вносит Client.new в базу и возвращает true или false
 		erb "<p>Thank you!</p>"
 	else
-    # В значения временной сущности добавляются пустые строки в незаполненных столбцах(?)
+    # В значения временной сущности добавляются пустые строки в незаполненных столбцах
 
     @error = @c.errors.full_messages.first #=> из хэша ошибок(errors) вернет массив значений(["Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank"] ?? почемуто 3 раза ??) и выберет из них первую, тоесть сообщит о первом из незаполненных полей.
 		erb :hq_barbershop_visit_true
@@ -502,25 +503,49 @@ puts '                              Форма со скрытым полем(и
 class Client < ActiveRecord::Base
 end
 
+# Выделим "product_1=4,product_2=7,product_3=4," разбивку в метод(В Рэилс это называется хэлпер):
+# Это не эффективный способ, лучше использовать json (позволяет поддерживать формат данных любой сложности).
+def parse_orders_input(orders_input)
+  #"product_1=4,product_2=7,product_3=4," => [["1", "4"], ["2", "7"], ["3", "4"]]
+  orders_input.split(',').map{|prod| prod.split('=')}.map{|a| [a[0][-1], a[1]]}
+end
+
 # Тот случай когда только пост-обработчик. Тк для приема списка заказов пользователь только нажимает кнопку на главной странице, а данные берутся из локалсторэдж.
 post '/cart' do
   @c = Client.new
 
 	@order_code = params[:orders] # "product_1=4,product_2=7,product_3=4,"
-	#"product_1=4,product_2=7,product_3=4," => [["1", "4"], ["2", "7"], ["3", "4"]]
-	order_list = params[:orders].split(',').map{|prod| prod.split('=')}.map{|a| [a[0][-1], a[1]]}
+
+  # Если пустой локаосторедж
+  if @order_code.size == 0
+		return erb "Cart is empty"
+	end
+
+	order_list = parse_orders_input(params[:orders])
 	# => {obj1 => 4, ...} тоесть хэш где ключ сущность а значение число заказов на нее
 	@order_list = order_list.map{|k, v| [Product.find(k.to_i), v.to_i]}.to_h
-  
-	erb :pizzashop_orders
+
+	erb :pizzashop_cart
 end
 
-# обработчик подтверждения заказа и занесения в бд
+# обработчик подтверждения заказа и занесения в бд(мб сделать не отдельный чтобы легче валидация?)
 post '/order' do
 	@c = Client.new params[:client]
 	@c.save
-	erb "<p>Thank you!</p>"
+	erb :pizzashop_order_plased
 end
+
+
+puts
+puts '                                       Минусы которые можно исправить'
+
+# Минусы созданного PizzaShop(и других программ в коспеутах):
+# 1. Модели находятся в app.rb. Лучше вынести в отдельный каталог, каждая модель в отдельном фаиле.
+# 2. Много несвязанных между собой get, post в одном файле. Синатра позволяет разбить по разным фаилам(потом мб доучить)
+# 3. Вспомогательный метод (хелпер) в этом же app.rb
+# 4. Представления не в подкаталогах (как в рейлс)
+# 5. Бардак с url
+# 6. Нет тестов (в рейлс для всего существуют тесты)
 
 
 

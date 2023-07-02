@@ -12,11 +12,11 @@ def show_book book
 	puts '==============================<br/>'
 end
 
-book1={mike: 65, tom: 55}
+book1 = {mike: 65, tom: 55}
 show_book book1
-book2={jessie: 22, den: 32}
+book2 = {jessie: 22, den: 32}
 show_book book2
-book=book1.merge book2
+book = book1.merge book2
 show_book book
 
 puts "</body>" #=> закрываем тег

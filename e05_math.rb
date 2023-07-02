@@ -461,6 +461,9 @@ end
 def calc(expression) # вар 2
   RubyVM::InstructionSequence.compile("1.0*" + expression).eval
 end
+def calc(expression) # вар 3
+  eval("1.0*" + expression)
+end
 p calc('2 / (2 + 3) * 4.33 - -6')#7.732
 p calc('2 /2+3 * 4.75- -6') # 21.25
 p calc("(1 - 2) + -(-(-(-4)))") # 3.0

@@ -53,7 +53,7 @@ function update_orders_input() {
   var orders = сart_get_orders(); //  "product_1=3,product_2=5,product_3=1, ..."
 
   // Используем джэйквери - для этого в лэйоут нужно подключть его, например так <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>  либо бутстрапное
-  $('#orders_input').val(orders); // обращаемся к полю через его айди и вставляем в его значение "product_1=3,product_2=5,product_3=1, ...". val(orders) - метод установки значений
+  $('#orders_input').val(orders); // обращаемся к полю через его айди и вставляем в его значение(атрибут value) "product_1=3,product_2=5,product_3=1, ...". val(orders) - метод установки значений
 }
 
 // Функция для того чтобы обратиться к кнопке в имя которой мы хотим поместить общее число заказов чтобы информацию о заказах было видно клиенту.
@@ -61,6 +61,15 @@ function update_orders_button() {
   var text = 'Корзина (' + cart_get_number_of_items() + ' шт.)'; // Используем функцию с общим числом заказов
   $('#orders_button').val(text);
 }
+
+// Для очистки козины на странице подтвержден. И для очиски информации об отмененном заказе
+function cansel_order() {
+  window.localStorage.clear();
+  update_orders_input();
+  update_orders_button();
+
+  $('#cart').text('Your cart is now empty');
+} // заменяем элемент id="cart" на текст при потощи метода text
 
 
 
