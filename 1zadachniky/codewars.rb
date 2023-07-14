@@ -379,6 +379,20 @@ end
 arr3 = [9, 10, 7, 2, 11, 8, 1, 17, 6, 16, 18, 19, 15, 3, 13]
 p miss_nums_finder(arr3) # [4, 5, 12, 14]
 
+def miss_nums_finder(arr)
+  stack = [0]
+  arr.each{|n| stack[n] = n}
+  res = []; size = 0
+  stack.each_with_index do |n, i|
+    if n == nil
+      res << i
+      size += 1
+      break if size == 10
+    end
+  end
+  res
+end
+
 
 puts
 # 4 kyu Challenge Fun #20: Edge Detection  https://www.codewars.com/kata/58bfa40c43fadb4edb0000b5
@@ -455,3 +469,136 @@ def smaller(arr)
 end
 
 p smaller([5, 4, 7, 9, 2, 4, 1, 4, 5, 6])# [5, 2, 6, 6, 1, 1, 0, 0, 0, 0]
+
+
+
+# 3 kyu The builder of things  https://www.codewars.com/kata/5571d9fc11526780a000011a/train/ruby
+class Thing
+  attr_accessor :name, :meths, :new_meth
+  def initialize(name)
+    @name = name
+    @is_a = @is_not_a = @is_the = @has = false
+
+    @meths = {}
+    @new_meth = false
+  end
+
+  def is_a
+    @is_a = true
+    self
+  end
+  def is_not_a
+    @is_not_a = true
+    self
+  end
+  def is_the
+    @is_the = true
+    self
+  end
+  def has(n)
+    @has = n
+    self
+  end
+  def is_a?(cls)
+    cls == Thing
+  end
+
+  def each(&block)
+    p block
+  end
+
+  def method_missing(method)
+    # p method
+    return @meths[method] if @meths[method] != nil
+    if @is_a
+      @is_a = false
+      @meths[(method.to_s + '?').to_sym] = true
+    elsif @is_not_a
+      @is_not_a = false
+      @meths[(method.to_s + '?').to_sym] = false
+    elsif @is_the
+      if @new_meth
+        @is_the = false
+        @meths[@new_meth] = method
+        res = @new_meth
+        @new_meth = false
+        @meths[res]
+      else
+        @new_meth = method
+        self
+      end
+    elsif @has
+      @meths[method] = []
+      if @has == 1
+        @meths[method] = Thing.new(method)
+      else
+        @has.times{ @meths[method] << Thing.new(method) }
+        @meths[method]
+      end
+    end
+  end
+end
+
+jane = Thing.new('Jane')
+# p jane.name # => 'Jane'
+# p jane.meths
+#
+# jane.is_a.person
+# jane.is_a.woman
+# jane.is_not_a.man
+#
+# p jane.person? # => true
+# p jane.woman? #=> true
+# p jane.man? # => false
+#
+# jane.is_the.parent_of.joe
+# p jane.parent_of # => 'joe'
+
+# p jane.has(2).legs
+# p jane.legs.size # => 2
+# p jane.legs.first.is_a?(Thing) # => true
+#
+# jane.has(1).head
+# p jane.head.is_a?(Thing) # => true
+
+
+# ХЗ КАК ЭТО СДЕЛАТЬ тк обращается к объекту main
+
+# can define number of things in a chainable and natural format
+p jane.has(2).arms.each { having(1).hand.having(5).fingers }
+# jane.arms.first.hand.fingers.size # => 5
+
+# # can define properties on nested items
+# jane.has(1).head.having(2).eyes.each { being_the.color.blue.and_the.shape.round }
+
+# # can define methods
+# jane.can.speak('spoke') do |phrase|
+#   "#{name} says: #{phrase}"
+# end
+
+# jane.speak("hello") # => "Jane says: hello"
+
+# # if past tense was provided then method calls are tracked
+# jane.spoke # => ["Jane says: hello"]
+
+
+puts
+# 6 kyu Build a Trie  https://www.codewars.com/kata/5b65c47cbedf7b69ab00066e/train/ruby
+def build_rec_helper(words)
+  words.sort.slice_when{|a, b| a[0] != b[0]}.map do |arr|
+    arr.size == 1 ? [arr[0], nil] : [arr[0], build_rec_helper(arr.select{|s| s.size > 1}.map{|s| s[1..-1]})]
+  end#.flatten(1)
+end
+
+def build_trie(words)
+  words = words.map{|w| (0...w.size).map{|i| w[0..i]}}.flatten.uniq
+  build_rec_helper(words)
+end
+
+# p build_trie([]) #=> {}
+# p build_trie([""]) #=> {}
+p build_trie(["trie"]) #=> {"t" =>  {"tr" =>  {"tri" =>  {"trie" =>  nil}}}}
+p build_trie(["tree"]) #=> {"t" =>  {"tr" =>  {"tre" =>  {"tree" =>  nil}}}}
+p build_trie(["trie", "trie"]) #=> {"t" =>  {"tr" =>  {"tri" =>  {"trie" =>  nil}}}}
+p build_trie(["A","to", "tea", "ted", "ten", "i", "in", "inn"]) #=> {"A" =>  nil, "t" =>  {"to" =>  nil, "te" =>  {"tea" =>  nil, "ted" =>  nil, "ten" =>  nil}}, "i" =>  {"in" =>  {"inn" =>  nil}}}
+p build_trie(["true", "trust"]) #=> {"t" =>  {"tr" =>  {"tru" =>  {"true" =>  nil, "trus" =>  {"trust" =>  nil}}}}}

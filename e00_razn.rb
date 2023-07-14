@@ -15,7 +15,7 @@
 Gem::Version.new('3.0.10') <=> Gem::Version.new('3.01.1') #=> -1
 
 
-# Возвращает true, если этот объект включен в аргумент. Аргументом должен быть любой объект, который отвечает на #include?.
+# ( Рэилс )Возвращает true, если этот объект включен в аргумент. Аргументом должен быть любой объект, который отвечает на #include?.
 characters = ["Konata", "Kagami", "Tsukasa"]
 "Konata".in?(characters) # => true
 
@@ -36,47 +36,6 @@ require 'digest'
 Digest::SHA2.hexdigest('code') #=> '5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b'
 ('a'..'zzzzz').find{|code| Digest::SHA1.hexdigest(code)==hash}
 
-
-# https://ruby-doc.org/stdlib-3.0.0/libdoc/matrix/rdoc/Matrix.html
-# перевод массива в матрицу
-require 'matrix'
-matrix1 = Matrix[[1,2,3],[4,5,6],[7,8,9]] #1
-nested_array = [[1,2,3],[4,5,6],[7,8,9]] #2
-matrix2 = Matrix[nested_array] #=> Matrix[[[1,2,3],[4,5,6],[7,8,9]]]
-matrix3 = Matrix[*nested_array] #=> Matrix[[1,2,3],[4,5,6],[7,8,9]]
-
-# Определитель(determinant)
-Matrix[[7,6], [3,9]].determinant #=> 45
-Matrix[[2,5,3], [1,-2,-1], [1, 3, 4]].det  #=> 20
-
-# Решение матрицы
-m = Matrix[[1, 0, 0], [4, -5, 1], [0, 0, 1]] #=> Matrix[[1, 0, 0], [4, -5, 1], [0, 0, 1]]
-b = Vector[0, 0, 729] #=> Vector[0, 0, 729]
-a = m.lup.solve(b).to_a #=> [(0/1), (729/5), (729/1)]  ( rescue 0  для вырожденных дописать)
-
-# Диагональ
-Matrix[ [1,2], [3,4] ].each(:diagonal).to_a #=>[1,4]
-:all #(по умолчанию) возвращает все элементы
-:diagonal# дает только элементы по диагонали
-:off_diagonal# возвращает все элементы, кроме диагональных
-:lower# дает только элементы на диагонали или ниже
-:strict_lower# выдает только элементы ниже диагонали
-:upper# возвращает только элементы на диагонали или выше
-:strict_upper# выдает только элементы выше диагонали
-
-
-require 'matrix'
-p Matrix.identity(5).to_a #=> [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
-
-# Сложение 2д массивов где складываются попарно все [i][j] элементы обоих массивов, образуя матрицу того же размера
-require 'matrix'
-(Matrix[*a] + Matrix[*b]).to_a
-(Matrix.rows(a) + Matrix.rows(b)).to_a #альтер вариант
-
-# Нахождение координат(индексов) элемента 2д массива
-require 'matrix'
-arr = [ [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 'e', 0], [0, 0, 0, 0] ]
-p Matrix[*arr].index('e') #=> [2, 2]
 
 
 # Метод max_by (Enumerable)
@@ -121,12 +80,6 @@ p a.repeated_combination(2).with_object([]) {|com, arr| arr << com } #=> [[0, 0]
 "Such Wow!".chars.partition.with_index{|e,i| i.even?}  #=> [["S", "c", " ", "o", "!"], ["u", "h", "W", "w"]]
 
 
-# условия можно переносить на новую строку при необходимости
-x = 10
-y = 10
-p x == 10 && y ==
-x && x + y ==
-20 #=> true
 
 # & это safe navigation, так называемый. убеждается, что объект не nil, после чего идёт дальше. бывает, что надо написать что то такое
 Model.find(id).some_associations.last&.some_field

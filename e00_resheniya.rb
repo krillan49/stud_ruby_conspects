@@ -4,21 +4,21 @@ puts '                                                 Готовые решен
 
 # https://mathworld.wolfram.com/TowerofHanoi.html  (Tower of Hanoi)
 
-# В руби принято делать отступы 2мя пробелами а не табуляцией(втф??)
+# В руби принято делать отступы 2мя пробелами а не табуляцией
 # Стоит писать скобки для параметров методов по кодстаилу
 
 
-file=File.open ARGV[0]
-cnt=file.gets.chomp.to_i
-sum=0
+file = File.open ARGV[0]
+cnt = file.gets.chomp.to_i
+sum = 0
 cnt.times do
-  sum+=file.gets.chomp.to_i
+  sum += file.gets.chomp.to_i
 end
 puts sum
 
 
 # быстрая пермутация до определенного момента(энной по счету пермутации) при помощи find
-def nth_perm(n,d)
-  ('0'..(d-1).to_s).to_a.permutation(d).find.with_index(1){|e,i| i==n}.join
+def nth_perm(n, d)
+  ('0'..(d-1).to_s).to_a.permutation(d).find.with_index(1){|e,i| i == n}.join
 end
-p nth_perm(1000,8)#'02436571'
+p nth_perm(1000, 8)#'02436571'

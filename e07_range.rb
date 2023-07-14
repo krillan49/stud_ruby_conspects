@@ -65,6 +65,9 @@ d6.each {|x| print "#{x} "}
 # Поиск находит ближайшее слева направо
 (num+1..1_000_000).find{|el| el.to_s.chars.uniq.size==2}
 
+# реверс диапазона
+p (1..7).reverse_each.to_a #=> [7, 6, 5, 4, 3, 2, 1]
+
 
 puts
 puts '                                              Метод inject/reduce'

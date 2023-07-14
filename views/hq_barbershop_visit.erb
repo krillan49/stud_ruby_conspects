@@ -14,11 +14,11 @@
 	<label>Ваш парикмахер:</label><br>
 	<select name="barber">
 		<% @barbers.each do |row| %>
-			<!-- 1. Нативный вариант тоже работеат (??) -->
-      <!-- <option <%= 'selected' if @barber == row['name'] %>><%=row['name']%></option> -->
-
-			<!-- 2. Вывод через синтаксис ActiveRecord -->
+			<!-- 1. Вывод через синтаксис ActiveRecord -->
 			<option <%= 'selected' if @barber == row.name %>><%=row.name%></option>
+
+			<!-- 2. Нативный вариант тоже работеат (??) -->
+      <!-- <option <%= 'selected' if @barber == row['name'] %>><%=row['name']%></option> -->
     <% end %>
   </select><br>
 

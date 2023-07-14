@@ -107,7 +107,7 @@ function addToCart(id) {
 // Работу разных функций удобно проверять в консоли браузера(типа как терминал и irb для руби)
 
 function lisiOfFuncs() {
-  // Функчия находящая индекс подстроки в строке
+  // Функчия находящая в строке индекс подстроки 
   'product_dddggg'.indexOf('product_') //=> 0
   'product_dddggg'.indexOf('product_') == 0 //=> true
   'bbbbbaaa'.indexOf('aaa') //=> 5

@@ -1,6 +1,6 @@
 <h2>Order list</h2>
 
-<div id="cart"> <!-- для замены таблицы строкой при помощи функции cansel_order() -->
+<div id="cart"> <!-- для замены таблицы строкой при помощи функции canselOrder() -->
 
 	<!-- таблица заказов -->
 	<table>
@@ -33,7 +33,7 @@
 	<h2>Подтвердите заказ</h2>
 	<!-- Форма подтверждения заказов -->
 	<div>
-		<form action="/order" method="POST">
+		<form action="/order" method="POST">canselOrder
 	  	<label>Ваше имя</label>
 	  	<input name="client[name]" type="text" value="<%= @c.name %>">
 
@@ -50,7 +50,7 @@
 		 	<button type="submit" class="btn btn-primary">Подтвердить</button>
 
 			<!-- Для очистки козины на странице подтвержден. И для очиски информации об отмененном заказе. -->
-		 	<button onclick="cansel_order()" type="button">Cancel</button>
+		 	<button onclick="canselOrder()" type="button">Cancel</button>
 		</form>
 	</div>
 

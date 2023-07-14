@@ -485,13 +485,16 @@ end
 
 puts
 # Диагонали 2д массива
-arr=[
+arr = [
   [1, 2, 3, 4],
   [3, 4, 5, 6],
   [5, 6, 7, 8],
-  [2, 3, 4, 5]]
-pattern=[*0..(arr.size-1)].map{|i| [nil]*i} #=> [[], [nil], [nil, nil], [nil, nil, nil]]
-res=pattern.reverse.zip(arr).zip(pattern).map(&:flatten)
+  [2, 3, 4, 5]
+]
+# Доп элементы к каждой строке
+pattern = (0..arr.size-1).map{|i| [nil]*i} #=> [[], [nil], [nil, nil], [nil, nil, nil]]
+# Добавляем справа и слева для смещения элементов
+res = pattern.reverse.zip(arr).zip(pattern).map(&:flatten)
 #=> [[nil, nil, nil, 1, 2, 3, 4], [nil, nil, 3, 4, 5, 6, nil], [nil, 5, 6, 7, 8, nil, nil], [2, 3, 4, 5, nil, nil, nil]]
 res.transpose.map(&:compact)
 #=> [[2], [5, 3], [3, 6, 4], [1, 4, 7, 5], [2, 5, 8], [3, 6], [4]]
@@ -499,8 +502,8 @@ res.transpose.map(&:compact)
 # Все диагонали(с обоих углов)
 def diags(matrix)
   [matrix, matrix.reverse].map do |m|
-    pat=[*0..(m.size-1)].map{|i| [nil]*i}
-    res=pat.reverse.zip(m).zip(pat).map(&:flatten)
+    pat = (0..m.size-1).map{|i| [nil]*i}
+    res = pat.reverse.zip(m).zip(pat).map(&:flatten)
     res.transpose.map(&:compact)
   end
 end
@@ -546,3 +549,48 @@ a.to_s.count("[")
 points_list1 = [[1,2,-4], [-3, 2, 4], [7, 8, -4], [2, 3, 5], [-2, -1, 1]]
 p_in_s.combination(3).to_a.each do |(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)|
 end
+
+
+puts
+puts '                                                 Matrix'
+
+# https://ruby-doc.org/stdlib-3.0.0/libdoc/matrix/rdoc/Matrix.html
+# перевод массива в матрицу
+require 'matrix'
+matrix1 = Matrix[[1,2,3],[4,5,6],[7,8,9]] #1
+nested_array = [[1,2,3],[4,5,6],[7,8,9]] #2
+matrix2 = Matrix[nested_array] #=> Matrix[[[1,2,3],[4,5,6],[7,8,9]]]
+matrix3 = Matrix[*nested_array] #=> Matrix[[1,2,3],[4,5,6],[7,8,9]]
+
+# Определитель(determinant)
+Matrix[[7,6], [3,9]].determinant #=> 45
+Matrix[[2,5,3], [1,-2,-1], [1, 3, 4]].det  #=> 20
+
+# Решение матрицы
+m = Matrix[[1, 0, 0], [4, -5, 1], [0, 0, 1]] #=> Matrix[[1, 0, 0], [4, -5, 1], [0, 0, 1]]
+b = Vector[0, 0, 729] #=> Vector[0, 0, 729]
+a = m.lup.solve(b).to_a #=> [(0/1), (729/5), (729/1)]  ( rescue 0  для вырожденных дописать)
+
+# Диагональ
+Matrix[ [1,2], [3,4] ].each(:diagonal).to_a #=>[1,4]
+:all #(по умолчанию) возвращает все элементы
+:diagonal# дает только элементы по диагонали
+:off_diagonal# возвращает все элементы, кроме диагональных
+:lower# дает только элементы на диагонали или ниже
+:strict_lower# выдает только элементы ниже диагонали
+:upper# возвращает только элементы на диагонали или выше
+:strict_upper# выдает только элементы выше диагонали
+
+
+require 'matrix'
+p Matrix.identity(5).to_a #=> [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+
+# Сложение 2д массивов где складываются попарно все [i][j] элементы обоих массивов, образуя матрицу того же размера
+require 'matrix'
+(Matrix[*a] + Matrix[*b]).to_a
+(Matrix.rows(a) + Matrix.rows(b)).to_a #альтер вариант
+
+# Нахождение координат(индексов) элемента 2д массива
+require 'matrix'
+arr = [ [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 'e', 0], [0, 0, 0, 0] ]
+p Matrix[*arr].index('e') #=> [2, 2]

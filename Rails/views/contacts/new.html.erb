@@ -1,0 +1,33 @@
+<h1>Contact us</h1>
+
+<%= form_for :contact, url: contacts_path, data: {turbo:false} do |f| %>
+
+	<p><%= @contact.errors.full_messages %></p> <!-- Вывод списка ошибок Вариант 1 -->
+
+	<% if @contact && @contact.errors.any? %> <!-- Вывод списка ошиюок Вариант 2 -->
+  	<p><%= @contact.errors.full_messages %></p>
+	<% end %>
+
+	<% if @contact && @contact.errors.any? %> <!-- Вывод списка ошиюок Вариант 2 в виде списка -->
+	  <ul>
+	    <% @contact.errors.full_messages.each do |msg| %>
+	      <li><%= msg %></li>
+	    <% end %>
+	  </ul>
+	<% end %>
+
+	<p>
+	  <%= f.label :email %><br>
+	  <%= f.text_field :email %>
+	</p>
+	<p>
+	  <%= f.label :message %><br>
+	  <%= f.text_area :message %>
+	</p>
+
+	<p>
+	  <%= f.submit 'Send message' %>
+    <!-- Поменять название кнопки отправки формы можно при помощи передачи параметра в виде строки -->
+	</p>
+
+<% end %>
