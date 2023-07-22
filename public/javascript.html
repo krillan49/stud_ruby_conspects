@@ -46,7 +46,9 @@
 
   <h4>Функция 3.1 c параметром</h4>
   <!-- просто пишем или интегрируем(<%= %>) если необходимо параметр в скобках -->
-  <button onclick="addToCart(6)">Click me!</button> <!-- #=> You added pizza with id: 6 -->
+  <button onclick="addToCart(6)">Click me!</button> <!-- #=> Your parametr is: 6 -->
+  <button onclick="addToCart('Kroker')">Click me!</button> <!-- #=> Your parametr is: Kroker -->
+  <!-- Для строкового параметра не забываем кавычки, а иначе воспримет как неинициализированную переменную(??) и всплывающее окно даже не появится -->
 
 
 </body>

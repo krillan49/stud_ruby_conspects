@@ -24,7 +24,7 @@
 
 <!-- Форма для того чтобы оставить комментарии к посту -->
 <form action="/details/<%= @row['id'] %>" method="POST"><!-- Мы не можем просто написать один адрес(тк много страниц) в значении атрибута action, соотв будем генерировать, вставляя id из запроса. Теперь это путь такой же как наша страница соотв пост запрос этой формы сможет обработать post '/details/:post_id' -->
-	<textarea name="content" rows="6" placeholder="Напишите ваш комментарий"></textarea>
+	<textarea name="content"></textarea>
 	<br>
  	<button type="submit">Add comment</button>
 </form>

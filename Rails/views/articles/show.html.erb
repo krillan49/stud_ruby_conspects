@@ -1,3 +1,69 @@
-<h1><%= @article.title %></h1>
+<!--                                          Вывод отдельной статьи -->
 
+<h1><%= @article.title %></h1>
 <p><%= @article.text %></p>
+
+
+<!--                                          Форма для комментариев -->
+
+<!-- По умолчанию URL формы будет '/articles/id'(show), но нам нужен '/articles/:article_id/comments', можно поменять вручную, но так делать не рекомендуется -->
+
+<!-- Потому нужно использовать такой синтаксис со связью сущностей  -->
+<%= form_for([@article, @comment]) do |f| %>
+<% end %>
+<!-- но у нас нет переменной @comment в контроллере articles#show get '/articles/id' из которого и возвращается представление с формой -->
+
+<!-- Тк нет переменной @comment используем метод build -->
+<!-- У нас есть коллекция(тут @article.comments). Если применить к этой коллекции метод build, то создастся новый объект Comment, все поля котого будут пустыми, за исключением aricle_id, соответсвующего @article, те привязан к нашей статье. Этот объект пока не будет сохранен, но его будет достаточно для создания нужного URL для form_for -->
+<%= form_for([@article, @article.comments.build]) do |f| %>
+  <!-- Теперь у нас есть нужный URL '/articles/:article_id/comments' в атрибуте action -->
+
+  <p>
+    <%= f.label :author %> <!-- <label for="comment_author">Author</label> -->
+    <%= f.text_field :author %> <!-- <input type="text" name="comment[author]" id="comment_author" /> -->
+  </p>
+  <p>
+    <%= f.label :body %> <!-- <label for="comment_body">Body</label> -->
+    <%= f.text_area :body %> <!-- <textarea name="comment[body]" id="comment_body"> -->
+  </p>
+
+  <p><%= f.submit %></p> <!-- <input type="submit" name="commit" value="Create Comment" data-disable-with="Create Comment" /> -->
+
+<% end %>
+
+
+<!--                                           Вывод комментариев -->
+
+<h2>Комментарии:</h2>
+
+<!-- Комментарии тоже удобно выводить от связи @article.comments, не определяя в articles#show других переменных -->
+
+<!-- Пустой комментарий, созданный формой выше будет тоже содержаться в @article.comments, если вывод комментов будет располагаться ниже формы, потому если ниже нужно дописать костылей: -->
+<!--
+'Пока еще нет комментариев' if @article.comments == 1
+Тк по счету он последний то можно сделать например
+@article.comments[0..-2].each do |comment|
+-->
+
+<%= 'Пока еще нет комментариев' if @article.comments.empty? %>
+
+<% @article.comments.each do |comment| %>
+
+  <p><b>Автор:</b> <%= comment.author %></p>
+  <p><%= comment.body %></p>
+  <hr>
+
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->

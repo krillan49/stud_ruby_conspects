@@ -24,6 +24,8 @@
 # .headers on
 # .mode column
 
+# pragma table_info(articles);  Посмотреть, какие стобцы и их типы и прочее существуют в таблице articles
+
 
 puts
 puts '                                            sqlite3 gem'

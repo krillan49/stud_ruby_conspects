@@ -71,6 +71,7 @@ puts '                                                  Методы'
 
 p 'vaSYa'.upcase() #=> "VASYA"
 p 'vaSYa'.downcase() #=> "vasya"
+p 'aBaB'.swapcase #=> "AbAb"
 p 'vaSYa'.capitalize #=> "Vasya"
 # strip убирающий пробелы и спецсимволы(например \n) до 1го и после последнего символа, пробелы между слов не трогает:
 p "   текст   с   пробелами   ".strip #=> "текст   с   пробелами"

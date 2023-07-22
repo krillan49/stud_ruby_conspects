@@ -1,17 +1,43 @@
 puts '                                             REST'
 
-# REST - паттерн для передачи состояния объекта. Это соглашение о том как лучше называть и структурровать URLы и методы их обрабатывающие. Сокращает число необходимых URL.
+# REST - паттерн для передачи состояния объекта. Это соглашение о том как лучше называть и структурровать URLы и методы их обрабатывающие. Сокращает число необходимых URL, делит методы по типу запросов, что позволяет админам распределять нагрузку тк они видят в юрл что за запрос.
 
 # В REST существует 7 различных методов с помощью которых можно управлять объектами: index, show, new, create, edit, update, destroy.
 
-# Далее на примере pizzashop и сущности Product(REST-product):
 
-#   index   - /products        - get    - все наши продукты. Данный метод используется для вывода информации о всех сущностях определенной модели(тут Product)
-#   show    - /products/1      - get    - конкретный продукт. (Последнее идентификатор)
-#   new     - /products/new    - get    - вывод формы для создания нового продукта
-#   create  - /products        - post   - создание продукта, обращ. к params и в БД создаёт запись
-#   edit    - /products/1/edit - get    - возвращает форму для редактирования определённого продукта
-#   update  - /products/1      - put
-#   destroy - /products/1      - delete
+puts
+puts '                                       Отличия resource и resources'
 
-# Все URL обрабатывающие определенную сущность называются ее именем во множественном числе.
+# resource и resources - эти ключевые слова отвечают за REST-маршруты(те 2 типа маршрутов) в нашем приложении. Они записываются в фаиле routes.rb в директории config
+
+# (resource) singular-resources: https://guides.rubyonrails.org/routing.html#singular-resources
+# профиль пользователя с позиции пользователя существует в единственном числе(его профиль)
+# ---------------------------------------------------------------------------------------------------------
+# HTTP Verb     Path                Controller#Action     Что можно сделать с ресурсом:
+# ---------------------------------------------------------------------------------------------------------
+# GET           /profile/new        profiles#new          return an HTML form for creating the profile
+# POST          /profile            profiles#create       create the new profile
+# GET           /profile            profiles#show         display the one and only profile resource
+# GET           /profile/edit       profiles#edit         return an HTML form for editing the profile
+# PATCH/PUT     /profile            profiles#update       update the one and only profile resource
+# DELETE        /profile            profiles#destroy      delete the profile resource
+# ---------------------------------------------------------------------------------------------------------
+# Всего 6 методов.
+# Нет обращения по id соотв больше подходит для уникального, например профиля пользователя
+
+# (resources) crud-verbs-and-actions: https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
+# статьи в блоге и с точки зрения пользователя существуют во множественном числе
+# ---------------------------------------------------------------------------------------------------------
+# HTTP Verb     Path                Controller#Action     Что можно сделать с ресурсами:
+# ---------------------------------------------------------------------------------------------------------
+# GET           /articles           articles#index        display a list of all articles
+# GET           /articles/new       articles#new          return an HTML form for creating a new article
+# POST          /articles           articles#create       create a new article
+# GET           /articles/:id       articles#show         display a specific article
+# GET           /articles/:id/edit  articles#edit         return an HTML form for editing a article
+# PATCH/PUT     /articles/:id       articles#update       update a specific article
+# DELETE        /articles/:id       articles#destroy      delete a specific article
+# ---------------------------------------------------------------------------------------------------------
+# Всего 7 методов. Тк есть метод для вывода списка всех ресурсов articles#index. Соотв когда нам нужно например выводить все статьи.
+# Есть обращения по id
+# Используется чаще
