@@ -22,15 +22,14 @@
   <p><%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %></p>
   <!-- button_to - для кнопки удаления вместо ссылки удаления link_to, тк на Rails версии 7+ вероятен баг - не удаляется статья (из браузера). Это происходит из-за того, что в Rails 7 отключен UJS. -->
     <!-- Ссылка выглядит так(не добавляет форму): -->
-      <!-- <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a> -->
+      <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a>
     <!-- Кнопка выглядит так(добавляет форму): -->
-      <!--
       <form class="button_to" method="post" action="/articles/2">
         <input type="hidden" name="_method" value="delete" autocomplete="off" />
         <button data-confirm="Действительно удалить?" type="submit">Destroy article</button>
         <input type="hidden" name="authenticity_token" value="Y0qY_ENmVXJ7z4K_OYyKaiOg3gx8jhUYz2I_KbncWglxBV2UvuNZBx5WpukCF8JYVWwtOUkUvsnm8QdzGPLRsg" autocomplete="off" />
-      </form> -->
-  <!-- data: { confirm: 'Действительно удалить?'} - необязательный элемент c окном подтверждения -->
+      </form>
+  <!-- data: { confirm: 'Действительно удалить?'} - необязательный элемент c окном подтверждения(!!! почему-то не работает) -->
 
   <!-- data-method="delete" - кастомный атрибут Рэилс
     data-some_name атрибуты нужны для того чтобы мы могли создать собственные атрибуты(some_name - на выбор). html-валидатор будет знать что это кастомный атрибут, браузер их не обрабатыает

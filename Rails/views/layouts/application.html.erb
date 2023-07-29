@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <!--                  Devise: Добавим ссылки входа(форма или сообщение что уже вошли) и выхода -->
+    <!--                             Devise: Добавим ссылки входа и выхода -->
 
     <!-- Вариант 1: хардкод -->
     <p>
@@ -29,22 +29,30 @@
       <%= link_to "Sign In", new_user_session_path %> |
       <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
     </p>
-    <!-- Из комментов(но у меня и так сработало):
+    <!-- Из комментов(! но у меня и без этого сработало):
       Вместо этого
-      link_to 'Sign Out!', destroy_user_session_path, method: :delete
-      у меня сработало
-      link_to 'Sign Out!', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
+      link_to 'Sign Out', destroy_user_session_path, method: :delete
+      Пишем так
+      link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
     -->
 
-    <!-- Вариант 2-2: выведем имя пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы.
-      https://github.com/heartcombo/devise#controller-filters-and-helpers -->
+    <!-- Вариант 2-2: выведем почту пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы, при помощи обработчиков хэлперов.
+    https://github.com/heartcombo/devise#controller-filters-and-helpers -->
     <% if user_signed_in? %>
       Hello, <%= current_user.email %> | <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
     <% else %>
       <%= link_to "Sign In", new_user_session_path %>
     <% end %>
-    <!-- user_signed_in? - хэлпер созданный Devise, возвращает true или false. -->
+    <!-- user_signed_in? - хэлпер созданный Devise, возвращает true или false, в зависимости от того авторизован или нет данный пользователь -->
     <!-- current_user - хэлпер созданный Devise, возвращает объект текущего пользователя, соотв можно от него вызывать методы сущности(столбцы таблицы) -->
+
+
+    <!-- Вариант 2-3: выведем имя пользователя, поле которого мы добавили в User и в форму devise/registrations/new.html.erb  вместо почты если авторизированы -->
+    <% if user_signed_in? %>
+      Hello, <%= current_user.username %> | <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+    <% else %>
+      <%= link_to "Sign In", new_user_session_path %>
+    <% end %>
 
 
     <!--                  Devise: Добавим для для флеш-сообщений(чтобы эта технология работала) -->

@@ -378,3 +378,91 @@ p cd.swap(['10', '9']) #=> "no cards to swap"
 # p cd.beat_dealer(55) #=> false
 # p cd.shift(2) #=> [{:suit=>"heart", :rank=>"10"}, {:suit=>"diamond", :rank=>"4"}, {:suit=>"diamond", :rank=>"3"}, {:suit=>"heart", :rank=>"2"}, {:suit=>"spade", :rank=>"6"}, {:suit=>"club", :rank=>"2"}, {:suit=>"spade", :rank=>"2"}, {:suit=>"heart", :rank=>"6"}]
 # p cd.methods_runner(dealer_actions, "beat_dealer") #=> [true, true]
+
+
+
+
+# ================== Интеровью 3
+# ===============================================================================
+
+def palindrome?(str)
+  size = str.size
+  return false if size == 0
+  i = size / 2 - 1
+  j = size / 2 + (size.even? ? 0 : 1)
+  until i.negative?
+    return false if str[i] != str[j]
+    i -= 1
+    j += 1
+  end
+  true
+end
+#
+# =================
+# ТЕСТЫ К ЗАДАНИЮ 1
+# =================
+#
+puts palindrome?('abba').inspect # => true
+puts palindrome?('abcba').inspect # => true
+puts palindrome?('aa').inspect # => true
+puts palindrome?('a').inspect # => true
+puts palindrome?('abc').inspect # => false
+puts palindrome?('').inspect # => false
+puts "==="
+puts palindrome?('racecar').inspect
+puts palindrome?('somethingnot').inspect
+puts palindrome?('dammitimmad').inspect
+puts palindrome?('turtle').inspect
+puts palindrome?('giannaannaig').inspect
+puts palindrome?('giannannaig').inspect
+
+
+
+def caesar_encrypt(str, increment = 1)
+  abc = ('a'..'z').to_a.rotate(increment)
+  res = ''
+  str.each_char do |c|
+    ord = c.ord
+    res += (97..122).include?(ord) ? abc[ord-97] : (65..90).include?(ord) ? abc[ord-65].upcase : c
+  end
+  res
+end
+
+# Подготовил Роман Пушкин для руби-чата https://t.me/rubyschool
+#
+# =================
+# ТЕСТЫ К ЗАДАНИЮ 2
+# =================
+#
+puts caesar_encrypt('abc').inspect # => bcd
+puts caesar_encrypt('abc', 2).inspect # => cde
+puts caesar_encrypt('xyz').inspect # => yza
+puts caesar_encrypt('xyz', 2).inspect # => zab
+puts caesar_encrypt('abc', -1).inspect # => zab
+puts caesar_encrypt('abc', -2).inspect # => yza
+puts "==="
+puts caesar_encrypt("abc", 1).inspect   # => "bcd"
+puts caesar_encrypt("abc", -1).inspect  # => "zab"
+puts caesar_encrypt("abc", 25).inspect  # => "zab"
+puts caesar_encrypt("abc", 52).inspect  # => "abc"
+puts caesar_encrypt("abc", 78).inspect  # => "abc"
+puts caesar_encrypt("abc", -78).inspect # => "abc"
+puts "=== Capital letters: ==="
+puts caesar_encrypt('ABC').inspect # => BCD
+puts caesar_encrypt('AbC').inspect # => BcD
+puts caesar_encrypt("Ab*", 1).inspect   # => "Bc*"
+
+
+def string_encode(str)
+  last = false
+  str.each_char.with_object([]) do |c, res|
+    c == last ? res[-1][1] += 1 : res << [c, 1]
+    last = c
+  end
+end
+
+puts string_encode("aabb").inspect # ==> [["a", 2], ["b", 2]]
+puts string_encode("cccccccccc").inspect # ==> [["c", 10]]
+puts string_encode("aaabbcbbaaa").inspect # => [["a", 3], ["b", 2], ["c", 1], ["b", 2], ["a", 3]]
+puts string_encode("aaabbcbbaad").inspect # => [["a", 3], ["b", 2], ["c", 1], ["b", 2], ["a", 2], ["d", 1]]
+puts string_encode("").inspect # => []

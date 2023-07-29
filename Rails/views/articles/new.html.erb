@@ -6,15 +6,13 @@
 
 <%= form_for :article, url: '/articles', data: {turbo:false} do |f| %> <!-- Тут именно с %= -->
   <!-- form_for - стандартный форм билдер, создает форму. Существуют разные форм билдеры(например для формы Бутсрапа), form_for используется не так часто, есть ещё форм билдер Simple form. Для этого подключается отдельный гем. -->
-  <!-- :article - в единственном числе, что логично тк форма отправляет данные об одной сущности. В итоге если посмотреть код то будет создана форма(тут с URL action="/articles/new"):
+  <!-- :article - в единственном числе, что логично тк форма отправляет данные об одной сущности. В итоге если посмотреть код то будет создана форма:
     <form action="/articles/new" accept-charset="UTF-8" method="post">
       <input type="hidden" name="authenticity_token" value="DGyL-HHUE0zhY7jgWBY5d7ZK0YK8oNKBppIILnbIXqjMpuGinsvpiN-0DD78BX3siF5BJ6qYsRgsnOmkAZGbJQ" autocomplete="off" />
   -->
   <!-- url: '/articles' (url: articles_path - альтернатива, направняет на корневой URL контроллера те '/articles') - добавляем. Тк для URL "/articles/new", что у form_for :article по умолчанию, существует только GET-обработчик(new), потому при нажатии кнопки произойдет ошибка. Для POST используется экшен create c URL '/articles', соотв надо перенаправить форму на него. Теперь если посмотреть код то адрес в теге формы изменился:
     <form action="/articles" accept-charset="UTF-8" method="post">
   -->
-
-  <!-- Для обработки данной формы в контроллер ArticlesController нужно добавить метод/экшен create -->
 
   <!-- data: {turbo:false} - нужно дописать, если в /articles/new при нажатии на кнопку submit не происходит перенаправления на /articles. Форма опять изменилась: -->
     <!-- <form data-turbo="false" action="/articles" accept-charset="UTF-8" method="post">

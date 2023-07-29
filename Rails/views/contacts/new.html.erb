@@ -4,11 +4,11 @@
 
 	<p><%= @contact.errors.full_messages %></p> <!-- Вывод списка ошибок Вариант 1 -->
 
-	<% if @contact && @contact.errors.any? %> <!-- Вывод списка ошиюок Вариант 2 -->
+	<% if @contact && @contact.errors.any? %> <!-- Вывод списка ошибок Вариант 2 -->
   	<p><%= @contact.errors.full_messages %></p>
 	<% end %>
 
-	<% if @contact && @contact.errors.any? %> <!-- Вывод списка ошиюок Вариант 2 в виде списка -->
+	<% if @contact && @contact.errors.any? %> <!-- Вывод списка ошибок Вариант 2 в виде списка -->
 	  <ul>
 	    <% @contact.errors.full_messages.each do |msg| %>
 	      <li><%= msg %></li>
