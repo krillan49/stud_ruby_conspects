@@ -13,13 +13,15 @@
   <!-- url: '/articles' (url: articles_path - альтернатива, направняет на корневой URL контроллера те '/articles') - добавляем. Тк для URL "/articles/new", что у form_for :article по умолчанию, существует только GET-обработчик(new), потому при нажатии кнопки произойдет ошибка. Для POST используется экшен create c URL '/articles', соотв надо перенаправить форму на него. Теперь если посмотреть код то адрес в теге формы изменился:
     <form action="/articles" accept-charset="UTF-8" method="post">
   -->
-
   <!-- data: {turbo:false} - нужно дописать, если в /articles/new при нажатии на кнопку submit не происходит перенаправления на /articles. Форма опять изменилась: -->
     <!-- <form data-turbo="false" action="/articles" accept-charset="UTF-8" method="post">
   -->
 
+  <!-- url: '/articles', data: {turbo:false}  - это и все дополнительное это хэш -->
+
 
   <!--                                      Поля формы в Рэилс -->
+
   <p>
     <%= f.label :title %><br> <!-- <label for="article_title">Title</label> -->
       <!-- label - обозначение тега -->
@@ -31,6 +33,14 @@
     <%= f.label :text %><br> <!-- <label for="article_text">Text</label> -->
     <%= f.text_area :text %> <!-- <textarea name="article[text]" id="article_text"></textarea> -->
   </p>
+
+  <!-- ===== User 1 - * Article. Возможность удалить и редактировать только автору ===== -->
+  <p>
+    <%= current_user.username %><br> <!-- вместо лэйбла -->
+    <%= f.hidden_field :user_id, value: current_user.id %>
+    <!-- <input value="2" autocomplete="off" type="hidden" name="article[user_id]" id="article_user_id" /> -->
+  </p>
+  <!-- ================================================================================= -->
 
   <p><%= f.submit %></p> <!-- <input type="submit" name="commit" value="Save Article" data-disable-with="Save Article" /> -->
 

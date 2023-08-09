@@ -19,11 +19,11 @@
     </p>
     <!-- data-turbo-method="delete" - Для sign_out возникнет ошибка при нажатии на ссылку, тк у маршрута /users/sign_out метод DELETE. В Rails 7 вместо data-method нужно использовать data-turbo-method -->
 
-    <!-- Вариант 2: по методам-хэлперам для путей -->
-    <!-- (можно посмотреть пути введя несуществующий URL)
+    <!-- Вариант 2: по методам-хэлперам для путей(можно посмотреть пути введя несуществующий URL)
       new_user_session_path	     GET	 /users/sign_in(.:format)	  devise/sessions#new
       user_session_path	         POST	 /users/sign_in(.:format)	  devise/sessions#create
       destroy_user_session_path	 GET	 /users/sign_out(.:format)	devise/sessions#destroy
+      (!!! delete при помощи запроса GET)
     -->
     <p>
       <%= link_to "Sign In", new_user_session_path %> |
@@ -44,7 +44,7 @@
       <%= link_to "Sign In", new_user_session_path %>
     <% end %>
     <!-- user_signed_in? - хэлпер созданный Devise, возвращает true или false, в зависимости от того авторизован или нет данный пользователь -->
-    <!-- current_user - хэлпер созданный Devise, возвращает объект текущего пользователя, соотв можно от него вызывать методы сущности(столбцы таблицы) -->
+    <!-- current_user - хэлпер созданный Devise, возвращает объект сущности User текущего пользователя, соотв можно от него вызывать методы сущности(столбцы таблицы) -->
 
 
     <!-- Вариант 2-3: выведем имя пользователя, поле которого мы добавили в User и в форму devise/registrations/new.html.erb  вместо почты если авторизированы -->
@@ -60,7 +60,11 @@
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
 
+
+
     <%= yield %>
+
+
   </body>
 </html>
 

@@ -20,6 +20,7 @@
 
   <!--                  Ссылка/кнопка на удаление статьи -->
   <p><%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %></p>
+  <!-- ?? data: { turbo_method: "post" } ?? для link_to -->
   <!-- button_to - для кнопки удаления вместо ссылки удаления link_to, тк на Rails версии 7+ вероятен баг - не удаляется статья (из браузера). Это происходит из-за того, что в Rails 7 отключен UJS. -->
     <!-- Ссылка выглядит так(не добавляет форму): -->
       <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a>
@@ -39,6 +40,19 @@
       2. если находит - создаёт форму, которая будет отправлять с помощью метода delete на URL /articles/id через POST
       3. устанавливает свой обработчик, при котором при нажатии на ссылку вызывается сабмит формы. Запрос отправляется с помощью технологии ajax
   -->
+
+
+  <!--                    User 1 - * Article. Возможность удалить и редактировать только автору -->
+
+  <p><%= link_to "Show article", article_path(article) %></p>
+  <!-- Скроем возможности редактирования и удаления от всех кроме автора статьи -->
+  <!-- Мой вариант изначальный с обращением к столбцам -->
+  <% if current_user.id == article.user_id %>
+  <!-- Но в примере такой и он тоже работает. Видимо тут user берет поле с user_id автоматически как было с comments только наоборот -->
+  <% if current_user == article.user %> <!-- В примере это делали через написание хэлпера -->
+    <p><%= link_to "Edit article", edit_article_path(article) %></p>
+    <p><%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %></p>
+  <% end %>
 
   <hr>
 <% end %>

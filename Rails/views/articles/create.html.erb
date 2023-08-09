@@ -6,7 +6,8 @@
 <!-- Обычно так не делают, тк это хардкод, если мы чтото поменяем в маршрутах, то ссылка останется старой -->
 <a href="/articles">Show all articles</a>
 
-<!-- Правильный синтаксис ссылки для Рэилс: -->
-<%= link_to "Show all articles", articles_path %>
+<!-- Правильный синтаксис ссылки для Рэилс: Получится та же ссылка что и выше, но когда мы поменяем маршруты в routes.rb то и путь, находящийся в переменной articles_path, в ссыдке изменится -->
+<%= link_to "Show all articles", articles_path, class: 'btn btn-sm btn-outline-danger' %>
 <!-- articles_path - относительный URL на корневую директорию контроллера articles те '/articles' -->
-<!-- Получится та же ссылка что и выше, но когда мы поменяем маршруты в routes.rb то и путь, находящийся в переменной articles_path, в ссыдке изменится -->
+<!-- "Show all articles" - value ссылки -->
+<!-- class: 'btn btn-sm btn-outline-danger'  - добавление классов к любому тегу -->

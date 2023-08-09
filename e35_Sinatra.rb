@@ -266,11 +266,11 @@ post '/' do
   @phone     = params[:phone]
   @date_time = params[:date_time]
 
-  if @user_name!='' && @phone!='' && @date_time!='' # Пустая строка('') будет значением если ничего не введено в поле
+  if @user_name != '' && @phone != '' && @date_time != '' # Пустая строка('') будет значением если ничего не введено в поле
     @title = 'Thank you!'
     @message = "Dear #{@user_name}, we'll be waiting for you at #{@date_time}"
-    # Не добавляем @error=nil тк эта переменная в новом запросе снова не определена:
-    # Во время нового запроса и контекст новый, данные между разными запросами не сохраняются(кроме как сохранений в сессиях или в базе естественно) Иначе как запросы двух людей разделять
+    # Не добавляем @error = nil тк эта переменная в новом запросе снова не определена:
+    # Во время нового запроса и контекст новый, данные между разными запросами не сохраняются(кроме как сохранений в сессиях или в базе) Иначе как запросы двух людей разделять
     erb :barbershop_message
   else
     @error = "You forgot enter some field. Please reapite"
@@ -598,7 +598,7 @@ get '/details/:post_id' do # добавляем в адрес :id(названи
   erb :leprosorium_details
 end
 
-post '/details/:post_id' do # универсальный пост обработчик(тут обрабатывает запросы со страниц /details/:post_id, ссылки на которые мы создаем в leprosorium_details выводя post_id из колонки в таблице постов из БД)
+post '/details/:post_id' do # универсальный пост обработчик(тут обрабатывает POST-запросы с URL формы /details/:post_id, которые мы генерируем в leprosorium_details выводя post_id из колонки в таблице постов из БД)
   post_id = params[:post_id] # получаем айди аналогично
 
   content = params[:content] # получаем данные(комментарий) из формы
@@ -612,9 +612,9 @@ post '/details/:post_id' do # универсальный пост обработ
 	end
 
   @db.execute('INSERT INTO Comments
-	(content, created_date, post_id) VALUES (?, datetime(), ?)', [content, post_id]) # post_id для того чтобы знать к какому посту коментарий, тк id это просто порядок коментариев к разным постам
+	(content, created_date, post_id) VALUES (?, datetime(), ?)', [content, post_id]) # post_id для того чтобы знать к какому посту коментарий, тк id это просто порядок комментариев к разным постам
 
-  redirect to ('/details/' + post_id)  # перенаправляем на страницу поста(get '/details/:post_id') чтоб открыть leprosorium_details без сохраненных в value переменных и для избежания повторной отправки формы
+  redirect to ('/details/' + post_id)  # перенаправляем на страницу поста(get '/details/:post_id') чтоб открыть leprosorium_details без сохраненных в value переменных и для избежания повторной отправки формы(PRG)
 end
 
 

@@ -1,4 +1,10 @@
 <h1>Contact us</h1>
+<!-- ===================== i18n ======================== -->
+<h2><%= t('contacts.contact_us') %></h2>
+<!-- contacts - имя раздела в en.yml -->
+<!-- contact_us - имя подраздела -->
+<!-- <h2>Contact Us!</h2> -->
+<!-- =================================================== -->
 
 <%= form_for :contact, url: contacts_path, data: {turbo:false} do |f| %>
 

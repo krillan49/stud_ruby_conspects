@@ -4,18 +4,15 @@ puts '                                           Дата и время'
 
 
 # Получение текущей даты и времени Time.new и Time.now которые являются синонимами
-time1=Time.new #=> 2022-11-10 13:21:18 +0300
-time2=Time.now #=> 2022-11-10 13:21:18 +0300
-
-time1.class #=> Time
-time1.inspect #=> 2022-11-10 13:21:18.9216593 +0300
+time1 = Time.new #=> 2022-11-10 13:21:18 +0300
+time2 = Time.now #=> 2022-11-10 13:21:18 +0300
+time1.class      #=> Time
+time1.inspect    #=> 2022-11-10 13:21:18.9216593 +0300
 time1.inspect.class #=> String
 
 
-
 # Мы можем использовать объект Time для получения различных компонентов даты и времени
-time=Time.new
-"Current Time : " + time.inspect #=> Current Time : 2022-06-16 22:04:10.0562021 +0300
+time = Time.new
 time.year    #=> 2022  # Year of the date
 time.month   #=> 6     # Month of the date (1 to 12)
 time.day     #=> 16    # Day of the date (1 to 31 )
@@ -28,43 +25,38 @@ time.usec    #=> 56202 # 999999: microseconds
 time.zone    #=> RTZ 2 (����) # "UTC": timezone name
 
 # получения всех компонентов массива в следующем формате: [sec,min,hour,day,month,year,wday,yday,isdst,zone]
-time=Time.new
-values=time.to_a #=> [55, 21, 22, 16, 6, 2022, 4, 167, false, "RTZ 2 (\xE7\xE8\xEC\xE0)"]
+time = Time.new
+values = time.to_a #=> [55, 21, 22, 16, 6, 2022, 4, 167, false, "RTZ 2 (\xE7\xE8\xEC\xE0)"]
 
 # Возвращает количество секунд с момента начала эпохи
-time=Time.now.to_i #=> 1682870032
+time = Time.now.to_i #=> 1682870032
 # Преобразование целого числа принимаемого за коллич секунд от начала эпохи в объект Time.
 Time.at(time) #=> 2023-04-30 18:53:52 +0300
 # Возвращает количество секунд и микросекунд с момента начала эпохи
-time=Time.now.to_f #=> 1682870032.0273123
+time = Time.now.to_f #=> 1682870032.0273123
 Time.at(time) #=> 2023-04-30 18:53:52 28639/1048576 +0300
 
 
 puts
 # Функции Time.utc, Time.gm и Time.local - функции для форматирования даты в стандартном формате следующим образом:
-# July 8, 2008
-Time.local(2008, 7, 8) #=> 2008-07-08 00:00:00 +0300
-# July 8, 2008, 09:10am, local time
-Time.local(2008, 7, 8, 9, 10) #=> 2008-07-08 09:10:00 +0300
-# July 8, 2008, 09:10 UTC
-Time.utc(2008, 7, 8, 9, 10) #=> 2008-07-08 09:10:00 UTC
-# July 8, 2008, 09:10:11 GMT (same as UTC)
-Time.gm(2008, 7, 8, 9, 10, 11) #=> 2008-07-08 09:10:11 UTC
-
+Time.local(2008, 7, 8)         #=> 2008-07-08 00:00:00 +0300   # July 8, 2008
+Time.local(2008, 7, 8, 9, 10)  #=> 2008-07-08 09:10:00 +0300   # July 8, 2008, 09:10am, local time
+Time.utc(2008, 7, 8, 9, 10)    #=> 2008-07-08 09:10:00 UTC     # July 8, 2008, 09:10 UTC
+Time.gm(2008, 7, 8, 9, 10, 11) #=> 2008-07-08 09:10:11 UTC     # July 8, 2008, 09:10:11 GMT (same as UTC)
 
 time = Time.new
-values = time.to_a
+values = time.to_a #=> [55, 21, 22, 16, 6, 2022, 4, 167, false, "RTZ 2 (\xE7\xE8\xEC\xE0)"]
 Time.utc(*values) #=> 2022-06-16 22:23:34 UTC
 
 
 puts
 # Вы можете использовать объект Time , чтобы получить всю информацию, связанную с часовыми поясами и переходом на летнее время, следующим образом:
 time = Time.new
-time.zone       # => "UTC": return the timezone
-time.utc_offset # => 0: UTC is 0 seconds offset from UTC
-time.zone       # => "PST" (or whatever your timezone is)
-time.isdst      # => false: If UTC does not have DST.
-time.utc?       # => true: if t is in UTC time zone
+time.zone       #=> "UTC": return the timezone
+time.utc_offset #=> 0: UTC is 0 seconds offset from UTC
+time.zone       #=> "PST" (or whatever your timezone is)
+time.isdst      #=> false: If UTC does not have DST.
+time.utc?       #=> true: if t is in UTC time zone
 time.localtime  # Convert to local timezone.
 time.gmtime     # Convert back to UTC.
 time.getlocal   # Return a new Time object in local zone
@@ -72,11 +64,11 @@ time.getutc     # Return a new Time object in UTC
 
 
 puts
-# Арифметика со временем(отнимаются/прибавляются секунды): #Time-number=>Time; Time+number=>Time; Time-Time=>number of seconds
-now=Time.now       #=> 2022-06-16 22:46:54 +0300        # Current time
-past=now-10        #=> 2022-06-16 22:46:44 +0300        # 10 seconds ago.
-future=now+10      #=> 2022-06-16 22:47:04 +0300        # 10 seconds from now
-diff=future-past   #=> 20.0
+# Арифметика со временем(отнимаются/прибавляются секунды):
+now = Time.now         #=> 2022-06-16 22:46:54 +0300   # Current time
+past = now - 10        #=> 2022-06-16 22:46:44 +0300   # 10 seconds ago.      # Time - number => Time
+future = now + 10      #=> 2022-06-16 22:47:04 +0300   # 10 seconds from now  # Time + number => Time
+diff = future - past   #=> 20.0                                               # Time - Time => number of seconds
 
 "00:30:00" > "00:15:00" #=> true
 
@@ -85,13 +77,12 @@ puts
 puts '                                          Форматирование даты и времени'
 
 # Существуют различные способы форматирования даты и времени. Например:
-time=Time.new  #=> 2022-06-16 22:29:54.325225 +0300
-time.to_s      #=> 2022-06-16 22:29:54 +0300
-time.ctime     #=> Thu Jun 16 22:29:54 2022
-time.localtime #=> 2022-06-16 22:29:54 +0300
+time = Time.new  #=> 2022-06-16 22:29:54.325225 +0300
+time.to_s        #=> 2022-06-16 22:29:54 +0300
+time.ctime       #=> Thu Jun 16 22:29:54 2022
+time.localtime   #=> 2022-06-16 22:29:54 +0300
 
 
-time=Time.new
 time.strftime("%Y-%m-%d %H:%M:%S") #=> 2022-06-16 22:29:54
 # Директивы форматирования времени. Эти директивы в следующей таблице используются с методом Time.strftime .
 "%а" # Сокращенное название дня недели (Вс).
@@ -124,7 +115,7 @@ puts
 
 puts
 require 'time'
-t=Time.parse("06:30:00") #=> 2022-08-15 06:30:00 +0300
+t = Time.parse("06:30:00") #=> 2022-08-15 06:30:00 +0300
 t.min #=> 30
 
 
@@ -138,41 +129,38 @@ Date::DAYNAMES #=> ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fri
 Date::MONTHNAMES #=> [nil, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 # Методы
-birthday=Date.new(1990, 10, 16)
-birthday.year #=> 1990
-birthday.month #=> 10
-birthday.day #=> 16
-birthday.wday #=> 2  # Returns the day of week (0-6, Sunday is zero).
-birthday.friday? #=> false # день недели(тут пятница)
-birthday.next_year(1) # #<Date: 1991-10-16 ((2448546j,0s,0n),+0s,2299161j)>
+birthday = Date.new(1990, 10, 16)
+birthday.year          #=> 1990
+birthday.month         #=> 10
+birthday.day           #=> 16
+birthday.wday          #=> 2  # Returns the day of week (0-6, Sunday is zero).
+birthday.friday?       #=> false # день недели(тут пятница)
+birthday.next_year(1)  # #<Date: 1991-10-16 ((2448546j,0s,0n),+0s,2299161j)>
 birthday.next_month(2) # #<Date: 1990-12-16 ((2448242j,0s,0n),+0s,2299161j)>
-birthday.next_day(50) # #<Date: 1990-12-05 ((2448231j,0s,0n),+0s,2299161j)>
+birthday.next_day(50)  # #<Date: 1990-12-05 ((2448231j,0s,0n),+0s,2299161j)>
 
 # Правильная ли дата?
-Date.valid_date?(2001,2,3)        #=> true
-Date.valid_date?(2001,2,29)       #=> false
-Date.valid_date?(2001,2,-1)       #=> true
+Date.valid_date?(2001, 2, 3)        #=> true
+Date.valid_date?(2001, 2, 29)       #=> false
+Date.valid_date?(2001, 2, -1)       #=> true
 
 # Отрицательные значения как индексы с конца
-Date.new(2001,2,-1) # #<Date: 2001-02-28 ((2451969j,0s,0n),+0s,2299161j)>
-Date.new(2001,2,-2) # #<Date: 2001-02-28 ((2451969j,0s,0n),+0s,2299161j)>
+Date.new(2001, 2, -1) # #<Date: 2001-02-28 ((2451969j,0s,0n),+0s,2299161j)>
+Date.new(2001, 2, -2) # #<Date: 2001-02-27 ((2451968j,0s,0n),+0s,2299161j)>
+# число дней в данном месяце данного года
+Date.new(2000, 2, -1).day #=> 29
 
 # leap?(високосный)
 Date.julian_leap?(1900)           #=> true
 Date.gregorian_leap?(1900)        #=> false
 Date.leap?(2000)                  #=> true     (gregorian)
 
-# число дней в данном месяце данного года
-Date.new(2000,2,-1).day #=> 29
-
-# можно прибавить дни
-(Date.new(2016,1,1)+3106).to_s #=> "2024-07-03"
-
-# мат операции над объектами
-Date.new(2022,11,4)-Date.new(2022,2,24) # (253/1)  дни  to_i=253
+# мат операции
+(Date.new(2016, 1, 1) + 3106).to_s        #=> "2024-07-03"
+Date.new(2022,11,4) - Date.new(2022,2,24) #=> (253/1)  дни  to_i=253
 
 # Парсинг
-Date.parse('2001-02-03') #=> #<Date: 2001-02-03 ((2451944j,0s,0n),+0s,2299161j)>
+Date.parse('2001-02-03')  #=> #<Date: 2001-02-03 ((2451944j,0s,0n),+0s,2299161j)>
 Date._parse('2001-02-03') #=> {:year=>2001, :mon=>2, :mday=>3}
 
 # пример
@@ -182,6 +170,6 @@ def dayOfTheWeek(date)
 	y = date.split("/")[2].to_i
   m = date.split("/")[1].to_i
   d = date.split("/")[0].to_i
-  days[Date.new(y,m,d).wday]
+  days[Date.new(y, m, d).wday]
 end
 p dayOfTheWeek("02/06/1940") #=> "Sunday"

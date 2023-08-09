@@ -31,7 +31,7 @@
 
 <% end %>
 
-<!--                                          Форма для комментариев 2 (Devise: username) -->
+<!--                                   Форма для комментариев 2 (Devise: username) -->
 
 <!-- 2-1. Мой мутный вариант, где изменяется форма вместо добавления параметра value в нужное поле -->
 <%= form_for([@article, @article.comments.new(:author => current_user.username)]) do |f| %>
