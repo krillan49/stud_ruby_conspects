@@ -41,3 +41,17 @@ puts '                                       Отличия resource и resource
 # Всего 7 методов. Тк есть метод для вывода списка всех ресурсов articles#index. Соотв когда нам нужно например выводить все статьи.
 # Есть обращения по id
 # Используется чаще
+
+
+puts
+puts '                                        Вложенные маршруты'
+
+# Схема one-to-many: Article 1(resourses) - * Comment(resourses). Тоесть сущность(таблица, может быть связана со многими комментариями для нее)
+# article_comments     GET      /articles/:article_id/comments(.:format)          comments#index
+# new_article_comment  GET      /articles/:article_id/comments/new(.:format)      comments#new
+#                      POST     /articles/:article_id/comments(.:format)          comments#create
+# article_comment      GET      /articles/:article_id/comments/:id(.:format)      comments#show
+# edit_article_comment GET      /articles/:article_id/comments/:id/edit(.:format) comments#edit
+#                      PATCH    /articles/:article_id/comments/:id(.:format)      comments#update
+#                      PUT      /articles/:article_id/comments/:id(.:format)      comments#update
+#                      DELETE   /articles/:article_id/comments/:id(.:format)      comments#destroy

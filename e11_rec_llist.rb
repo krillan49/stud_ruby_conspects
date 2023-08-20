@@ -3,15 +3,15 @@ p '                                                 Рекурсия и Linked l
 # 4 kyu Hash.flattened_keys
 # https://www.codewars.com/kata/521a849a05dd182a09000043
 class Hash
-  def flattened_keys(obj=nil)
 
-    obj=self.clone if !obj
+  def flattened_keys(obj = nil)
+    obj = self.clone if !obj
 
-    res=obj.map {|k,v|
-      if v.class==Hash or v.class==Array
+    res = obj.map {|k, v|
+      if v.class == Hash or v.class == Array
         v.map {|key, val|
-          newk=k.to_s+'_'+key.to_s
-          newk=newk.to_sym if k.class==Symbol && key.class==Symbol
+          newk = k.to_s + '_' + key.to_s
+          newk = newk.to_sym if k.class == Symbol && key.class == Symbol
           [newk, val]
         }
       else
@@ -19,13 +19,13 @@ class Hash
       end
     }.flatten
 
-    if res.any?{|e| e.class==Hash or e.class==Array}
-      res=flattened_keys(res.each_slice(2).to_a)
+    if res.any?{|e| e.class == Hash or e.class == Array}
+      flattened_keys(res.each_slice(2).to_a)
     else
       res.each_slice(2).to_a.to_h
     end
-
   end
+
 end
 
 unflat = {id: 1, info: {name: 'example'}}
@@ -37,7 +37,7 @@ p unflat.flattened_keys # {a: 1, 'b' => 2, info_id: 1, 'info_name' => 'example'}
 
 
 puts
-puts '                                            Linked list(связанные списки)'
+puts '                                      Linked list(связанные списки)'
 
 # https://en.wikipedia.org/wiki/Linked_list
 
@@ -72,7 +72,7 @@ end
 def append(list_a, list_b)
   return list_a if !list_b # проверка не равен ли один из списков nil
   return list_b if !list_a
-  list_a.next==nil ? list_a.next=list_b : append(list_a.next, list_b)
+  list_a.next == nil ? list_a.next = list_b : append(list_a.next, list_b)
   list_a
 end
 
@@ -88,13 +88,12 @@ class Node
 	attr_accessor :data, :next
 	def initialize(data)
   	@data = data
-    @next = nil
   end
 end
 
-def push(head, data)  # отдельные методы
-	node=Node.new(data)
-  node.next=head
+def push(head=nil, data)  # отдельные методы
+	node = Node.new(data)
+  node.next = head
   node
   # Node.new(data, node)
 end
@@ -102,20 +101,22 @@ end
 def build_one_two_three
   push(push(push(3), 2), 1)
 end
+
 def build_one_two_three_four_five_six
-  node=nil
-  6.downto(1){|n| node=push(node, n)}
-  node
-end
-def build_list(arr)
-  node=Node.new(arr[-1])
-  arr[0..-2].reverse.each{|e| node=push(node, e)}
+  node = nil
+  6.downto(1){|n| node = push(node, n)}
   node
 end
 
-p push(nil, 1) #=> #<Node:0x00000299ebad1678 @data=1, @next=nil>
-p build_one_two_three() #=> #<Node:0x00000299ebad1380 @data=1, @next=#<Node:0x00000299ebad13a8 @data=2, @next=#<Node:0x00000299ebad13d0 @data=3, @next=nil>>>
-p build_list([1, 2, 3, 4, 5, 6, 7]) #=> #<Node:0x000002501e604058 @data=1, @next=#<Node:0x000002501e6040d0 @data=2, @next=#<Node:0x000002501e6040f8 @data=3, @next=#<Node:0x000002501e604120 @data=4, @next=#<Node:0x000002501e604148 @data=5, @next=#<Node:0x000002501e604198 @data=6, @next=#<Node:0x000002501e604350 @data=7, @next=nil>>>>>>>
+def build_list(arr)
+  node = Node.new(arr[-1])
+  arr[0..-2].reverse.each{|e| node = push(node, e)}
+  node
+end
+
+push(nil, 1) #=> #<Node:0x00000299ebad1678 @data=1, @next=nil>
+build_one_two_three() #=> #<Node:0x00000299ebad1380 @data=1, @next=#<Node:0x00000299ebad13a8 @data=2, @next=#<Node:0x00000299ebad13d0 @data=3, @next=nil>>>
+build_list([1, 2, 3, 4, 5, 6, 7]) #=> #<Node:0x000002501e604058 @data=1, @next=#<Node:0x000002501e6040d0 @data=2, @next=#<Node:0x000002501e6040f8 @data=3, @next=#<Node:0x000002501e604120 @data=4, @next=#<Node:0x000002501e604148 @data=5, @next=#<Node:0x000002501e604198 @data=6, @next=#<Node:0x000002501e604350 @data=7, @next=nil>>>>>>>
 
 
 puts
@@ -129,8 +130,8 @@ class Context
 end
 
 def move_node(source,dest)
-  dest=push(dest, source.data)
-  source=source.next
+  dest = push(dest, source.data)
+  source = source.next
   Context.new(source,dest)
 end
 
@@ -143,23 +144,23 @@ p move_node(build_one_two_three(), build_one_two_three())# Context.new(build_lis
 puts
 # пример5 (подсчет всх узлов и определенных по значениям) (класс списков и методы задействованы из пред примера3)
 def length(node)
-	return 0 if node==nil
+	return 0 if node == nil
   counter=0
-  until node.next==nil
-    node=node.next
-    counter+=1
+  until node.next == nil
+    node = node.next
+    counter += 1
   end
-  counter+1
+  counter + 1
 end
 
 def count(node, data)
-	return 0 if node==nil
-  counter=0
-  until node.next==nil
-    counter+=1 if node.data==data
-    node=node.next
+	return 0 if node == nil
+  counter = 0
+  until node.next == nil
+    counter += 1 if node.data == data
+    node = node.next
   end
-  counter+=1 if node.data==data
+  counter += 1 if node.data == data
   counter
 end
 
@@ -190,27 +191,28 @@ class Node
 end
 
 def push(head, data)
-	node=Node.new(data)
-  node.next=head
+	node = Node.new(data)
+  node.next = head
   node
 end
+
 def buildOneTwoThree
   push(push(Node.new(3), 2), 1)
 end
 
 def length(node)
-	return 0 if node==nil
-  counter=0
-  until node.next==nil
-    node=node.next
-    counter+=1
+	return 0 if node == nil
+  counter = 0
+  until node.next == nil
+    node = node.next
+    counter += 1
   end
-  counter+1
+  counter + 1
 end
 
 def insert_nth(head, index, data)
-  raise Error if length(head)<index
-  return push(head, data) if head==nil or index==0
+  raise Error if length(head) < index
+  return push(head, data) if head == nil or index == 0
   head.next
 end
 
