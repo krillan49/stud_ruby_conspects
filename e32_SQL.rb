@@ -1,9 +1,9 @@
 '                                                 SQL(SQLite3)'
 
 # https://sqlitebrowser.org/dl/  инструмент-браузер для SQLite(мб еще для чегото)
-#
+
 # SQLite — это библиотека на языке C, которая реализует небольшой, автономный, полнофункциональный механизм базы данных SQL.
-#
+
 # Скачивание и установка:
 # https://sqlite.org/index.html  ->  Download  ->  Precompiled Binaries for Windows  ->  https://www.youtube.com/watch?v=ZSOyqH3loss  https://lumpics.ru/how-install-sqlite-on-windows-10/
 

@@ -12,6 +12,8 @@ puts '                                                 Vargant'
 
 # Виртуальная машина на линуксе(для запуска на любой системе) - туда установятся(bootstrap.sh - просто похожее название) Руби, Рэилс, СУБД и еще много всякого что нужно
 
+# поставить виртуал бокс и  Vargant и установить рэилс дев бокс по инструкции
+
 # https://github.com/rails/rails-dev-box   # rails-dev-box  -  способ настройки среды
 # https://www.virtualbox.org/
 # https://www.vagrantup.com/    # Vargant

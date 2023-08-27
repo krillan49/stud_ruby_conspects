@@ -36,6 +36,13 @@ en:
 
   contacts: # Обязательно должны быть 2 пробела а не таб, иначе yml фаил не заработает
     contact_us: "Contact Us!"
+  articles:
+    new:
+      header: "Add your new article"
+    show:
+      new_comment: "Add your comment:"
+    edit:
+      header: "Edit article"
 
 
 

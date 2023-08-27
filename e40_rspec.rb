@@ -75,7 +75,7 @@ end
 
 puts
 # before
-# У нас часто повторяется код hero = Hero.new 'foo', и это не совпадает с DRY (Don`t Repeat Yourself), потому оптимизируем, добавив before. Но главное чтобы была хорошая читаемость, во вред ей DRY использовать не стоит.
+# У нас часто повторяется код hero = Hero.new 'foo', и это не совпадает с DRY (Don`t Repeat Yourself), потому оптимизируем, добавив before.
 require './hero'
 
 describe Hero do

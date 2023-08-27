@@ -9,7 +9,7 @@ puts '                                                Bootstrap'
 # https://getbootstrap.com/docs/5.3/getting-started/download/  (возможно инфа по совместимости с Руби)
 
 
-# (команда из комментов к уроку(gem install sinatra-bootstrap))
+# (gem install sinatra-bootstrap  -    команда из комментов к уроку)
 
 # Подключение:
 
