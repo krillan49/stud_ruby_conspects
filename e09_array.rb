@@ -18,6 +18,9 @@ arr2 = :a, "b", 3 #=> [:a, "b", 3]  # можно и без скобок
 list3 = %w[Roman 32 Mike] #=> ["Roman", "32", "Mike"]
 list3a = %w(one two three four five) #=> ["one", "two", "three", "four", "five"]
 
+# Инициализация массива для Symbol элементов
+syms = %i[en ru]
+
 
 puts
 # Индексы и их применение:

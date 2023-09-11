@@ -6,34 +6,36 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- иконка -->
+    <%= favicon_link_tag 'favicon.png' %>
+
+    <!-- стили -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
   <body>
     <!--                             Devise: Добавим ссылки входа и выхода -->
 
+    <!-- Логичнее всего добавлять в шапку -->
+
+
     <!-- Вариант 1: хардкод -->
-    <p>
-      <a href="/users/sign_in">Sign In</a> |
-      <a href="/users/sign_out" data-turbo-method="delete">Sign Out</a>
-    </p>
-    <!-- data-turbo-method="delete" - Для sign_out возникнет ошибка при нажатии на ссылку, тк у маршрута /users/sign_out метод DELETE. В Rails 7 вместо data-method нужно использовать data-turbo-method -->
+    <a href="/users/sign_in">Sign In</a>
+    <a href="/users/sign_out" data-turbo-method="delete">Sign Out</a>
+    <!-- data-turbo-method="delete" - В Rails 7 вместо data-method нужно использовать data-turbo-method. Иначе для sign_out возникнет ошибка при нажатии на ссылку, тк у маршрута /users/sign_out метод DELETE -->
+
 
     <!-- Вариант 2: по методам-хэлперам для путей(можно посмотреть пути введя несуществующий URL)
       new_user_session_path	     GET	 /users/sign_in(.:format)	  devise/sessions#new
       destroy_user_session_path	 GET	 /users/sign_out(.:format)	devise/sessions#destroy
       (!!! delete при помощи запроса GET)
     -->
-    <p>
-      <%= link_to "Sign In", new_user_session_path %> |
-      <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
-    </p>
+    <%= link_to "Sign In", new_user_session_path %>
+    <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
     <!-- Из комментов(! но у меня и без этого сработало):
-      Вместо этого
-      link_to 'Sign Out', destroy_user_session_path, method: :delete
-      Пишем так
       link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
     -->
+
 
     <!-- Вариант 2-2: выведем почту пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы, при помощи обработчиков хэлперов.
     https://github.com/heartcombo/devise#controller-filters-and-helpers -->

@@ -44,6 +44,12 @@
   </p>
   <!-- ================================================================================= -->
 
+  <!-- Пример реализации селектора https://stackovergo.com/ru/q/6043668/how-to-add-a-class-to-selecttag-in-ruby-on-rails -->
+  <%= f.label :commentable_type, class: 'form-label' %>
+  <%= f.select :commentable_type, ["Post", "Image"], {}, class: 'form-select' %>
+  <!-- Между значениями опций селектора и параметрами класса нужен пустой хэш -->
+  <!-- ================================================================================= -->
+
   <p><%= f.submit %></p> <!-- <input type="submit" name="commit" value="Save Article" data-disable-with="Save Article" /> -->
 
 

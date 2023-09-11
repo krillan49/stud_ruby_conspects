@@ -157,6 +157,9 @@ Math::log(8, 2) #=> 3.0
 puts
 puts '                                                 methods'
 
+# достаточно одну из переменных поставить во флоат,  int + float = float
+p 1 + 1.0 #=> 2.0
+
 -14.84.abs() #=> 14.84  #Модуль числа
 55.positive? #=> Returns true if self is greater than 0, false otherwise.
 55.negative? #=> false

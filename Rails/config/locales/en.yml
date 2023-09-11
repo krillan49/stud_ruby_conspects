@@ -29,7 +29,7 @@
 # To learn more, please read the Rails Internationalization guide
 # available at https://guides.rubyonrails.org/i18n.html.
 
-en:
+en: #  - указывает на локаль(удалять не нужно)
   hello: "Hello world"
 
 # Выше то что было по умолчанию, ниже то что я дописал
@@ -38,11 +38,12 @@ en:
     contact_us: "Contact Us!"
   articles:
     new:
-      header: "Add your new article"
+      header: Add your new article # кавычки ставить не обязательно
     show:
-      new_comment: "Add your comment:"
+      new_comment: Add your comment:
     edit:
-      header: "Edit article"
+      header: Edit article
+
 
 
 
