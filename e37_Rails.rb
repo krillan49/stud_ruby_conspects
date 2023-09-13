@@ -608,6 +608,8 @@ get 'about' => 'pages#about'
 
 # Создадим представления /app/views/pages/terms.html.erb и /app/views/pages/about.html.erb
 
+# Для статических страниц создаются и хэлперы юрлов, например terms_path
+
 
 puts
 puts '                                             helpers(Хелперы)'

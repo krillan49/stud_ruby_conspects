@@ -30,10 +30,10 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en: #  - указывает на локаль(удалять не нужно)
-  hello: "Hello world"
-
-# Выше то что было по умолчанию, ниже то что я дописал
-
+  # перевод названий локали для t(locale)
+  en: 'English'
+  ru: 'Russian'
+  # просто каталоги
   contacts: # Обязательно должны быть 2 пробела а не таб, иначе yml фаил не заработает
     contact_us: "Contact Us!"
   articles:

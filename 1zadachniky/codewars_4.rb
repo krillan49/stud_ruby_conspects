@@ -154,3 +154,80 @@ def edge_detection(image)
   end
   "#{width} " + result.slice_when{|a, b| a != b}.map{|arr| [arr[0], arr.size]}.flatten.join(' ')
 end
+
+
+
+puts
+# 4 kyu All Balanced Parentheses  https://www.codewars.com/kata/5426d7a2c2c7784365000783/train/ruby
+# просто для просмотра скобок(не проходит по скорости)
+$brs={0=>[['']], 1=>[['(',')']]}
+2.upto(5) do |n|
+  arr=$brs[n-1]
+  res=[]
+  arr.each do |a|
+    res << ['(']+a+[')'] << ['(']+[')']+a << a+['(']+[')'] # заворачиваем весь элемент и добавлям слева и справа
+    brr=a.slice_when{|x,y| x==')' && y=='('}.to_a
+    (0..brr.size-1).each do |i|
+      nbi=['(']+brr[i]+[')']
+      newel=(brr[0...i]+nbi+brr[i+1..-1]).flatten # оборачиваем каждый завершенный{ +((...))+ } подэлемент
+      res << newel
+      res << (brr[0...i]+['(',')']+brr[i..-1]).flatten if i!=0 # пихаем () между каждыми )...(
+    end
+  end
+  $brs[n]=res.uniq
+end
+# p $brs.map{|k, v| [k, v.map(&:join)]}
+
+# решение, тоже не проходит по скорости
+def balanced_parens(n)
+  return [''] if n < 1
+  arr = [ ['(', '*'] * n ]
+  p arr # [["(", "*", "(", "*", "(", "*"]]
+  until n == 1
+    n -= 1
+    arr = arr.each_with_object([]) do |a, res|
+      1.upto(a.size) do |x|
+        counter = 1
+        new = a.each.with_index do |e, i|
+          if e == '*' && counter == x
+            new = a.clone
+            new[i] = ')'
+            new = new.map.with_index{|ee, j| ee == '*' && j <= i ? nil : ee}.compact
+            res << new
+          end
+          counter += 1
+        end
+      end
+    end
+    p arr # [["(", ")", "(", "*", "(", "*"], ["(", "(", ")", "(", "*"], ["(", "(", "(", ")"]]
+    # [["()(", ")", "(", "*"], ["()(", "(", ")"], ["(()", ")", "(", "*"], ["(()", "(", ")"], ["((()", ")"]] (2й круг цикла)
+    arr.map! do |a|
+      i = a.rindex(')')
+      if a[0..i].join.count('(') == a[0..i].join.count(')')
+        [ a[0..i+1].join ] + a[i+2..-1]
+      else
+        [ a[0..i].join ] + a[i+1..-1]
+      end
+    end
+    p arr # [["()(", "*", "(", "*"], ["(()", "(", "*"], ["((()"]]
+    # [["()()(", "*"], ["()(()"], ["(())(", "*"], ["(()()"], ["((())"]]
+    arr.map! do |a|
+      a = a.reject{|e| e == '*'}.zip(['*'] * (a.size-1)).flatten.compact
+      count = a.count('*')
+      if count < n && a[-1] != '*'
+        a + ['*']
+      else
+        a
+      end
+    end
+    p arr # [["()(", "*", "(", "*"], ["(()", "*", "(", "*"], ["((()", "*"]]
+    # [["()()(", "*"], ["()(()", "*"], ["(())(", "*"], ["(()()", "*"], ["((())", "*"]]
+  end
+
+  arr.map{|a| [a[0], ')'].join}
+end
+
+# p balanced_parens(0) # [""]
+# p balanced_parens(1) # ["()"]
+# p balanced_parens(2) # ["()()","(())"]
+p balanced_parens(3) # ["()()()","(())()","()(())","(()())","((()))"]

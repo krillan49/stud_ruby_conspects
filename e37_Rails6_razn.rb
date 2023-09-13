@@ -1,5 +1,19 @@
 puts '                                       Rails разное'
 
+# Хэлперы для URL
+root_path # для ссылок на главную(get '/' root в маршруте), может содержать параметры, например для локалей
+url_for(locale: locale) # ??
+
+
+puts
+# ссылка(на путь '#') внутри тега которой объекты, тут тег div, так же содержит дата-атрибуты
+<%= link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'} do %>
+  <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %>
+  <%= t I18n.locale %>
+<% end %>
+
+
+puts
 # Пример из blog2(с Devise):
 # При редиректе с fallback_location: происходит почемуто множественный редирект если пользователь не соответсвует фильтру:
 class ProtectedController < ApplicationController
