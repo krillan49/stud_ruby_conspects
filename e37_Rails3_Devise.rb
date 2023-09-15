@@ -244,8 +244,9 @@ class Article < ApplicationRecord
   #  ... валидации ...
   has_many :comments#, dependent: :destroy    # было в комментах к уроку 46 хз зачем
 
-  belongs_to :user, optional: true # добавим вручную;
+  belongs_to :user, optional: true, required: true # добавим вручную;
   # optional: true - если это не добавить то при использовании Rails 5.1 и выше создание новой статьи и тесты(валидации ??) выдадут ошибку "User must exist"
+  # required: true - если не добавить возникнут ошибки с rspec тестирыванием этой ассоциации
 end
 
 # Добавим столбец с user_id отдельной миграцией

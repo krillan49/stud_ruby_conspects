@@ -17,6 +17,9 @@ puts '                                            Rails'
 # https://github.com/DefactoSoftware/Hours
 
 
+# > rails -v    # посмотреть версию рэилс
+
+
 puts
 puts '                                        Создание приложения'
 

@@ -5,7 +5,7 @@ puts '                                          Rspec для Rails'
 # 1. Добавить в Gemfile нашего Rails-приложения:
 group :test, :development do # добавим гемы только для 2х типов окружения(test, development)
   gem 'rspec-rails'
-  gem 'shoulda-matchers'   # добавляет матчеры для проверки моделей(работает как для rspec так и для обычных юнит тестов)   http://matchers.shoulda.io/docs/v3.1.3/    https://github.com/thoughtbot/shoulda-matchers
+  gem 'shoulda-matchers'     # добавляет матчеры для проверки моделей(работает как для rspec так и для обычных юнит тестов)   http://matchers.shoulda.io/docs/v3.1.3/    https://github.com/thoughtbot/shoulda-matchers
   gem 'capybara'
 end
 # > bundle install
@@ -14,20 +14,24 @@ end
 # stackoverflow.com/questions/65479863/rails-6-1-ruby-3-0-0-tests-error-as-they-cannot-load-rexml
 
 # 2. Настройка Rspec для Rails:
-# > rails g rspec:install   # (этот генератор, среди прочих, добавился при установке gem 'rspec-rails') запускает гем и выполняет его установку в наше приложение(установит дополнительные каталоги и хэлперы)
-  # Создались:
+# > rails g rspec:install   # этот генератор(среди прочих, добавился при установке gem 'rspec-rails') запускает гем и выполняет его установку в наше приложение(установит дополнительные каталоги и хэлперы). Создались:
   # .rspec                 - содержит опции/настройки(например для цветового вывода)
   # spec                   - Директория для rspec тестов и других фаилов
   # spec/spec_helper.rb
   # spec/rails_helper.rb
 #      (У меня не возникла)(Проблема из комментов: когда прописал команду rails g rspec:install после стоит на месте, нужно прервать и написать так DISABLE_SPRING=true rails generate rspec:install)
 
-# 3. Настроим Shoulda-matchers, добавив в spec/rails_helper.rb(добавил в rails_helper.rb):
-Shoulda::Matchers.configure do |config|
-  config.integrate do |with|
-    with.test_framework :rspec
-    with.library :rails
+# 3. Настроим Shoulda-matchers, добавив в spec_helper.rb или rails_helper.rb(я добавил в rails_helper.rb):
+RSpec.configure do |config|
+  # всякие конфигурации ...
+
+  Shoulda::Matchers.configure do |config|
+    config.integrate do |with|
+      with.test_framework :rspec
+      with.library :rails
+    end
   end
+
 end
 
 # 4. Тк тестовая БД(если ее используем) по умолчанию не содержит миграций, нужно их произвести чтобы не было ошибок
@@ -35,10 +39,13 @@ end
 
 
 puts
-puts '                                      Rspec Тестирование моделей'
+puts '                                 Тестирование моделей(Матчеры shoulda-matchers)'
 
 # Создадим для тестирования моделей каталог /spec/models. В нем будем создавать фаилы для тестирования моделей
-# матчеры для проверки моделей(работает как для rspec так и для обычных юнит тестов) http://matchers.shoulda.io/docs/v3.1.3/    https://github.com/thoughtbot/shoulda-matchers
+
+# Матчеры shoulda-matchers для проверки моделей(работает как для rspec так и для обычных юнит тестов):
+# http://matchers.shoulda.io/docs/v3.1.3/
+# https://github.com/thoughtbot/shoulda-matchers
 
 # Модель, которую будем тестировать (/app/models/contact.rb):
 class Contact < ApplicationRecord
@@ -50,8 +57,7 @@ end
 require 'rails_helper' # подключаем фаил spec/rails_helper.rb
 # Далее синтакс rspec(но тут почемуто без названий тестов)
 describe Contact do
-  it { should validate_presence_of :email } # должно проверять присутсвие email(тестируем валидацию)
-  # validate_presence_of - матчер
+  it { should validate_presence_of :email } # # validate_presence_of - матчер проверяющий присутсвие email(тестируем валидацию)
   it { should validate_presence_of :message }
 end
 
@@ -76,7 +82,28 @@ end
 
 
 puts
-puts '                                    Rspec Вложенный describe'
+puts '                                 Баг тестирования belong_to к Devise модели'
+
+# По умолчанию, если User модель Devise возникает ошибка при тестировании ассоциации /spec/models/comment_spec.rb
+require 'rails_helper'
+
+describe Comment do
+  it { should belong_to :user } # в матчере belong хотя в модели belongs
+end
+
+# > rake spec
+# => Failure/Error: it { should belong_to :user }
+
+# Возникает для ее исправления в модели нужно добавить:
+class Comment < ApplicationRecord
+  belongs_to :user, optional: true, required: true
+  # optional: true  -  от ошибки "User must exist"
+  # required: true  -  от ошибки требующей разрешение
+end
+
+
+puts
+puts '                                       Rspec Вложенный describe'
 
 # Вложенный describe - повышает читаемость кода тестов
 
@@ -139,6 +166,11 @@ describe Comment do
   end
 end
 
+# Меньше чем, равен значению и одновременно меньше и больше чем
+should validate_length_of(:bio).is_at_least(15)
+should validate_length_of(:favorite_superhero).is_equal_to(6)
+should validate_length_of(:password).is_at_least(5).is_at_most(30)
+
 
 puts
 puts '                                             Factory Bot'
@@ -182,7 +214,7 @@ FactoryBot.define do # определяем фабрику
     text { "Article text" }
   end
 end
-# Теперь наша фабрика может создатЬ сущность Article с полями title и text
+# Теперь наша фабрика может создать сущность Article с полями title и text
 
 
 puts
@@ -195,7 +227,7 @@ class Article < ApplicationRecord
   has_many :comments
 
   def subject # добавим метод который будем тестировать (возвращает название статьи ??)(Не забываем что это метод экземпляра)
-    title
+    title # модель имеет методы экземпляра для каждого столбца ?? (мб и тестировать сразу его)
   end
 end
 
@@ -336,17 +368,16 @@ end
 
 
 puts
-puts '                                            Rspec + i18n'
+puts '                                           Capybara + i18n'
 
 # Работа с i18n (internationalization):
-
 # 1. Открыть файл /config/locales/en.yml (в нем есть небольшая кокументация по использованию)
 # 2. Создадим в фаиле /config/locales/en.yml раздел contacts:
 # 3. Вызовем в представлении /app/views/contacts/new.html.erb: <h2><%= t('contacts.contact_us') %></h2>
 
 
 puts
-# Применение i18n в Capybara: Исправим последний тест с учётом i18n файл /spec/features/visitor_creates_contact_spec.rb:
+# Исправим последний тест с учётом i18n файл /spec/features/visitor_creates_contact_spec.rb:
 require "rails_helper"
 
 feature "Contact creation" do

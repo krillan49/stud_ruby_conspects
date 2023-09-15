@@ -8,6 +8,9 @@ puts '                                            Rspec'
 # > gem install rspec    # установка
 # > rspec    # Запуск тестов
 
+# Matchers - это то что мы пишем после expect, те способы для разных условий тестирования
+# https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers
+
 
 # Создадим и протестируем героя компьютерной игры.
 
@@ -41,7 +44,7 @@ describe Hero do # метод принимает тестируемый клас
   # Тест 1
   it "has a capitalized name" do # метод принимает имя теста и его тело в лямбде
     hero = Hero.new 'foo' # создаем сущность для теста
-    expect(hero.name).to eq 'Foo' # expect - ожидать. ожидаем что аргуиент hero.name метода expect соответсвует аргументу 'Foo' метода eq  (hero.name == 'Foo')
+    expect(hero.name).to eq 'Foo' # expect (ожидать) - матчер. ожидаем что аргуиент hero.name метода expect соответсвует аргументу 'Foo' метода eq  (hero.name == 'Foo')
   end
   # Тест 2
   it "can power up" do
@@ -74,12 +77,14 @@ end
 
 
 puts
-# before
+puts '                                               Метод before'
+
 # У нас часто повторяется код hero = Hero.new 'foo', и это не совпадает с DRY (Don`t Repeat Yourself), потому оптимизируем, добавив before.
+
 require './hero'
 
 describe Hero do
-  before do # аналогичен методу синатры
+  before do # аналогичен методу Синатры(запускается перед каждым тестом it ??)
     @hero = Hero.new 'foo' # не забываем сделать переменную глобальной
   end
 
@@ -108,10 +113,6 @@ puts
 # 3. easy to understand - лёгкие для понимания другими программистами.
 # 4. скорость работы тестов не особо важна, тк может противоречить надежности и читаемости
 # 5. DRY тоже не особо важен
-
-
-# Matchers - это то что мы пишем после expect, те способы для разных условий тестирования
-# https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers
 
 
 puts
@@ -149,3 +150,22 @@ describe Car do
     expect(car.range).to eq 200
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
