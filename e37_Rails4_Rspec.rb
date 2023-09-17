@@ -88,7 +88,7 @@ puts '                                 Баг тестирования belong_to
 require 'rails_helper'
 
 describe Comment do
-  it { should belong_to :user } # в матчере belong хотя в модели belongs
+  it { should belong_to :user }
 end
 
 # > rake spec
@@ -176,6 +176,7 @@ puts
 puts '                                             Factory Bot'
 
 # Factory Bot - помогает при тестировании, чтобы не создавать в AR объекты для теста и тестовую БД, вместо этого создаётся фабрика, и она будет создавать нам объекты для теста. Это соотв принципу DRY тк не нужно создавать тестовую БД
+
 # Раньше был другой гем gem Factory Girl(устарел)
 # https://github.com/thoughtbot/factory_bot/blob/v4.9.0/UPGRADE_FROM_FACTORY_GIRL.md
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md
@@ -254,6 +255,87 @@ end
 
 
 puts
+# Пример на blog2 (с синтаксисом как выше была ошибка "User must exist" хотя стояло optional: true, ииза того что юзер не создан, тоже самое будет у коммента, для коментэйл итд)
+
+# Модель Post
+class Post < ApplicationRecord
+  belongs_to :user, optional: true, required: true
+  has_many :comments, as: :commentable
+  validates :content, presence: true, length: { in: 100..5000 }
+end
+# Модель User
+class User < ApplicationRecord
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
+  has_many :posts
+  # ...
+end
+
+# Фабрика users.rb
+FactoryBot.define do
+  factory :user do
+    email { "user@mail.ru" } # либо sequence(:email) { |n| "user#{n}@mail.ru" }
+    username { "username" } # либо sequence(:username) { |n| "username#{n}" }
+    password { "123456" } # почемуто password, хотя колонка называется encrypted_password
+  end
+end
+# Фабрика posts.rb
+FactoryBot.define do
+  factory :post do
+    content { "Post content" }
+    user # возможность создания юзера фабрикой :user ??
+  end
+end
+
+# Тест post_spec.rb
+require 'rails_helper'
+describe Post do
+  # ...
+  describe "#columns" do
+    it "returns the post content" do
+      user = create :user # создаем юзера фабрикой :user ??
+      post = create(:post, content: 'a' * 100, user: user) # в конце привязываем к юзеру ??(можно добавлять несколько??)
+      expect(post.content).to eq 'a' * 100
+    end
+  end
+end
+# > rake spec
+
+
+post
+# Такой же как прошлый только для полиморфно ассоциированного комментария(к постам и картинкам и одновременно 1 то мэни к юзерам)
+
+# Модель Comment
+class Comment < ApplicationRecord
+  belongs_to :user, optional: true, required: true
+  belongs_to :commentable, polymorphic: true
+  validates :body, presence: true
+end
+
+# Фабрика comments.rb
+FactoryBot.define do
+  factory :comment do
+    body { "Comment body" }
+    user
+  end
+end
+
+# Тест comment_spec.rb
+require 'rails_helper'
+describe Comment do
+  # ...
+  describe "#columns" do
+    it "returns the comment body" do
+      user = create :user
+      post = create(:post, content: 'a' * 100, user: user) # создаем пост тк ему тоже принадлежит как комментайбл
+      comment = create(:comment, body: 'aaa', commentable: post, user: user) # тут добавляем пост в commentable
+      expect(comment.body).to eq 'aaa'
+    end
+  end
+end
+# > rake spec
+
+
+puts
 # Пример посложнее:
 
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Sequences    # Sequences (последовательности):
@@ -288,7 +370,7 @@ FactoryBot.define do
     # создаём фабрику для создания статьи с несколькими комментариями(создаем фабрику внутри блока фабрики article)
     factory :article_with_comments do
       after :create do |article, evaluator| # after - метод срабатывающий после чего либо. :create - метод(в тесте) после которого сработает after. Те после создания article в тесте. (evaluator - не обязательно)
-        create_list :comment, 3, article: article # создаём список из 3-х сущностей комментариев(:comment из фабрики комментариев ??)
+        create_list :comment, 3, article: article # создаём список из 3-х комментариев(:comment из фабрики комментариев ??)
         # article: article - указываем тк в модели у нас коммент принадлежит статье, параметр статья созданная в тесте
       end
       # Те после создания article создаём список из 3-х комментариев
