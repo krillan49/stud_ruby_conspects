@@ -398,7 +398,16 @@ end
 puts
 puts '                        Приёмочное тестирование(Acceptance Testing). Gem Capybara'
 
-# Проверка функциональности на соответствие требованиям. Отличие от юнит-тестов, что для этих тестов обычно существует план приёмочных работ(список требований и выполняются эти требования или нет). Юнит-тесты - проверка чтобы не сломалось.
+# УЗНАТЬ:
+# 1. Как копировать все данные в тестовую БД
+# 2. Как использовать маршруты для show в тестах?
+  # visit '/posts/1'  - такие работают
+  # visit post_path('1') - такие нет ActionController::UrlGenerationError
+  # visit post_path(Post.all.last) - такие нет ActionController::UrlGenerationError
+
+
+puts
+# Проверка функциональности на соответствие требованиям. Отличие от юнит-тестов, что для этих тестов обычно существует план приёмочных работ(список требований и выполняются эти требования или нет). А юнит-тесты - проверка чтобы не сломалось.
 # http://protesting.ru/testing/levels/acceptance.html
 
 # Обычно unit и acceptance используются вместе в проектах
@@ -440,7 +449,7 @@ require "rails_helper"
 feature "Contact creation" do
   scenario "allows acess to contacts page" do # будем проверять наличие доступа к странице
     visit new_contacts_path # get 'contacts/new' (можно прописать URL и вручную)
-    # Капибара заходит на указанную страницу
+    # Капибара заходит на указанную страницу(указывать обязательно, даже если это корневая по умолчанию)
 
     expect(page).to have_content 'Contact us' # проверяем что страница имеет какуюто строку(учитывает регистр)
     # page - переменная содержащая страницу(полностью сгенерированную вместе с layout)
@@ -459,20 +468,6 @@ puts '                                           Capybara + i18n'
 
 
 puts
-# Исправим последний тест с учётом i18n файл /spec/features/visitor_creates_contact_spec.rb:
-require "rails_helper"
-
-feature "Contact creation" do
-  scenario "allows acess to contacts page" do
-    visit new_contacts_path
-
-    expect(page).to have_content I18n.t('contacts.contact_us')
-  end
-end
-# > rake spec
-# Теперь мы точно обращаемся к правильной строке вместо того чтоб смотреть что в ней там написано с каким регистом итд
-
-
 # Добавим создание самого контакта:
 # Откроем страницу /app/views/contacts/new.html.erb и откроем код формы, чтобы узнать id поля (будем использовать в тесте):
 # <input name="contact[email]" id="contact_email" type="text">
@@ -484,7 +479,8 @@ require "rails_helper"
 feature "Contact creation" do
   scenario "allows acess to contacts page" do
     visit new_contacts_path
-    expect(page).to have_content I18n.t('contacts.contact_us')
+    expect(page).to have_content I18n.t('contacts.contact_us') # Исправим тест с учётом i18n(всегда нужно указывать полный путь каталогов тут, как в предсталениях t('.contact_us') выдаст ошибку)
+    # Теперь мы точно обращаемся к правильной строке вместо того чтоб смотреть что в ней там написано с каким регистом итд
   end
 
   scenario "allows a guest to create contact" do
@@ -546,7 +542,6 @@ end
 
 # Далее либо в rails_helper.rb требуем этот файл
 require 'support/session_helper'
-
 # Либо в файле rails_helper.rb раскомментируем этот закоментированный код:
 Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 # Так каждый раз вписывать наши новые вспомогательные файлы из support не надо будет. Они будут вписываться автоматически
@@ -559,6 +554,7 @@ puts
 # Нам надо использовать sign_up в разных тестах, и чтобы не повторяться и не писать один и тот же код, мы используем before, after hooks:
 before(:each) do # Исполняется перед каждым тестом в feature или describe
 end
+
 before(:all) do # Исполняется перед всеми(1 раз перед всеми) тестами в feature или describe
 end
 
@@ -594,7 +590,7 @@ end
 
 
 puts
-# Тест для посещения страныцы редактирования статьи и собственно редактирование статьи юзером user_updates_article_spec.rb
+# Тест для посещения страницы редактирования статьи и собственно редактирование статьи юзером user_updates_article_spec.rb
 require "rails_helper"
 
 feature "Article Creation" do
