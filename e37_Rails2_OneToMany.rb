@@ -11,6 +11,7 @@ puts '                               one-to-many. На примере Article 1 
 # 1. Создадим модель Comment со ссылкой на article:
 # > rails g model Comment author:string body:text article:references
 # article:references - дополнительный параметр, отвечающий за отношение между сущностями
+# Создалось:
 # /models/comment.rb:
 class Comment < ApplicationRecord
   belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. можно добавлять вручную если в генераторе не указать article:references
@@ -65,7 +66,7 @@ end
 
 # Посмотрим в rails console:
 Article.comments  #=> будет ошибка говорящая что у модели нет такого свойства comments
-@article = Article.find(1) #=> но если создать обект с одной статьей ...
+@article = Article.find(1) #=> но если создать объект с одной статьей ...
 @article.comments #=> ... то ошибки уже не будет. Те мы получаем доступ к списку всех комментов для этой статьи
 @article.comments.create(:author => 'Foo', :body => 'Bar') #=> создание коммента для данной статьи, через сущность статьи
 Comment.last

@@ -328,7 +328,7 @@ puts '                                       Валидация и метод va
 
 # Метод save по умолчанию проводит и валидацию, если всё правильно, то возвращает true иначе false.
 
-# Хоть валидация и выполняется автоматически, но нужно ее настроить в основном фаиле app.rb в модели к которой относятся данные при помощи метода validates. Настройки могут позволить проводить валидацию по разлмчным параметрам: длинна строки, значение строки итд.
+# Хоть валидация и выполняется автоматически, но нужно ее настроить в основном фаиле app.rb в модели к которой относятся данные при помощи метода validates. Настройки могут позволить проводить валидацию по различным параметрам: длинна строки, значение строки итд.
 
 class Client < ActiveRecord::Base
   validates :name, presence: true  # 1й параметр это название столбца для проверки, 2+ параметры это хэш с условиями проверки. В данном случае условие проверки presence: true означает, что значение для столбца name не должно быть пустым
@@ -336,16 +336,16 @@ class Client < ActiveRecord::Base
   validates :datestamp, presence: true
   validates :color, presence: true
 
-  #                    Некоторые другие популярные методы проверки:
+  #                           Некоторые другие популярные методы проверки:
 
   #     1. length - проверяем по допустимой длинне
-  # validates :name, length: { minimum: 2 }             # minimum - длинна не менее чем
-  # validates :bio, length: { maximum: 500 }            # maximum - длинна не более чем(можно указать одновременно с предыдущим)
-  # validates :password, length: { in: 6..20 }          # in - допустимая длинна находится в интервале
-  # validates :registration_number, length: { is: 6 }   # is - точное указание длинны
+  validates :name, length: { minimum: 2 }             # minimum - длинна не менее чем
+  validates :bio, length: { maximum: 500 }            # maximum - длинна не более чем(можно указать одновременно с предыдущим)
+  validates :password, length: { in: 6..20 }          # in - допустимая длинна находится в интервале
+  validates :registration_number, length: { is: 6 }   # is - точное указание длинны
 
   #     2. inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
-  # validates :size, inclusion: { in: %w(small medium large), message: "%{value} is not a valid size" }
+  validates :size, inclusion: { in: %w(small medium large), message: "%{value} is not a valid size" }
 
   # numericality: true - проверка, введены ли числа
 
@@ -355,6 +355,7 @@ end
 # Если мы проверим незаполненного клиента в tux то:
 c = Client.new     #=> #<Client id: nil, name: nil, phone: nil, datestamp: nil, barber: nil, color: nil, created_at: nil, updated_at: nil>
 c.valid?           #=> false
+# Все ошибки можно выводить на экран при помощи специального массива errors:
 c.errors.count     #=> 4 - выводит число незаполненных полей(ошибок)
 c.errors.messages  #=> {:name=>["can't be blank"], :phone=>["can't be blank"], :datestamp=>["can't be blank"], :color=>["can't be blank"]} - выводит сообщения об ошибках, мы можем использовать ее для вывода
 # Эти свойства мы так же можем использовать в обработчиках и методах основной программы.

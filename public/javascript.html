@@ -3,54 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>JS + HTML main</title>
-  <script src="scripts.js"></script> <!-- подключаем джаваскрипт фаил, теперь можем использовать код из него тут -->
-  <!-- <script src="/app.js"></script> --> <!-- подключение в Синатре -->
 </head>
 
-
 <body>
-  <div><a href="javascript2.html">To page2</a></div>
 
 
-  <!-- При нажатии простой кнопки весь код обрабатывается браузером, никаких запросов не происходит -->
-  <!-- Функции с одним именем размещенные на разных страницах никак не влияют друг на друга, тк обрабатываются каждая на своей странице. Разные страницы для браузера это как разные приложения независимые друг от друга -->
-
-  <h4>Функция 1.1 записаная в теге script ниже</h4>
-  <button onclick="some()">Click me!</button>
-  <!-- В JS функция вызывается по хэндлеру/событию(обработчик) -->
-  <!-- onclick - атрибут обработчика/хендлера в значении которого находится имя функции(тут "some()") которую мы хотим исполнить нажатием -->
-  <script>
-    function some() {
-      alert("Hello world!");
-    }
-  </script>
-
-  <h4>Функция 1.2 из фаила scripts.js</h4>
-  <button onclick="something()">Click me!</button>
-
-  <h4>Функция 1.3 c переменной x+=1</h4>
-  <button onclick="perx()">Click me!</button>
-
-  <h4>1.4 alert() без функции, прямо в атрибуте</h4>
-  <!-- alert() можно писать прямо в атрибуте и оно будет вызывать сообщение -->
-  <button onclick="alert('Hello im alert in atribut')">Click me!</button>
-
-  <h4>1.5 Две строки кода в аргументе. return false</h4>
-  <!-- return false - отменит например отправку формы ?? -->
-  <button onclick="alert('Hello im alert in atribut');return false">Click me!</button>
-
-
-  <h4>Функция 2.1 c localStorage</h4>
-  <button onclick="localst()">Click me!</button>
-
-
-  <h4>Функция 3.1 c параметром</h4>
-  <!-- просто пишем или интегрируем(<%= %>) если необходимо параметр в скобках -->
-  <button onclick="addToCart(6)">Click me!</button> <!-- #=> Your parametr is: 6 -->
-  <button onclick="addToCart('Kroker')">Click me!</button> <!-- #=> Your parametr is: Kroker -->
-  <!-- Для строкового параметра не забываем кавычки, а иначе воспримет как неинициализированную переменную(??) и всплывающее окно даже не появится -->
-
-
+  <script src="scripts.js"></script> <!-- подключаем джаваскрипт фаил, теперь можем использовать код из него тут -->
+  <script src="/app.js"></script> <!-- подключение в Синатре -->
 </body>
 </html>
 
