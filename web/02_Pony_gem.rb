@@ -17,7 +17,7 @@ Pony.mail(:to => 'you@example.com', :via => :sendmail) # sends via sendmail
 
 
 puts
-# НА ПРИМЕРЕ ПРОГРАММЫ:
+# на примере руби программы:
 require 'pony'
 
 my_mail = 'gigantkroker@gmail.com' # переменная с адресом почты отправителя(нашим)
@@ -54,7 +54,6 @@ Pony.mail(
     }
   }
 )
-puts 'Письмо отправлено ... наверно' # для проверки что программа сработала и дошла до этой строки
 
 # 535-5.7.8 Username and Password not accepted. Learn more at (Net::SMTPAuthenticationError)
 # https://stackoverflow.com/questions/23137012/535-5-7-8-username-and-password-not-accepted
