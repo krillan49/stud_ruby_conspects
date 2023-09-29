@@ -12,6 +12,9 @@
 	<label>Когда вас ждать?</label><br>
 	<input type="datetime-local" name="date_time" value="<%= @date_time %>"><br> <!-- в value переменная вставляется аналогично и для поля datetime-local, а незаполненное тоже считается пустой строкой -->
 
+	<label>Выберите цвет</label><br>
+	<input type="color" name="color" value="<%= @color %>"><br> <!-- сохраняет как хэш например #22c9bd -->
+
 	<label>Ваш парикмахер:</label><br>
 	<select name="barber">
 		<!-- Cохраняем выбранное значение при помощи атрибута selected(в виде String) тега option и условного оператора -->
@@ -22,14 +25,11 @@
     <option <%= 'selected' if @barber == 'Gus Fring' %>>Gus Fring</option>
 
 
-		<!-- 2. Способ для работы с методом before(селектор заполняется из него при исполнении запроса гет). Тут у нас есть переменная из запроса post - @barber и переменная из метода before - @barbers, которая будет доступна и в гет и в пост запросах -->
+		<!-- 2. Способ для работы с парикмахерами из базы помещенными в переменную. Из метода before селектор заполняется при исполнении запроса гет. Тут у нас есть переменная из запроса post - @barber и переменная из метода before - @barbers, которая будет доступна и в гет и в пост запросах -->
 		<% @barbers.each do |row| %>
       <option <%= 'selected' if @barber == row['name'] %>><%=row['name']%></option>
     <% end %>
   </select><br>
-
-	<label>Выберите цвет</label><br>
-	<input type="color" name="color" value="<%= @color %>"><br> <!-- сохраняет как хэш например #22c9bd -->
 
 	<input type="submit">
 

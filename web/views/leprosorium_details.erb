@@ -2,9 +2,9 @@
 
 <br>
 <p>  <!-- Выводим данные поста из запрса таблицы постов -->
-	<%= @row['content'] %>
+	<%= @post['content'] %>
 	<br><br>
-	Added by <b><%= @row['author'] %></b> at <%= @row['created_date'] %>
+	Added by <b><%= @post['author'] %></b> at <%= @post['created_date'] %>
 </p>
 
 
@@ -23,8 +23,18 @@
 <% end %>
 
 <!-- Форма для того чтобы оставить комментарии к посту -->
-<form action="/details/<%= @row['id'] %>" method="POST"><!-- Будем генерировать URL, вставляя id из запроса. Теперь запрос этой формы сможет обработать post '/details/:post_id' -->
+<form action="/details/<%= @post['id'] %>" method="POST"><!-- Будем генерировать URL, вставляя id из запроса. Теперь запрос этой формы сможет обработать post '/details/:post_id' -->
 	<textarea name="content"></textarea>
 	<br>
  	<button type="submit">Add comment</button>
 </form>
+
+
+
+
+
+
+
+
+
+<!-- -->

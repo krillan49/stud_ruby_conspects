@@ -1,8 +1,8 @@
-puts '                                  ActiveRecord(на примере Sinatra)'
+puts '                                   ActiveRecord(на примере Sinatra)'
 
 # ActiveRecord - это специальный гем для Ruby, который делает работу с БД более удобной и быстрой
 
-# https://guides.rubyonrails.org/active_record_querying.html   -   справка по активрекорд(Active Record Query Interface — Ruby on Rails Guides)
+# https://guides.rubyonrails.org/active_record_querying.html   -   справка по активрекорд
 
 # Механизмы миграции - чтобы версия базы данных всегда совпадала с версией кода.
 # to keep up to date - держать в актуальном состоянии - чтобы работали предыдущие версии программы нужно чтоб БД тоже откатилась тк в новых версияхз они могли измениться, например добавить колонки

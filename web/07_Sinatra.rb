@@ -223,14 +223,15 @@ puts '                                             Layout.erb'
 
 # layout.erb - это базовая страница/шаблон, имя зарезервировано. Он будет всегда использоваться Синатрой по умолчанию и добавлять параметр метода erb в точку <%= yield %>. В файле views/layout.erb можно сделать основной каркас страницы, разместить yield и уже из других erb подгружать информацию.
 
-# Задаем аргументом метода erb(если хотим не использовать Layout нужно возвращать просто код без метода erb) необходимый html код или представление и он будет выводиться внутри вида layout.erb в точку <%= yield %>. Тоесть метод get вернет нам представление layout.erb c интегрированным в <%= yield %> аргументом метода erb
+# Задаем аргументом метода erb необходимый html код или представление и он будет выводиться внутри вида layout.erb в точку <%= yield %>. Тоесть метод get вернет нам представление layout.erb c интегрированным в <%= yield %> аргументом метода erb. Если хотим не использовать Layout нужно возвращать просто код без метода erb.
 get '/' do
-	erb "Hello! <a href=\"https://github.com/bootstrap-ruby/sinatra-bootstrap\">Original</a> pattern has been modified for <a href=\"http://rubyschool.us/\">Ruby School</a>" # просто строка с html кодом
+	erb "Hello! <a href=\"https://github.com/bootstrap-ruby/sinatra-bootstrap\">Original</a> pattern has been modified for <a href=\"http://rubyschool.us/\">Ruby School</a>" # просто строка с html кодом помещается в точку <%= yield %>
 end
 get '/' do
 	erb :a_welcome # код из вида a_welcome также помещается в точку <%= yield %>
 end
 
+# Переменные заданные в обработчиках, можно помещать в вид Layout
 
 # Сообщение об ошибке(пример вложенного в erb кода Ruby). В layout для нее есть код, проверяющий переменную.
 get '/about' do
@@ -242,7 +243,8 @@ end
 puts
 puts '                                             Валидация'
 
-# Валидация(validation) - обозначает проверку параметров. Например если отправлена форма с незаполненными полями:
+# Валидация(validation) - обозначает проверку параметров на соответсвование требованиям к ним.
+# Например проверка на то заполнены ли поля переданные с формой:
 get '/' do
   erb :barbershop_index
 end
@@ -284,9 +286,9 @@ end
 
 
 puts
-puts '                                     Отправка ответа на почту пользователя'
+puts '                                  Отправка ответа на почту пользователя'
 
-# отправка подтверждения на почту при помощи гема pony
+# Отправка подтверждения на почту при помощи гема pony
 require 'sinatra'
 require 'pony'
 
@@ -295,7 +297,7 @@ get '/contacts' do
 end
 
 post '/contacts' do
-	@email        = params[:email]   # (например) VasiaPupkin@gmail.com
+	@email        = params[:email]   # например VasiaPupkin@gmail.com
 	@user_message = params[:user_message]
 
 	hh = { email: 'Введите почту', user_message: 'Введите сообщение' }
@@ -329,9 +331,9 @@ end
 
 
 puts
-puts '                                        configure + базы данных'
+puts '                                configure + БД(создание и заполнение данными формы)'
 
-# configure - команда, которая запускается при инициализации приложений(каждый перезапуск фаила .rb) или при обновлении приложения/сохранении фаила. Соотв в ней удобно создавать или открывать необходимые фаилы, например базу данных.
+# configure - команда, которая запускается при инициализации приложений(каждый перезапуск фаила .rb) или при обновлении приложения/сохранении фаила. В ней удобно создавать или открывать необходимые фаилы, например базу данных.
 
 # похоже переменные с @ работают только внутри метода и в .erb но не работают по всему .rb фаилу.
 # в комментах для открытия и использования базы данных предлагали глобальную переменную с $(проверено - работает, но в чатике сказали что это плохая практика), но тут сделаем с локальной переменной и будем вызывать каждый раз объект базы данных
@@ -343,7 +345,8 @@ require 'sqlite3'
 configure do
 	db = SQLite3::Database.new('barbershop.db') # создаем новое подключение к barbershop.db(либо саму эту БД если ее нет)
   db.execute 'CREATE TABLE IF NOT EXISTS "Users"
-  ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT)' # создаем в этой базе таблицу если она не создана.(кавычки в названии столбцов не обязательно)
+    ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT)'
+  # создаем в этой базе таблицу если она не создана.(кавычки в названии столбцов не обязательно)
   db.close
 end
 
@@ -358,7 +361,9 @@ post '/' do
   @barber    = params[:barber]
 
   db = SQLite3::Database.new('barbershop.db') # тут приходится заново запускать БД
-  db.execute 'INSERT INTO Users ( username, phone, datestamp, barber ) VALUES (?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber] # записываем в базу данных данные введенные пользователем
+  db.execute 'INSERT INTO Users
+    ( username, phone, datestamp, barber ) VALUES (?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber]
+  # записываем в базу данных данные введенные пользователем
   db.close
 
   erb :barbershop_index
@@ -366,18 +371,19 @@ end
 
 
 puts
-# Вывод из базы данных + выведение открытия/создания базы в отдельный метод
+puts '                               Вывод данных из БД в представления'
 
+# выведем открытия/создания базы в отдельный метод
 def get_db
 	db = SQLite3::Database.new './DBS/barbershop.db' # открываем/создаем базу только при запуске метода и прописываем путь
 	db.results_as_hash = true # выводим результаты в виде хэша
-	db # возвращаем нашу открытую бд(нужно тк метод выше возвращает true)
+	db # возвращаем нашу открытую БД(нужно тк метод выше возвращает true)
 end
 
 configure do
 	db = get_db() # вызываем метод и присваиваем БД в переменную
 	db.execute 'CREATE TABLE IF NOT EXISTS "Users"
-  ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT)'
+    ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT)'
 	db.close
 end
 
@@ -392,20 +398,20 @@ post '/' do
   @barber    = params[:barber]
 
   db = get_db() # вызываем метод и присваиваем БД в переменную
-  db.execute 'INSERT INTO Users ( username, phone, datestamp, barber ) VALUES (?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber]
+  db.execute 'INSERT INTO Users
+    ( username, phone, datestamp, barber ) VALUES (?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber]
   db.close
 
   erb :barbershop_index
 end
 
-# Вариант вывода из БД 1. Который я сам сделал как ДЗ к уроку 26(грязный c html в основном фаиле).
+# Вариант вывода из БД 1(грязный c html в основном фаиле). Который я сделал как ДЗ к уроку 26.
 get '/showusers' do # страница для вывода данных из бд
-	@users = '' # для вывода данных воспользуемся переменными
-	@columns = ''
+	@users, @columns = '', '' # для вывода данных воспользуемся переменными
 	db = get_db()
 	db.execute 'SELECT * FROM Users ORDER BY id DESC' do |row|
-		@columns = '<th>'+row.keys.join('</th><th>')+'</th>' if @columns == '' # заполняем названия столбцов
-		@users += '<tr><td>'+row.values.join('</td><td>')+'</td></tr>' # заполняем данные в столбцах
+		@columns = '<th>' + row.keys.join('</th><th>') + '</th>' if @columns == '' # заполняем названия столбцов
+		@users += '<tr><td>' + row.values.join('</td><td>') + '</td></tr>' # заполняем данные в столбцах
 	end
 	db.close
 	erb :barbershop_showusers
@@ -416,25 +422,25 @@ get '/showusers' do
 	db = get_db()
 	@results = db.execute 'SELECT * FROM Users ORDER BY id DESC' # сохраняем результаты всего запроса в переменную
 	db.close
-	erb :barbershop_showusers_b
+	erb :barbershop_showusers
 end
 
 
 puts
-puts '                    before(в sinatra) + загрузка только уникальных значений в БД в configure'
+puts '                        seed - предварительное наполнение БД новыми данными'
 
 require 'sinatra'
 require 'sqlite3'
 
-# дополнительная функция проверяющая существует ли уже парикмахер в таблице Barbers
-def is_barber_exists?(db, name) # принимает обьект БД и имя парикмахера
-  db.execute('SELECT * FROM Barbers WHERE name=?', [name]).size > 0 # если длинна массива массивов строк запроса, в котором содержится имя проверяемого парикмахера > 0 тогда вернется true иначе false
+# проверяем существует ли уже парикмахер в таблице Barbers
+def is_barber_not_exists?(db, name) # принимает обьект БД и имя парикмахера
+  db.execute('SELECT * FROM Barbers WHERE name=?', [name]).size <= 0 # если длинна массива массивов строк запроса, в котором содержится имя проверяемого парикмахера <= 0 тогда вернется true иначе false
 end
-# дополнительная функция(seed(наполнить) - устоявшееся название для фукций заполнения, тут для заполнения БД)
+# seed(наполнить) - устоявшееся название для фукций заполнения, тут для заполнения БД
 def seed_db(db, barbers) # принимает БД и массив парикмахеров
   barbers.each do |barber| # проверяем каждого парикмахера в массиве
-    if !is_barber_exists?(db, barber) # если парикмахер не существует в таблице Barbers(метод возвращает false)
-      db.execute 'INSERT INTO Barbers (name) VALUES (?)', [barber] # тогда добавляем его в таблицу, так у нас не будут дублироваться парикмахеры в таблице
+    if is_barber_not_exists?(db, barber) # если парикмахер не существует в таблице Barbers ...
+      db.execute 'INSERT INTO Barbers (name) VALUES (?)', [barber] # ... тогда добавляем его в таблицу, так у нас не будут дублироваться парикмахеры в таблице
     end
   end
 end
@@ -448,17 +454,22 @@ end
 configure do
 	db = get_db()
   db.execute 'CREATE TABLE IF NOT EXISTS "Users"
-  ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT, "color" TEXT)'
+    ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "username" TEXT, "phone" TEXT, "datestamp" TEXT, "barber" TEXT, "color" TEXT)'
 
   # создаем 2ю таблицу для парикмахеров для селектора в форме
   db.execute 'CREATE TABLE IF NOT EXISTS "Barbers" ( "id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" TEXT )'
 
-  seed_db(db, ['Jessie Pinkman', 'Walter White', 'Gus Fring', 'Mike Ehrmantraut']) # вызываем метод с параметрами: объект БД и списком парикмахеров в виде массива(миграция для заполнения таблицы ? тк добавит только тех которых нет в нашей таблице изначально, те это способ добавить новых парикмахеров)
+  seed_db(db, ['Jessie Pinkman', 'Walter White', 'Gus Fring', 'Mike Ehrmantraut']) # вызываем метод с параметрами: объект БД и списком парикмахеров в виде массива(так добавит только тех которых еще нет в нашей таблице изначально, те новых парикмахеров)
 
   db.close # закрываем только после обработки функции
 end
 
-# before (в sinatra) - каждый раз исполняет код в теле метода before перед(в теле обработчика??) любым запросом(get/post/...) - соотв код(напр переменные) из before будет доступен во всех обработчиках и соотв представлениях ими возвращамых. Удобно если один и тот же код необходимо использовать в нескольких запросах и возвращаемых ими представлениях
+
+puts
+puts '                                             before'
+
+# before (в sinatra) - исполняет свой код в блоке, каждый раз когда запускается любой обработчик(приходит get/post/...-запрос), соотв код(напр переменные) из before будет доступен во всех обработчиках и представлениях ими возвращамых. Удобно если один и тот же код необходимо использовать в нескольких запросах и возвращаемых ими представлениях
+
 # Для Барбершоп у нас есть 2 обработчика корневой страницы(get '/' и post '/') оба возвращают barbershop_index в котором есть селектор со значениями из БД из таблицы парикмахеров соотв и там и там в коде будет нужна переменная @barbers, соотв если не присвоить ее в какомто запрсе может быть ошибка и удобнее присвоить ее в before чем 2 раза - в каждом обрабочике.
 before do
   db = get_db()
@@ -486,7 +497,8 @@ post '/' do
   return erb :barbershop_index if @error != ''
 
   db = get_db()
-  db.execute 'INSERT INTO Users ( username, phone, datestamp, barber, color ) VALUES (?, ?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber, @color]
+  db.execute 'INSERT INTO Users
+    ( username, phone, datestamp, barber, color ) VALUES (?, ?, ?, ?, ?)', [@user_name, @phone, @date_time, @barber, @color]
   db.close
 
   @message = "Dear #{@user_name}, we'll be waiting for you at #{@date_time}"
@@ -497,7 +509,6 @@ end
 puts
 # (На примере программы leprosorium)
 # before для инициализации базы данных для каждого обработчика и каждого представления.
-# redirect to '/' - перенаправление на другую страницу
 require 'sinatra'
 require 'sqlite3'
 
@@ -513,10 +524,10 @@ end
 configure do
 	init_db  # тут соотв тоже используем @db(тк before не работает в configure)
 	@db.execute 'CREATE TABLE IF NOT EXISTS Posts
-	(id INTEGER PRIMARY KEY AUTOINCREMENT, created_date DATE, author TEXT, content TEXT)'
+    (id INTEGER PRIMARY KEY AUTOINCREMENT, created_date DATE, author TEXT, content TEXT)'
   # Вторая таблица для след раздела(Универсальный обработчик. Прием параметра из ссылки)
   @db.execute 'CREATE TABLE IF NOT EXISTS Comments
-	(id INTEGER PRIMARY KEY AUTOINCREMENT, created_date DATE, content TEXT, post_id INTEGER)'
+    (id INTEGER PRIMARY KEY AUTOINCREMENT, created_date DATE, content TEXT, post_id INTEGER)'
 end
 
 get '/' do
@@ -540,33 +551,34 @@ post '/new' do
 
   # Теперь и тут нам доступна база данных @db из before соотв не нужно дополнительно вызывать init_db
   @db.execute 'INSERT INTO Posts
-	(content, created_date, author) VALUES (?, datetime(), ?)', [content, author]
+    (content, created_date, author) VALUES (?, datetime(), ?)', [content, author]
 
-	redirect to '/'    # перенаправляет нас на другую (тут главную) страницу после обработки запроса
+	redirect to '/'    # перенаправляет нас на другую (тут главную) страницу
 end
 
 
 puts
-puts '                                             redirect/redirect to'
+puts '                                           redirect/redirect to'
 
-# redirect - метод отправляет HTTP-заголовок для перенаправления клиента на заданный URL-адрес, передаваемый аргумент должен быть полным URL-адресом с хостом (например http://example.com/path, не просто /path).
+# redirect - метод отправляет HTTP-заголовок для перенаправления клиента на заданный URL-адрес, передаваемый аргумент должен быть полным URL-адресом с хостом (например http://example.com/path, а не просто /path).
 # to - метод преобразует путь в полный URL-адрес вашего приложения Sinatra, позволяя использовать полученный URL-адрес в файлах redirect. Например, to('/path')станет http://yoursinatraapp/path.
 
 # Метод redirect to в Синатре используется для перенаправления пользователя на другую страницу. Когда метод вызывается, Синатра отправляет HTTP-заголовок Location с указанием нового местоположения и статус кодом 302 (Found).
 # Для использования метода redirect to необходимо иметь объект запроса (request) и объект ответа (response). Пример:
 get '/' do
-  redirect to '/about' #=> переходим на URL .../about(как по ссылке), соотв далее как будто браузер посылает гет-запрос с адреса '/about' ...
+  redirect to '/about' #=> переходим на URL .../about(как по ссылке), далее браузер получая инструцию посылает гет-запрос с URL адреса '/about' ...
 end
 get '/about' do # ... соответсвенно этот обработчик принимает гет запрос от redirect to '/about'
   "Это страница о нас"
 end
-# В этом примере при переходе на главную страницу пользователь будет автоматически перенаправлен на страницу "/about". Если метод не получит аргумента, то он будет перенаправлять на главную страницу ("/").
+# В этом примере при переходе на главную страницу пользователь будет автоматически перенаправлен на страницу "/about".
+# Если метод не получает аргумента, то он будет перенаправлять на главную страницу ("/").
 
 # Метод redirect to не сохраняет при переходе переменные экземпляра из материнского обработчика, поэтому например для @error нужно возвращать представление.
 
 
 puts
-puts '                            Универсальный обработчик. Прием параметра из ссылки'
+puts '                          Универсальный обработчик. Прием params-параметра из ссылки'
 
 # (На примере продожения программы leprosorium)
 # Чтобы автоматически вставлять элемент адреса в адрес нужно воспользоваться параметром чтобы использовать один обработчик для однотипных страниц, а иначе пришлось бы делать множество отдельных обработчиков(например для каждого поста в блоге)
@@ -576,7 +588,7 @@ get '/details/:post_id' do # добавляем в адрес :id(названи
   post_id = params[:post_id] # метод params так же может возвращать параметр(тут цифру) по элементу из URL адреса в обработчике(тут :post_id). Например если адрес /details/6 то тут в переменную post_id присвоится значение 6
 
   results = @db.execute 'SELECT * FROM Posts WHERE id = ?', [post_id]
-	@row = results[0]  # у нас внешний массив results состоит из одного элемента(массива/хэша) тк id в таблице уникален
+	@post = results[0]  # у нас внешний массив results состоит из одного элемента(массива/хэша) тк id в таблице уникален
 
   # запрос для комментариев для поста чтобы отобразить их на странице поста
   @comments = @db.execute 'SELECT * FROM Comments WHERE post_id = ? ORDER BY id', [post_id]
@@ -592,13 +604,14 @@ post '/details/:post_id' do # универсальный пост обработ
   if content.size <= 0 # валидация
 		@error = 'Введите текст комментария'
     # тут придется для валидации снова повторить код из гет обработчика, тк эти переменные используются в виде(непонятно где лучше это прописать в отдельный метод или в before(но похоже что слишком лучше его не захламлять))
-    @row = (@db.execute 'SELECT * FROM Posts WHERE id = ?', [post_id])[0] # в массиве 1 элемент
+    @post = (@db.execute 'SELECT * FROM Posts WHERE id = ?', [post_id])[0] # в массиве 1 элемент
     @comments = @db.execute 'SELECT * FROM Comments WHERE post_id = ? ORDER BY id', [post_id]
 		return erb :leprosorium_details # возвращаем вид на тот же адрес
 	end
 
   @db.execute('INSERT INTO Comments
-	(content, created_date, post_id) VALUES (?, datetime(), ?)', [content, post_id]) # post_id для того чтобы знать к какому посту коментарий, тк id это просто порядок комментариев к разным постам
+    (content, created_date, post_id) VALUES (?, datetime(), ?)', [content, post_id])
+  # post_id для того чтобы знать к какому посту коментарий, тк id это просто порядок комментариев к разным постам
 
   redirect to ('/details/' + post_id)  # перенаправляем на страницу поста(get '/details/:post_id') чтоб открыть leprosorium_details без сохраненных в value переменных и для избежания повторной отправки формы(PRG)
 end
