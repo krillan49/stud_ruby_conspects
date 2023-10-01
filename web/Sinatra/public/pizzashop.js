@@ -14,16 +14,14 @@ function addToCart(id) {
 function cartGetNumberOfItems() {
   var cnt = 0;
 
-  for (var i = 0; i < window.localStorage.length; i++) { // от 0 до длинны локалсторедж(итератор/перебор чисел присвоенных в i)
-    var key = window.localStorage.key(i); // получаем ключ по идексам ключей локалсторедж(от значений i по которым идет проход)
-    var value = window.localStorage.getItem(key); // теперь по полученному выше ключу получаем значение из локалсорэдж
+  for (var i = 0; i < window.localStorage.length; i++) { // от 0 до длинны локалсторедж
+    var key = window.localStorage.key(i); // получаем ключ по идексам ключей локалсторедж
 
-    if(key.indexOf('product_') == 0) {
-      // cnt ++;  // прибавляем 1 если такой ключ существует(тоесть получим количество ключей начинающихся с 'product_')
-      cnt = cnt + value * 1; // а так считаем сумму значений для всех подходящих ключей
+    if(key.indexOf('product_') == 0) { // проверяем начинается ли ключ с 'product_'
+      var value = window.localStorage.getItem(key); // теперь по полученному выше ключу получаем значение из локалсорэдж
+      cnt += value * 1; // считаем сумму значений для всех подходящих ключей
     }
   }
-
   return cnt;
 }
 
@@ -32,16 +30,14 @@ function cartGetNumberOfItems() {
 // Почти такая же по функционалу функция как и cartGetNumberOfItems, за исключением замены cnt на orders
 function сartGetOrders() {
   var orders = '';
-
   for (var i = 0; i < window.localStorage.length; i++){
     var key = window.localStorage.key(i); // получаем ключ
-    var value = window.localStorage.getItem(key); // получаем значение
 
     if(key.indexOf('product_') == 0) {
-      orders = orders + key + '=' + value + ','; // тут прибавляем один элемент результата например "product_1=3,"
+      var value = window.localStorage.getItem(key); // получаем значение
+      orders += key + '=' + value + ','; // тут прибавляем один элемент результата например "product_1=3,"
     }
   }
-
   return orders; // "product_1=3,product_2=5,product_3=1, ..."
 }
 
