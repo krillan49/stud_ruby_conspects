@@ -240,6 +240,8 @@ Comment.where("post_id = ?", params[:post_id]) #=> возвращает масс
 # -- order вывод в порядке по убыванию или возрастанию относительно столбцов
 Barber.order "created_at DESC" # получаем всю таблицу barbers(SELECT * FROM barbers ORDER BY created_at DESC) отсортированную по полю created_at и DESK переданные параметром в виде строки через пробел.
 
+Contact.attribute_names #=> ["id", "email", "message", "created_at", "updated_at"] # узнать какие свойства(поля) у сущности
+
 
 puts
 puts '                                          Вывод в представления'

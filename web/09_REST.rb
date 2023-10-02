@@ -22,7 +22,7 @@ puts '                                       Отличия resource и resource
 # PATCH/PUT     /profile            profiles#update       update the one and only profile resource
 # DELETE        /profile            profiles#destroy      delete the profile resource
 # ---------------------------------------------------------------------------------------------------------
-# Всего 6 методов.
+# 6 методов.
 # Нет обращения по id соотв больше подходит для уникального, например профиля пользователя
 
 # (resources) crud-verbs-and-actions: https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
@@ -38,15 +38,18 @@ puts '                                       Отличия resource и resource
 # PATCH/PUT     /articles/:id       articles#update       update a specific article
 # DELETE        /articles/:id       articles#destroy      delete a specific article
 # ---------------------------------------------------------------------------------------------------------
-# Всего 7 методов. Тк есть метод для вывода списка всех ресурсов articles#index. Соотв когда нам нужно например выводить все статьи.
+# Всего 7 методов. Тк есть метод для вывода списка всех ресурсов(статей) articles#index.
 # Есть обращения по id
-# Используется чаще
 
 
 puts
 puts '                                        Вложенные маршруты'
 
-# Схема one-to-many: Article 1(resourses) - * Comment(resourses). Тоесть сущность(таблица, может быть связана со многими комментариями для нее)
+# Схема one-to-many: Article 1(resourses) - * Comment(resourses).
+# Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
+# ---------------------------------------------------------------------------------------------------------
+# Хэлпер для URL       HTTP     Path                                              Controller#Action
+# ---------------------------------------------------------------------------------------------------------
 # article_comments     GET      /articles/:article_id/comments(.:format)          comments#index
 # new_article_comment  GET      /articles/:article_id/comments/new(.:format)      comments#new
 #                      POST     /articles/:article_id/comments(.:format)          comments#create
@@ -55,3 +58,15 @@ puts '                                        Вложенные маршрут�
 #                      PATCH    /articles/:article_id/comments/:id(.:format)      comments#update
 #                      PUT      /articles/:article_id/comments/:id(.:format)      comments#update
 #                      DELETE   /articles/:article_id/comments/:id(.:format)      comments#destroy
+
+
+
+
+
+
+
+
+
+
+
+#
