@@ -1,6 +1,7 @@
 puts '                               one-to-many. На примере Article 1 - * Comment'
 
-# Схема one-to-many: Article 1 - * Comment. Тоесть сущность(таблица, может быть связана со многими комментариями для нее)
+# Схема one-to-many: Article 1 - * Comment.
+# Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
 
 # https://railsguides.net/advanced-rails-model-generators/
 # https://guides.rubyonrails.org/association_basics.html
@@ -12,11 +13,6 @@ puts '                               one-to-many. На примере Article 1 
 # > rails g model Comment author:string body:text article:references
 # article:references - дополнительный параметр, отвечающий за отношение между сущностями
 # Создалось:
-# /models/comment.rb:
-class Comment < ApplicationRecord
-  belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. можно добавлять вручную если в генераторе не указать article:references
-  # + Теперь можно обращаться от любого коммента к статье которой он пренадлежит через Comment.find(1).article
-end
 # /db/migrate/12312314_create_comments.rb:
 class CreateComments < ActiveRecord::Migration[7.0]
   def change
@@ -30,6 +26,11 @@ class CreateComments < ActiveRecord::Migration[7.0]
       t.timestamps
     end
   end
+end
+# /models/comment.rb:
+class Comment < ApplicationRecord
+  belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. можно добавлять вручную если в генераторе не указать article:references
+  # + Теперь можно обращаться от любого коммента к статье которой он пренадлежит через Comment.find(1).article
 end
 # rake db:migrate
 
@@ -48,7 +49,6 @@ resources :articles
 resources :articles do
   resources :comments # создает список маршрутов по REST, но вложенный(одни ресурсы в других)
 end
-# Команда rails routes покажет нам карту маршрутов для comments.
 # article_comments     GET      /articles/:article_id/comments(.:format)          comments#index
 # new_article_comment  GET      /articles/:article_id/comments/new(.:format)      comments#new
 #                      POST     /articles/:article_id/comments(.:format)          comments#create
@@ -60,18 +60,21 @@ end
 # Тут article_id то что в маршрутах articles являлось id, тут id это айди коммента
 
 
-# 4. Добавляем контроллер для комментариев
-# > rails g controller Comments
-# Для комментариев нам(тут) нужен только один метод - create, тк не будем с ним больше ничего делать, кроме добавления(POST), а форма для него и вывод будут на странице статьи к которой он относится(article#show).
-
 # Посмотрим в rails console:
-Article.comments  #=> будет ошибка говорящая что у модели нет такого свойства comments
+Article.comments           #=> будет ошибка тк у модели нет такого свойства comments
 @article = Article.find(1) #=> но если создать объект с одной статьей ...
-@article.comments #=> ... то ошибки уже не будет. Те мы получаем доступ к списку всех комментов для этой статьи
+@article.comments          #=> ... то мы получаем доступ к списку всех комментов для этой статьи
 @article.comments.create(:author => 'Foo', :body => 'Bar') #=> создание коммента для данной статьи, через сущность статьи
 Comment.last
-Comment.all  # все комменты ко всем статьям
+Comment.all                # все комменты ко всем статьям
 
+
+# 4. Добавим форму для комментариев на '/articles/id'  show.html.erb (Вывод комментариев там же)
+
+
+# 5. Добавляем контроллер для комментариев
+# > rails g controller Comments
+# Для комментариев нам(тут) нужен только один метод - create, тк не будем с ним больше ничего делать, кроме добавления(POST), а форма для него и вывод будут на странице статьи к которой он относится(article#show).
 class CommentsController < ApplicationController
   # Создадим метод create в /app/controllers/comments_controller.rb:
   def create # post '/articles/:article_id/comments'
@@ -89,11 +92,8 @@ class CommentsController < ApplicationController
 end
 
 
-# 5. Добавим форму для комментариев на '/articles/id'  show.html.erb (Вывод комментариев там же)
-
-
 puts
-puts '                                               Типы связей(AR)'
+puts '                                            Типы связей(AR)'
 
 # Существует множество типов связей, но среди них есть 3 основные: one-to-many, one-to-one, many-to-many
 # http://rusrails.ru/active-record-associations
@@ -118,17 +118,6 @@ puts '                                               Типы связей(AR)'
 # Изучить: http://www.rusrails.ru/active-record-associations#foreign_key
 
 
-puts
-puts '                                            CRUD(ActiveRecord)'
-
-# CRUD(основыные операции):
-# Create - (new) - .create ; .new.save
-# Read - .where; .find(3); .all
-# Update - (update)
-# Delete - (destroy)
-
-# https://github.com/rails/strong_parameters
-# https://guides.rubyonrails.org/action_controller_overview.html#more-examples
 
 
 
