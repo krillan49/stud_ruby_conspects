@@ -36,7 +36,7 @@
     <%= f.text_area :text %> <!-- <textarea name="article[text]" id="article_text"></textarea> -->
   </p>
 
-  <!-- ===== User 1 - * Article. Возможность удалить и редактировать только автору ===== -->
+  <!-- ===== Devise User 1 - * Article. Возможность удалить и редактировать только автору ===== -->
   <p>
     <%= current_user.username %><br> <!-- вместо лэйбла -->
     <%= f.hidden_field :user_id, value: current_user.id %>
@@ -48,7 +48,7 @@
   <%= f.label :commentable_type, class: 'form-label' %>
   <%= f.select :commentable_type, ["Post", "Image"], {}, class: 'form-select' %>
   <!-- Между значениями опций селектора и параметрами класса нужен пустой хэш -->
-  <!-- ================================================================================= -->
+  
 
   <p><%= f.submit %></p> <!-- <input type="submit" name="commit" value="Save Article" data-disable-with="Save Article" /> -->
 

@@ -57,6 +57,11 @@ request.fullpath #=> возвращает относительный URL на к
 
 
 
+puts
+# Турбо конфирм
+link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
+
+
 
 
 

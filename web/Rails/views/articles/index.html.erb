@@ -46,7 +46,7 @@
 
 
 
-  <!--                    User 1 - * Article. Возможность удалить и редактировать только автору -->
+  <!--                Devise User 1 - * Article. Возможность удалить и редактировать только автору -->
 
   <p><%= link_to "Show article", article_path(article) %></p>
 
@@ -54,7 +54,7 @@
 
   <!-- 1. Вариант из примера - сравнивает сущности активного юзера и юзера к которому привязана статья  -->
   <% if current_user == article.user %> <!-- В примере это делали через написание хэлпера -->
-    <!-- article.user - user возвращает объект юзера которому принадлежит статья, как было с comments только наоборот -->
+    <!-- article.user - возвращает объект юзера которому принадлежит статья, как было с comments только наоборот -->
     <p><%= link_to "Edit article", edit_article_path(article) %></p>
     <p><%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %></p>
   <% end %>

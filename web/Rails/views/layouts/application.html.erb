@@ -25,35 +25,26 @@
     <!-- data-turbo-method="delete" - В Rails 7 вместо data-method нужно использовать data-turbo-method. Иначе для sign_out возникнет ошибка при нажатии на ссылку, тк у маршрута /users/sign_out метод DELETE -->
 
 
-    <!-- Вариант 2: по методам-хэлперам для путей(можно посмотреть пути введя несуществующий URL)
-      new_user_session_path	     GET	 /users/sign_in(.:format)	  devise/sessions#new
-      destroy_user_session_path	 GET	 /users/sign_out(.:format)	devise/sessions#destroy
-      (!!! delete при помощи запроса GET)
-    -->
-    <%= link_to "Sign In", new_user_session_path %>
-    <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+    <!-- Вариант 2: по методам-хэлперам для путей(можно посмотреть пути введя несуществующий URL) -->
+    <%= link_to "Sign In", new_user_session_path %> <!-- GET	 /users/sign_in(.:format)	  devise/sessions#new -->
+    <%= link_to "Sign Out", destroy_user_session_path, method: :delete %> <!-- GET	 /users/sign_out(.:format)	devise/sessions#destroy (!!! delete при помощи запроса GET) -->
     <!-- Из комментов(! но у меня и без этого сработало):
       link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
     -->
 
 
-    <!-- Вариант 2-2: выведем почту пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы, при помощи обработчиков хэлперов.
+    <!-- Вариант 2-2: выведем почту/имя пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы, при помощи обработчиков хэлперов.
     https://github.com/heartcombo/devise#controller-filters-and-helpers -->
     <% if user_signed_in? %>
+      <!-- а. Вариант с почтой -->
       Hello, <%= current_user.email %> | <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+      <!-- б. Вариант с именем, поле которого мы добавили в User и в форму devise/registrations/new.html.erb -->
+      Hello, <%= current_user.username %> | <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
     <% else %>
       <%= link_to "Sign In", new_user_session_path %>
     <% end %>
     <!-- user_signed_in? - хэлпер созданный Devise, возвращает true или false, в зависимости от того авторизован или нет данный пользователь -->
     <!-- current_user - хэлпер созданный Devise, возвращает объект сущности User текущего пользователя, соотв можно от него вызывать методы сущности(столбцы таблицы) -->
-
-
-    <!-- Вариант 2-3: выведем имя пользователя, поле которого мы добавили в User и в форму devise/registrations/new.html.erb  вместо почты если авторизированы -->
-    <% if user_signed_in? %>
-      Hello, <%= current_user.username %> | <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
-    <% else %>
-      <%= link_to "Sign In", new_user_session_path %>
-    <% end %>
 
 
     <!--                  Devise: Добавим для для флеш-сообщений(чтобы эта технология работала) -->
@@ -64,19 +55,19 @@
 
 
 
-    <!--                            i18n меню для переключения языков(для шапки бутстрап) -->
+    <!--                         i18n меню для переключения языков(для шапки бутстрап) -->
 
     <ul class="nav mb-2 mb-md-0">
       <li class="dropdown">
         <%= link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'} do %>
-          <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %>
+          <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %> <!-- просто тег для выравнивания, интерполяция для названия классов, видимо разные css-свойства для разных языков -->
           <%= t I18n.locale %> <!-- Название текущей локали -->
         <% end %>
 
         <ul class="dropdown-menu"> <!-- собственно дропдаун с выбором локали -->
           <% I18n.available_locales.each do |locale| %>
             <li>
-              <% if I18n.locale == locale %> <!-- если текущая локаль(I18n.locale) равна локали из переменной -->
+              <% if I18n.locale == locale %> <!-- если текущая локаль равна локали из списка доступных -->
                 <%= tag.span t(locale), class: 'dropdown-item' %> <!-- отображаем название локали, тут t(locale) это перевод названия локали на нужный язык -->
               <% else %> <!-- если текущая локаль не равна локали из переменной -->
                 <%= link_to t(locale), url_for(locale: locale), class: 'dropdown-item' %> <!-- ссылка переключения локали, добавляет локаль в URL ?? (можно было без дропдаун, списка и цикла по простому сделать лишь 2 ссылки переключения с url_for(locale: :ru) и url_for(locale: :en)) -->
