@@ -98,3 +98,85 @@ end
 def per_ang_twice(n)
   $res
 end
+
+
+
+# 5 kyu Compute the Largest Sum of all Contiguous Subsequences   https://www.codewars.com/kata/56001790ac99763af400008c/train/ruby
+def sum_all_same_sign(arr, sum = 0, new = [])
+  arr.each do |n| # складываем все положительные идущие подряд и все отрицательные иддущие подряд
+    if (sum + n).abs == sum.abs + n.abs
+      sum += n
+    else
+      new << sum
+      sum = n
+    end
+  end
+  new << sum
+  new
+end
+
+def sum_two_sides_more(arr) # 191, -111, 293 => 373 тк 191 - 111 > 0 && 293 - 111 > 0
+  sum = 0
+  new = []
+  arr.each_with_index do |n, i|
+    if i.even?
+      if i == 0
+        sum = n
+      elsif sum + arr[i-1] > 0 && n + arr[i-1] > 0
+        sum += n + arr[i-1]
+        new << sum if i == arr.size - 1
+      else
+        new << sum << arr[i-1]
+        sum = n
+      end
+    end
+  end
+  new.size > 0 && new[-1] < 0 ? new + [arr[-1]] : new
+end
+
+def ender_bruteforse(arr) #  медленный способ окончательного решения для коротких
+  max = 0
+  arr.each.with_index do |n, i|
+    sum = n
+    max = sum if max < sum
+    break if i == arr.size - 1
+    arr[i+1..-1].each.with_index do |k, j|
+      sum += k
+      max = sum if max < sum
+    end
+  end
+  max
+end
+
+def ender_max_points_area(arr) # быстрее(чем меньше точек тем быстрее) но все равно не хватает на размер 1000001
+  max_points = arr.max(5)
+  max = 0
+  max_points.each do |point|
+    i = arr.index(point)
+    lmax = 0
+    (0..i).step(2).map do |j|
+      sum = arr[j..i].sum
+      lmax = sum if sum > lmax
+    end
+    rmax = 0
+    (i..arr.size-1).step(2).map do |j|
+      sum = arr[i..j].sum
+      rmax = sum if sum > rmax
+    end
+    max = lmax + rmax - point if max < lmax + rmax - point
+  end
+  max
+end
+
+def largest_sum(arr)
+  return 0 if arr == [] or arr.all?{|n| n < 0}
+  return arr.sum if arr.all?{|n| n > 0}
+  arr = arr[arr.index{|n| n > 0}..arr.rindex{|n| n > 0}] # убираем отрицательные вначале и в конце
+  arr = sum_all_same_sign(arr)
+  return arr[0] if arr.size == 1
+  arr = sum_two_sides_more(arr)
+
+  arr.size < 1000 ? ender_bruteforse(arr) : ender_max_points_area(arr)
+end
+
+p largest_sum([191, -111, 103, 190, -167, 200, -145, 164, 150, -118, -157, -102, -137, 109, -139, 197, -148, -116, -146, 184, 129, 144, -146, -129, -119, -117, -131, -119, 185, -104, 148, 165, -157, -163, -155, -110])# 575

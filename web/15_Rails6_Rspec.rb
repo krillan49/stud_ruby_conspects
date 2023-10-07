@@ -55,7 +55,7 @@ end
 
 # Создадим тест для модели: создать файл /spec/models/contact_spec.rb
 require 'rails_helper' # подключаем фаил spec/rails_helper.rb
-# Далее синтакс rspec(но тут почемуто без названий тестов)
+# Далее синтакс rspec
 describe Contact do
   it { should validate_presence_of :email } # # validate_presence_of - матчер проверяющий присутсвие email(тестируем валидацию)
   it { should validate_presence_of :message }
@@ -66,19 +66,59 @@ end
 # > rails db:migrate RAILS_ENV=test
 
 
-# Используем матчер have_many http://matchers.shoulda.io/docs/v3.1.3/Shoulda/Matchers/ActiveRecord.html#have_many-instance_method
+puts
+# Использование других матчеров для тестирования моделей(длинны введенных данных и ассоциаций принадлежности):
+# have_many http://matchers.shoulda.io/docs/v3.1.3/Shoulda/Matchers/ActiveRecord.html#have_many-instance_method
+# validate_length_of https://matchers.shoulda.io/docs/v5.3.0/Shoulda/Matchers/ActiveModel.html#validate_length_of-instance_method
+
+# модель /app/models/article.rb которую будем тестировать
+class Article < ApplicationRecord
+  validates :title, presence: true, length: { maximum: 140 } # Добавим валидацию длинны
+  validates :text, presence: true, length: { maximum: 4000 }
+  has_many :comments
+end
+
+# модель /app/models/comment.rb которую будем тестировать
+class Comment < ApplicationRecord
+  validates :body, presence: true, length: { maximum: 4000 } # Добавим валидацию длинны
+  belongs_to :article
+end
 
 # Создадим тест /spec/models/article_spec.rb:
 require 'rails_helper'
-describe Article do # сущность Article должа иметь много комментов
-  it { should have_many :comments } # have а не has ииза правил английского тк есть should
+describe Article do
+  # Проверим длинну
+  describe "validations" do
+    # Примеры тестов из ДЗ46(на валидацию макс длинны полей при помощи матчера validate_length_of)
+    it { should validate_length_of(:title).is_at_most(140) } # is_at_most(140) - не больше чем 140
+    it { should validate_length_of(:text).is_at_most(4000) }
+  end
+
+  # Проверим ассоциавции принадлежности при помощи матчера have_many
+  describe "assotiations" do  # сущность Article должа иметь много комментов
+    it { should have_many :comments } # have а не has ииза правил английского тк есть should
+  end
 end
 
 # Создадим тест /spec/models/comment_spec.rb
 require 'rails_helper'
 describe Comment do
-  it { should belong_to :article } # в матчере belong хотя в модели belongs
+  describe "validations" do
+    it { should validate_length_of(:body).is_at_most(4000) }
+  end
+
+  # Проверим ассоциавции принадлежности при помощи матчера have_many belong_to
+  describe "assotiations" do  # сущность Comment должа принадлежать статье
+    it { should belong_to :article } # в матчере belong хотя в модели belongs
+  end
 end
+
+
+puts
+# Другие матчеры валидации длинны:
+should validate_length_of(:bio).is_at_least(15) # не менее чем
+should validate_length_of(:favorite_superhero).is_equal_to(6) # равен значению
+should validate_length_of(:password).is_at_least(5).is_at_most(30) # одновременно меньше и больше чем
 
 
 puts
@@ -94,7 +134,7 @@ end
 # > rake spec
 # => Failure/Error: it { should belong_to :user }
 
-# Возникает для ее исправления в модели нужно добавить:
+# Для исправления в модели нужно добавить:
 class Comment < ApplicationRecord
   belongs_to :user, optional: true, required: true
   # optional: true  -  от ошибки "User must exist"
@@ -103,77 +143,7 @@ end
 
 
 puts
-puts '                                       Rspec Вложенный describe'
-
-# Вложенный describe - повышает читаемость кода тестов
-
-# модель article.rb которую будем тестировать
-class Article < ApplicationRecord
-  validates :title, presence: true
-  validates :text, presence: true
-  has_many :comments
-end
-
-# /spec/models/article_spec.rb:
-require 'rails_helper'
-
-describe Article do
-  # разбиваем на логически обоснованные разделы
-  describe "validations" do
-    it { should validate_presence_of :title }
-    it { should validate_presence_of :text }
-  end
-
-  describe "assotiations" do
-    it { should have_many :comments }
-  end
-end
-
-# Нэйминг(желательный) после describe - помогает прогам считать какое коллич кода покрыто тестами
-# НЕ методы:                     describe "something" do
-# instance методы:               describe "#method_name" do
-# class методы (self.method):    describe ".method_name" do
-
-
-puts
-# Еще примеры тестов из ДЗ46(на валидацию макс длинны полей при помощи матчера validate_length_of)
-# https://matchers.shoulda.io/docs/v5.3.0/Shoulda/Matchers/ActiveModel.html#validate_length_of-instance_method
-
-# Добавим валидацию длинны в модели /app/models/article.rb и /app/models/comment.rb
-class Article < ApplicationRecord
-  validates :title, presence: true, length: { maximum: 140 }
-  validates :text, presence: true, length: { maximum: 4000 }
-  # ...
-end
-class Comment < ApplicationRecord
-  validates :body, presence: true, length: { maximum: 4000 }
-  # ...
-end
-
-# В /spec/models/article_spec.rb и /spec/models/comment_spec.rb добавим
-describe Article do
-  # ... предыдущие тесты ...
-  describe "validations" do
-    # ... предыдущие тесты валидации ...
-    it { should validate_length_of(:title).is_at_most(140) } # is_at_most(140) - не больше чем 140
-    it { should validate_length_of(:text).is_at_most(4000) }
-  end
-end
-describe Comment do
-  # ... предыдущие тесты ...
-  describe "validations" do
-    it { should validate_length_of(:body).is_at_most(4000) }
-  end
-end
-
-# Меньше чем, равен значению и одновременно меньше и больше чем
-should validate_length_of(:bio).is_at_least(15)
-should validate_length_of(:favorite_superhero).is_equal_to(6)
-should validate_length_of(:password).is_at_least(5).is_at_most(30)
-
-
-puts
-puts '                                             Factory Bot'
+puts '                                      Factory Bot. Настройка'
 
 # Factory Bot - помогает при тестировании, чтобы не создавать в AR объекты для теста и тестовую БД, вместо этого создаётся фабрика, и она будет создавать нам объекты для теста. Это соотв принципу DRY тк не нужно создавать тестовую БД
 
@@ -202,13 +172,14 @@ require 'support/factory_bot'
 
 
 puts
-# Создание фабрики:
+puts '                                      Factory Bot. Создание фабрики'
+
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Defining_factories
 
 # Создадим каталог с фабриками - /spec/factories
 
 # создадим файл в котором будем создавать фабрику для article /spec/factories/articles.rb:
-FactoryBot.define do # определяем фабрику
+FactoryBot.define do # определяем фабрики
   factory :article do # фабрика article. По умолчанию будет брать модель Article и устанавливать в нее свойсва:
     # Зададим свойства и их значения, тк наши тесты будут проверять их валидацию и без них выдадут ошибки валидации
     title { "Article title" } # содержание параметра не важно можно любое
@@ -228,7 +199,7 @@ class Article < ApplicationRecord
   has_many :comments
 
   def subject # добавим метод который будем тестировать (возвращает название статьи ??)(Не забываем что это метод экземпляра)
-    title # модель имеет методы экземпляра для каждого столбца ?? (мб и тестировать сразу его)
+    title # модель имеет методы экземпляра для каждого столбца, которые мы и юзаем в видах (мб и тестировать сразу его)
   end
 end
 
@@ -240,12 +211,10 @@ describe Article do
 
   describe "#subject" do
     it "returns the article title" do
-      # arrange + act
       article = create(:article, title: 'Foo Bar') # создаем объект/сущность Article но не с помощью AR, а при помощи фабрики
       # create - метод factory_bot для создания сущности
       # :article - имя фабрики ??
 
-      # assert
       expect(article.subject).to eq 'Foo Bar' # проверяем что метод subject возвращает указанное значение title сущности
     end
   end
@@ -347,7 +316,7 @@ class Article < ApplicationRecord
 
   # Создадим метод last_comment и протестируем его:
   def last_comment # метод возврата последнего комментария(помним что это метод экземпляра а экземпляр это сущность статьи)
-    comments.last # последний комментарий из колекции комментов этой статьи, тк comments, тоже похоже метод экземпляра, возвращающий массив комментариев
+    comments.last # последний комментарий из колекции комментов этой статьи, тк comments, тоже метод экземпляра, возвращающий массив комментариев
   end
 end
 
@@ -407,20 +376,9 @@ puts '                        Приёмочное тестирование(Acce
 
 
 puts
-# Проверка функциональности на соответствие требованиям. Отличие от юнит-тестов, что для этих тестов обычно существует план приёмочных работ(список требований и выполняются эти требования или нет). А юнит-тесты - проверка чтобы не сломалось.
+# Проверка функциональности на соответствие требованиям. Отличие от юнит-тестов, что для этих тестов обычно существует план приёмочных работ(список требований и выполняются эти требования или нет). А юнит-тесты - проверка чтобы не сломалось. Обычно unit и acceptance используются вместе в проектах
 # http://protesting.ru/testing/levels/acceptance.html
 
-# Обычно unit и acceptance используются вместе в проектах
-
-# unit:         describe   ->   it
-# acceptance:   feature    ->   scenario
-
-# feature -> scenario - это фишка Capybara аналог, describe it.
-# feature - особенность(имеется ввиду какаято функциональность)
-# scenario - сценарий(способ использования функциональности)
-#   Пример: Для контактной формы существует 2 сценария:
-#     а. Убедиться, что контактная форма существует.
-#     б. Что мы можем эту форму заполнить и отправить
 
 # https://www.rubydoc.info/github/teamcapybara/capybara/master    #Capybara
 # https://github.com/teamcapybara/capybara
@@ -435,13 +393,28 @@ require 'capybara/rspec'
 
 # Как работает гем Капибара - запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
 
+# Капибара работает с тестовой БД
+
+
+puts
+puts '                                        Capybara синтаксис'
+
+# unit:         describe   ->   it
+# acceptance:   feature    ->   scenario
+
+# feature -> scenario - это фишка Capybara аналог - describe it.
+# feature - особенность(имеется ввиду какаято функциональность)
+# scenario - сценарий(способ использования функциональности)
+#   Пример: Для контактной формы существует 2 сценария:
+#     а. Убедиться, что контактная форма существует.
+#     б. Что мы можем эту форму заполнить и отправить
+
 # 2 типа тестов(просто удобный нэйминг):
 # visitor_..._spec.rb - анонимный пользователь
 # user_..._spec.rb - пользователь залогиненый в системе
 
 
-puts
-# Проведём тестирование контактной формы контактов.
+# Проведём тестирование формы контактов.
 
 # Создадим каталог /spec/features и создадим файл /spec/features/visitor_creates_contact_spec.rb:
 require "rails_helper"
@@ -454,21 +427,21 @@ feature "Contact creation" do
     expect(page).to have_content 'Contact us' # проверяем что страница имеет какуюто строку(учитывает регистр)
     # page - переменная содержащая страницу(полностью сгенерированную вместе с layout)
   end
+
+  # Вариант с i18n (тот же тест что и выше).
+  scenario "allows acess to contacts page" do
+    visit new_contacts_path
+    expect(page).to have_content I18n.t('contacts.contact_us') # всегда нужно указывать полный путь каталогов, если сократить как в предсталениях, например t('.contact_us'), то выдаст ошибку
+  end
 end
 # > rake spec   (!!!Для Windows - нужно запускать в классической командной строке, в повершелл будет ошибка)
 
 
 puts
-puts '                                           Capybara + i18n'
+puts '                                     Capybara fill_in и click_button'
 
-# Работа с i18n (internationalization):
-# 1. Открыть файл /config/locales/en.yml (в нем есть небольшая кокументация по использованию)
-# 2. Создадим в фаиле /config/locales/en.yml раздел contacts:
-# 3. Вызовем в представлении /app/views/contacts/new.html.erb: <h2><%= t('contacts.contact_us') %></h2>
+#  Протестируем создание нового контакта:
 
-
-puts
-# Добавим создание самого контакта:
 # Откроем страницу /app/views/contacts/new.html.erb и откроем код формы, чтобы узнать id поля (будем использовать в тесте):
 # <input name="contact[email]" id="contact_email" type="text">
 # <textarea name="contact[message]" id="contact_message"></textarea>
@@ -477,15 +450,12 @@ puts
 require "rails_helper"
 
 feature "Contact creation" do
-  scenario "allows acess to contacts page" do
-    visit new_contacts_path
-    expect(page).to have_content I18n.t('contacts.contact_us') # Исправим тест с учётом i18n(всегда нужно указывать полный путь каталогов тут, как в предсталениях t('.contact_us') выдаст ошибку)
-    # Теперь мы точно обращаемся к правильной строке вместо того чтоб смотреть что в ней там написано с каким регистом итд
-  end
-
   scenario "allows a guest to create contact" do
     visit new_contacts_path
-    fill_in :contact_email, with: 'foo@bar.ru' # fill_in - метод для того чтобы Капибара заполнила поле; :contact_email - значение id поля; with: 'foo@bar.ru' - то что будет записано в поле
+    fill_in :contact_email, with: 'foo@bar.ru'
+    # fill_in - метод для того чтобы Капибара заполнила поле;
+    # :contact_email - значение id поля;
+    # with: 'foo@bar.ru' - то что будет записано в поле
     fill_in :contact_message, with: 'Foo Bar Baz'
     click_button 'Send message' # click_button - Капибара нажмет на кнопку с именем 'Send message'
 
@@ -495,7 +465,7 @@ end
 
 
 puts
-# Следующий тест: протестировать функциональность приложения залогинившись под пользователем
+puts '                               Capybara тесты с регистрацией и логином'
 
 # 1. Сделаем сначала тест для гостя, что он может зарегистрироваться на сайте, т.е. протестируем форму регистрации.
 
@@ -512,7 +482,6 @@ feature "Account Creation" do
     click_button 'Sign up'
 
     expect(page).to have_content I18n.t('devise.registrations.signed_up')
-    # devise.registrations.signed_up  i18n взято из config/locales/devise.en.yml (заодно пример структуры)
   end
 end
 # > rake spec
@@ -538,7 +507,7 @@ def sign_up
   fill_in :user_password_confirmation, with: '1234567'
   click_button 'Sign up'
 end
-# Далее вынесем код метода sign_up в файл в каталоге /spec/support/session_helper.rb
+# Далее вынесем код метода sign_up в файл /spec/support/session_helper.rb
 
 # Далее либо в rails_helper.rb требуем этот файл
 require 'support/session_helper'
@@ -547,22 +516,11 @@ Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 # Так каждый раз вписывать наши новые вспомогательные файлы из support не надо будет. Они будут вписываться автоматически
 
 
-puts
-# RSpec: before, after hooks
-# https://relishapp.com/rspec/rspec-core/v/3-8/docs/hooks/before-and-after-hooks
-
-# Нам надо использовать sign_up в разных тестах, и чтобы не повторяться и не писать один и тот же код, мы используем before, after hooks:
-before(:each) do # Исполняется перед каждым тестом в feature или describe
-end
-
-before(:all) do # Исполняется перед всеми(1 раз перед всеми) тестами в feature или describe
-end
-
-
 # 3. Тест для просмотра формы и создания статьи и создание статьи залогиненым пользователем /spec/features/user_creates_article_spec.rb:
 require "rails_helper"
 
 feature "Article Creation" do
+  # Нам надо использовать sign_up в разных тестах, и чтобы не повторяться, мы используем before hook:
   before(:each) do
     sign_up # регистрируем нового пользователя перед вызовом кажого сценария
   end
@@ -593,7 +551,7 @@ puts
 # Тест для посещения страницы редактирования статьи и собственно редактирование статьи юзером user_updates_article_spec.rb
 require "rails_helper"
 
-feature "Article Creation" do
+feature "Article Edition" do
   before(:each) do
     sign_up
     create_article # создаем статью(хэлпер выше)
