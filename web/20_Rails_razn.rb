@@ -1,23 +1,5 @@
 puts '                                       Rails разное'
 
-# Хэлперы для URL
-root_path # для ссылок на главную(get '/' root в маршруте), может содержать параметры, например для локалей
-url_for(locale: locale) # ??
-
-# Если название контроллера не в множественном числе(без s на конце), то хэлпер для URL index будет называться не name_path а:
-name_index_path
-# при этом хэлпер для show будет называться стандартно
-
-
-puts
-# ссылка(на путь '#') внутри тега которой объекты, тут тег div, так же содержит дата-атрибуты
-<%= link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'} do %>
-  <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %>
-  <%= t I18n.locale %>
-<% end %>
-
-
-puts
 # Пример из blog2(с Devise):
 # При редиректе с fallback_location: происходит почемуто множественный редирект если пользователь не соответсвует фильтру:
 class ProtectedController < ApplicationController
@@ -54,12 +36,6 @@ params.inspect #=> #<ActionController::Parameters {"controller"=>"comments", "ac
 puts
 # https://stackoverflow.com/questions/2165665/how-do-i-get-the-current-absolute-url-in-ruby-on-rails
 request.fullpath #=> возвращает относительный URL на который пришел запрос в данный экшен. Так же можно использовать в представлении
-
-
-
-puts
-# Турбо конфирм
-link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
 
 
 
