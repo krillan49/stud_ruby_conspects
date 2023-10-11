@@ -1,6 +1,6 @@
 puts '                                               HTML'
 
-# В руби пишем теги просто через оператор вывода puts/print
+# В руби пишем теги просто строками через оператор вывода puts/print
 puts '<body>' # теперь со следующей строки можно писать html код(весь вывод будет восприниматься как html код)
 puts 'hello<br>'
 
@@ -19,7 +19,7 @@ show_book book2
 book = book1.merge book2
 show_book book
 
-puts "</body>" #=> закрываем тег
+puts "</body>" # закрываем тег
 
 
 # Пример с yeild
@@ -29,5 +29,4 @@ def show_me_text
   print "</h1>"
 end
 
-show_me_text { puts "Foo!" }
-#=> <h1>Foo!</h1>
+show_me_text { puts "Foo!" } #=> <h1>Foo!</h1>

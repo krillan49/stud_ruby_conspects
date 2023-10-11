@@ -107,6 +107,8 @@ class CommentsController < ApplicationController
     @article = Article.find(params[:article_id]) # :article_id тк это контроллер Comments и его карта маршрутов
     @article.comments.create(comment_params) # создаем комментарий через сущность статьи
 
+    # https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
+
     redirect_to article_path(@article) # get '/articles/id'  articles#show
   end
 
