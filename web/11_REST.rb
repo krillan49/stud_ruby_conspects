@@ -13,7 +13,7 @@ puts '                                             REST API'
 # Единообразный, унифицированный интерфейс - тоесть для каждой CRUD-операции мы используем семантически правильный HTTP-метод и определенный URL(например для того чтобы выдать инфу о продукте get 'products/id' и о клиенте get 'clients/id'). Так же сюда относится принятый формат взаимодействия(json/xml итд), унифицированные названия для например токенов итд
 # Кэширование, как засчет заголовков HTTP, так и сторонними например Редис(GET и POST запрсы могут кэшироваться, а PUT и DELETE не кэшируются). Например какието редко изменяемые данные(например список валют) при множестве запросов логичнее не каждый раз брать с сервера, а кэшировать и хранить прямо в браузере, либо при помощи сторонних кэшей на сервере(Рэдис). Это увеличивает скорость и снижает нагрузку на сервер
 
-# REST API формат обмена данными:
+# формат обмена данными с REST API:
 # В принципе может быть любым, но чаще всего это json и иногда xml
 
 # REST API версионирование:
@@ -25,7 +25,7 @@ puts '                                             REST API'
 
 
 puts
-puts '                                               REST'
+puts '                                               REST Rails'
 
 # REST - паттерн для передачи состояния объекта. Это соглашение о том как лучше называть и структурровать URLы и методы их обрабатывающие. Сокращает число необходимых URL, делит методы по типу запросов, что позволяет админам распределять нагрузку тк они видят в юрл что за запрос.
 
@@ -75,16 +75,16 @@ puts '                                        Вложенные маршрут�
 # Схема one-to-many: Article 1(resourses) - * Comment(resourses).
 # Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
 # ---------------------------------------------------------------------------------------------------------
-# Хэлпер для URL       HTTP     Path                                              Controller#Action
+# Хэлпер для URL       HTTP     Path                                      Controller#Action
 # ---------------------------------------------------------------------------------------------------------
-# article_comments     GET      /articles/:article_id/comments(.:format)          comments#index
-# new_article_comment  GET      /articles/:article_id/comments/new(.:format)      comments#new
-#                      POST     /articles/:article_id/comments(.:format)          comments#create
-# article_comment      GET      /articles/:article_id/comments/:id(.:format)      comments#show
-# edit_article_comment GET      /articles/:article_id/comments/:id/edit(.:format) comments#edit
-#                      PATCH    /articles/:article_id/comments/:id(.:format)      comments#update
-#                      PUT      /articles/:article_id/comments/:id(.:format)      comments#update
-#                      DELETE   /articles/:article_id/comments/:id(.:format)      comments#destroy
+# article_comments     GET      /articles/:article_id/comments            comments#index
+# new_article_comment  GET      /articles/:article_id/comments/new        comments#new
+#                      POST     /articles/:article_id/comments            comments#create
+# article_comment      GET      /articles/:article_id/comments/:id        comments#show
+# edit_article_comment GET      /articles/:article_id/comments/:id/edit   comments#edit
+#                      PATCH    /articles/:article_id/comments/:id        comments#update
+#                      PUT      /articles/:article_id/comments/:id        comments#update
+#                      DELETE   /articles/:article_id/comments/:id        comments#destroy
 
 
 

@@ -67,6 +67,8 @@ Digest::SHA2.hexdigest('code') #=> '5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8
 # Вызывает блок один раз для каждого элемента, передавая как элемент, так и данный объект:
 (1..4).each_with_object([]) {|i, arr| arr.push(i**2) } # => [1, 4, 9, 16]
 %w(foo bar).each_with_object({}) { |el, hh| hh[el.to_sym] = el } # => {'foo' => 'FOO', 'bar' => 'BAR'}
+# обджект со значениями
+[1,2,3].map.with_object({'a'=> 'b'}){|n, obj| obj[n] = n**2} #=> {"a"=>"b", 1=>1, 2=>4, 3=>9}
 # primer
 amount=127
 hh={ H: 50, Q: 25, D: 10, N: 5, P: 1 }

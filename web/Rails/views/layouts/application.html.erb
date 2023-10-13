@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>
+  <head lang="<%= I18n.locale %>"> <!--  I18n.locale  - добавим для языка перевода -->
+
+    <meta charset="utf-8"> <!-- пропишем кодировку для I18n и еще много чего -->
+
     <title>Blog</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>

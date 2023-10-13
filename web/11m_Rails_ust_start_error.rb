@@ -1,0 +1,146 @@
+puts '                                            Rails'
+
+# http://guides.rubyonrails.org/routing.html  -  Rails Routing from the Outside In — Ruby on Rails Guides
+# http://rusrails.ru/command-line             -  Rusrails: Командная строка Rails
+# http://rusrails.ru/rails-routing            -  Rusrails: Роутинг в Rails
+
+
+# https://www.youtube.com/watch?v=tqSkBmODHBk  - установка и настройка для Рэилс 7
+# https://www.youtube.com/watch?v=6_ek4hokiak  - установка и настройка для Рэилс 6
+# (Установка: Ruby, RVM(линукс), Ruby на Windows, SQLite 3, переменных среды на Windows, NodeJS и небольшая ремарка о node-gyp, Yarn и проверка, Обновление подсистемы RubyGems, Ruby on Rails)
+
+
+# (Не пробовал)
+# В конспектах на гитхаб так же есть ruby через RVM и другие штуки:
+# 	Установка ruby через RVM
+# 		1. Посмотрим доступные версии Rails:  gem search '^rails$' --all
+# 		2. Чтобы установить конкретную версию, введите (вместо rails_version - номер версии): gem install rails -v rails_version
+# 		3. С помощью gemset-ов можно использовать вместе разные версии Rails и Ruby. Это делается с помощью команды gem.
+# 			rvm gemset create gemset_name # create a gemset
+# 			rvm ruby_version@gemset_name  # specify Ruby version and our new gemset
+# 			Gemset-ы позволяют создавать полнофункциональные окружения для gem-ов, а также настраивать неограниченное количество окружений для каждой версии Ruby.
+# https://github.com/DefactoSoftware/Hours
+
+
+# > rails -v    # посмотреть версию рэилс
+
+
+puts
+puts '                                        Создание приложения'
+
+# > rails new name   -  cоздаcт новое рейлс-приложение в выбранной папке(вручную ничего делать не нужно), где последнее слово на выбор это имя директории приложения(например blog). Устанавливаются все необходимое для работы приложения, гемы, инициализируется гит итд.
+# > rails new name -T   -  создать новое Рэилс приложение без автотестов
+# > rails new name --skip-hotwire   -  создать новое Рэилс приложение без hotwire(отдельное большое решение для фронтэнда, это то что отвечает за всякие turbo-хрени, тоесть тк будет работать боз них)
+
+# Фичи(доп опции) Рэилс 7 при создании приложения:
+# настройка ассетов для CSS:
+# > rails new name --css bootstrap
+# > rails new name -T --css tailwind   - можно вместе с -T естественно
+# > rails new name --css bulma
+# > rails new name --css postcss
+# > rails new name --css sass
+# Движки для JS(inpostmap-rails - ставится по умолчанию, не делат bundle для js, а подключает модули напрямую):
+# (устанавливаемые: esbuild, rollup.js, Webpack(раньше использовали только его потому встречается чаще всех))
+# > rails new name -j webpack
+
+
+# > rails new blog                                                 -  для курса рубишколы
+# > rails new AskIt -T --css bootstrap -j webpack --skip-hotwire   -  для курса Круковского
+
+
+# В итоге появляется папка с выбранным именем, которая содержит все необходимые стартовые папки и фаилы(далее обозначим f - фаил, d - папка):
+# f .git
+# d app              -  содержит отдельные папки views, models, controllers итд. По сути тут весь основной код приложения
+# d bin              -  бинарные фаилы зафиксированные на версии(rails запустит приложение в той версии на которой оно создано)
+# d config           -  конфигурация содержит, например:
+#     d enviroments  -  настройки для каждого из 3х видов окружения(development.rb, test.rb и production.rb)
+#     f boot.rb;
+#     f routes.rb    -  фаил для установки маршрутов;
+# d db
+# d lib              -  доп фаилы
+# d log              -  журналы событий
+# d public           -  публичные фаилы передаваемые напрямую минуя приложение, просто в ответ на запрос
+# d storage          -  все что связано с актив сторэдж
+# d test
+# d tmp
+# d vendor           -  сейчас уже особо не используется
+# f .gitattributes
+# f .gitignore
+# f .ruby-version
+# f config.ru
+# f Gemfile          -  все библиотеки и их версии для корректной работы приложения
+# f Gemfile.lock
+# f Rakefile
+# f README.md
+
+
+puts
+puts '                                  Запуск сервера и исправление ошибок винды'
+
+# Запуск сервера приложения
+# (запускаем в основной папке приложения, если хотим запустить на последней версии Рэилс из установленных)
+# (запускаем из директоррии appname/bin, чтобы запустить на той версии Рэилс на которой приложение было созданно)
+# > rails server           - запуск в текущей консоли
+# > rails s
+# > start rails server     - запуск в новом окне консоли
+# > start rails s
+
+# Если не запустится, нужно установить nodejs(sudo apt-get install nodejs)
+
+# (!!! На Виндоус(64), решение для Рэилс 7). По умодлчанию будет выдавать ошибку таймзон(tzinfo-data is not present. Please add gem 'tzinfo-data' to your Gemfile and run bundle install (TZInfo::DataSourceNotFound)), поэтому нужны манипуляции:
+# 1. Изменить/подкрутить Gemfile. Найти в нем строку:
+gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]   # удаляем тут хэш доп настроек ...
+gem 'tzinfo-data'                                                 # ... сохраняем так
+# 2. > gem uninstall tzinfo-data
+
+# > bundle install |или| > bundle update(лучше тк можно не писать gem uninstall tzinfo-data ??)
+
+# (!!! Далее могут быть проблемы в Виндоус, если запустить приложение в PowerShell или Git Bash, тк у них проблемы с регистром(не воспринимают заглавные), потому нужно прописать вручную либо использовать классическую командную строку !!!)
+# https://discuss.rubyonrails.org/t/getting-started-with-rails-no-template-for-interactive-request/76162
+
+# (Не делал, от айтипрогер)Можно в гемфаил заменить в строке source "https://rubygems.org" https на http на время разработктки, тк корректнее для локального сервера ??
+
+# Далее запускается Рэилс-сервер, среди прочего он говорит, что запускается на порту 3000(http://127.0.0.1:3000/)
+# http://localhost:3000/  -  адрес для открытия рэилс приложений
+
+# Последовательность того как начинает работу rails-приложение, когда его запускаешь:
+# boot.rb -> rails -> environment.rb(подгружается) -> development.rb или test.rb или production.rb(подгружается окружение)
+
+
+# Rails-приложение по умолчанию может запускаться в 3 разных типах окружения(режимах):
+# 1. development - оптимизирует среду для удобства разработки, будет работать чуть медленнее.
+# 2. test        - для тестирования
+# 3. production  - запускает только то что нужно для работы приложения, работает максимально быстро
+# Для каждого типа окружения существует своя отдельная БД
+
+# Запуск окружения (development, test, production) через ключ -e (enviroment/окружение). По умолчанию окружение development
+# > rails s -e development
+# > rails s -e test
+# > rails s -e production
+
+# Можно создавать и собственные среды
+
+
+puts
+puts '                                             Ошибки разное'
+
+# 0. Если чтото не работает сперва перезапустить рэилс сервер приложения
+
+# 1. tmp\pids\server.pid  # Автоматически удаляется когда закрываем сервер, но если что-то пошло не так и он не удалился, то сервер может перестать запускаться, тогда этот фаил нужно удалить вручную
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
