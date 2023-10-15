@@ -180,3 +180,37 @@ def largest_sum(arr)
 end
 
 p largest_sum([191, -111, 103, 190, -167, 200, -145, 164, 150, -118, -157, -102, -137, 109, -139, 197, -148, -116, -146, 184, 129, 144, -146, -129, -119, -117, -131, -119, 185, -104, 148, 165, -157, -163, -155, -110])# 575
+
+
+
+puts
+# Shuffle It Up    https://www.codewars.com/kata/5b997b066c77d521880001bd
+def all_permuted(n) # Rencontres numbers
+  # arr = (1..n).to_a
+  # arr.permutation(n).select{|a| a.zip(arr).all?{|x, y| x != y}}.size
+
+  # res = (1..n).inject(:*) / Math::E
+  # n.odd? ? res.floor : res.ceil
+
+  res = (1..n).inject(:*) * (0..n).map{|k| (-1)**k / (k == 0 ? 1 : (1..k).inject(:*))}.sum
+end
+
+p all_permuted(1) #
+p all_permuted(2) #
+p all_permuted(3) #
+p all_permuted(4) #
+p all_permuted(5) #
+p all_permuted(6) #
+p all_permuted(7) #
+p all_permuted(8) #
+# p all_permuted(9) #
+
+# 0
+# 1
+# 2
+# 9
+# 44
+# 265
+# 1854
+# 14833
+# 133496

@@ -2,7 +2,7 @@ puts '                                             Строки(String)'
 
 #"ABCDEFGHIJKLMNOPQRSTUVWXYZ"  "abcdefghijklmnopqrstuvwxyz"
 
-# Строка — изменяемый (!)массив(!) байтов, представляющий символы в кодировке UTF-8. Реализуются классом String.
+# Строка — изменяемый массив байтов, представляющий символы в кодировке UTF-8. Реализуются классом String.
 
 "abcΣΣΣ".encode("ASCII", "UTF-8", invalid: :replace, undef: :replace, replace: "") # "abc"
 
