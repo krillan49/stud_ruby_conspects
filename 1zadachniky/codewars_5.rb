@@ -185,6 +185,8 @@ p largest_sum([191, -111, 103, 190, -167, 200, -145, 164, 150, -118, -157, -102,
 
 puts
 # Shuffle It Up    https://www.codewars.com/kata/5b997b066c77d521880001bd
+SUFFLES = [1]
+
 def all_permuted(n) # Rencontres numbers
   # arr = (1..n).to_a
   # arr.permutation(n).select{|a| a.zip(arr).all?{|x, y| x != y}}.size
@@ -192,25 +194,37 @@ def all_permuted(n) # Rencontres numbers
   # res = (1..n).inject(:*) / Math::E
   # n.odd? ? res.floor : res.ceil
 
-  res = (1..n).inject(:*) * (0..n).map{|k| (-1)**k / (k == 0 ? 1 : (1..k).inject(:*))}.sum
+  # (0..n).sum{|m| (-1)**m * (1..n).inject(:*) / (m == 0 ? 1 : (1..m).inject(:*))} # F(n,0)
+  # (0..n).sum{|m| (-1)**m * (n > m ? (m+1..n).inject(:*) : 1)} # F(n,0)
+
+  (0..n).map{|m| (-1)**m * (n > m ? (m+1..n).inject(:*) : 1)}
+
+  # until SUFFLES.size > n
+  #   m = SUFFLES.size
+  #   p '---'
+  #   # p m
+  #   p (-1)**m * (n > m ? (m+1..n).inject(:*) : 1)
+  #   SUFFLES << SUFFLES[-1] + (-1)**m * (n > m ? (m+1..n).inject(:*) : 1)
+  # end
+  # SUFFLES[n]
 end
 
-p all_permuted(1) #
-p all_permuted(2) #
-p all_permuted(3) #
-p all_permuted(4) #
-p all_permuted(5) #
-p all_permuted(6) #
-p all_permuted(7) #
-p all_permuted(8) #
-# p all_permuted(9) #
+p all_permuted(1) # 0
+p all_permuted(2) # 1
+p all_permuted(3) # 2
+p all_permuted(4) # 9
+p all_permuted(5) # 44
+p all_permuted(6) # 265
+p all_permuted(7) # 1854
+p all_permuted(8) # 14833
+p all_permuted(9) # 133496
 
-# 0
-# 1
-# 2
-# 9
-# 44
-# 265
-# 1854
-# 14833
-# 133496
+[1,      -1]
+[2,      -2,      1]
+[6,      -6,      3,      -1]
+[24,     -24,     12,     -4,     1]
+[120,    -120,    60,     -20,    5,     -1]
+[720,    -720,    360,    -120,   30,    -6,    1]
+[5040,   -5040,   2520,   -840,   210,   -42,   7,   -1]
+[40320,  -40320,  20160,  -6720,  1680,  -336,  56,  -8,  1]
+[362880, -362880, 181440, -60480, 15120, -3024, 504, -72, 9, -1]

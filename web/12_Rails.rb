@@ -45,7 +45,7 @@ puts '                                               Контроллеры'
 # ApplicationController(для наших кастомных методов ?) мы напишем метод и его унаследуют все наши контроллеры
 # ActionController::Base - (для методов pзэилс ?) содержит методы params, respond_to итд
 
-# Контроллер(а так же маршруты, виды итд) можно полностью создать в ручную, а можно при помощи специальных команд в терминале.
+# Контроллер(а так же маршруты, экшены, виды итд для него) можно полностью создать в ручную, а можно при помощи специальных команд в терминале.
 # Название фаила контроллера somename_controller.rb гду somename обычно в множественном числе, например pages
 
 # > rails generate controller home index  -  команда создания контроллера, где:
@@ -58,7 +58,7 @@ puts '                                               Контроллеры'
 class HomeController < ApplicationController # контроллер это класс наследующий от главного контроллера
   def index # а экшен/действие это метод в этом классе(отвечающий за обработку запросов)
     # по умолчанию get 'home/index'
-    # по умолчанию возвращает index.html.erb
+    # по умолчанию возвращает(рэндерит) index.html.erb
   end
   # Каждый экшен обрабатывает определенный HTML шаблон с таким же названием файла, что и название метода.
 end
@@ -67,6 +67,16 @@ end
 # 4. тесты и хэлперы
 
 # http://localhost:3000/home/index  -  теперь это представление можно открыть в браузере
+
+
+# В консоли выходит инфа о запросе и том какие представления рэндерятся:
+# Started GET "/" for ::1 at 2023-10-16 12:19:23 +0300
+# 12:19:23 web.1  | Processing by PagesController#index as HTML
+# 12:19:23 web.1  |   Rendering layout layouts/application.html.erb
+# 12:19:23 web.1  |   Rendering pages/index.html.erb within layouts/application
+# 12:19:23 web.1  |   Rendered pages/index.html.erb within layouts/application (Duration: 20.8ms | Allocations: 159)
+# 12:19:23 web.1  |   Rendered layout layouts/application.html.erb (Duration: 35.5ms | Allocations: 3676)
+# 12:19:23 web.1  | Completed 200 OK in 51ms (Views: 47.1ms | ActiveRecord: 0.0ms | Allocations: 4556)
 
 
 puts
@@ -102,9 +112,9 @@ end
 
 
 puts
-puts '                                    params в строке GET-запрса'
+puts '                              params с гет-параметрами(из строки GET-запрса)'
 
-# http://localhost:3000/?name=kroker    -   если ввести это, те сослать гет запрос на нашу корневую страницу с параметрами ?name=kroker, то params сможет получить эти данные по ключу соотв name.
+# http://localhost:3000/?name=kroker    -   если ввести это, те сослать гет запрос на нашу корневую страницу с гет-параметрами ?name=kroker, то params сможет получить эти данные по ключу соотв name.
 # (Подробности запроса описываются в консоли, где запущен сервер.)
 
 # Обработаем параметры в нашем контроллере:
@@ -115,6 +125,11 @@ class HomeController < ApplicationController
 end
 # далее вставим @name в вид home/index.html.erb
 # Теперь если ввести данные в URL через слэш после адреса, то выведет значение что после =
+
+# В консоли отображается обработка параметров:
+# 12:31:50 web.1  | Started GET "/?name=kroker" for ::1 at 2023-10-16 12:31:50 +0300
+# 12:31:50 web.1  | Processing by PagesController#index as HTML
+# 12:31:50 web.1  |   Parameters: {"name"=>"kroker"}
 
 
 
@@ -227,7 +242,7 @@ class ArticlesController < ApplicationController
 
     render 'articles/create' # можно вывести представления по имени директори и фаила в каталоге views
 
-    # по умолчанию возвращает create.html.erb(render 'articles/create')
+    # по умолчанию возвращает(рэндерит) create.html.erb(render 'articles/create')
   end
 end
 
