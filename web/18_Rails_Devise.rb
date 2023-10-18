@@ -348,6 +348,43 @@ users = User.create([{email: 'super@test.com', first_name: 'super', last_name: '
 admin = User.create(email: "admin@mail.ru", username: "admin", password: '123456', password_confirmation: '123456', admin: true)
 
 
+puts
+puts '                                    Переопределение devise-контроллеров'
+
+# https://github.com/heartcombo/devise#configuring-controllers
+
+# 1. Генерируем
+# > rails generate devise:controllers users -c registrations
+# Если не указать -c registrations то сгенерит все контроллеры
+
+# 2. Меняем маршрут в routes.rb
+devise_for :users, controllers: { registrations: 'users/registrations' } # было просто devise_for :users
+
+# 3. Рекомендуется, но не обязательно: скопируйте (или переместите) представления из devise/sessionsв users/sessions. Rails продолжит использовать представления из- devise/sessionsза наследования, если вы пропустите этот шаг, но наличие представлений, соответствующих контроллеру(ам), обеспечивает согласованность.
+
+# 4. Разкомментируем все экшены контроллера, чтобы они работали как задумано
+class Users::RegistrationsController < Devise::RegistrationsController
+  before_action :configure_sign_up_params, only: [:create]
+  before_action :configure_account_update_params, only: [:update]
+
+  # Данный экшен будет работать по умолчанию
+  def new
+    super
+  end
+
+  # К данному экшену добавлен функционал на создание еще одной сущности
+  def create
+    super do |resource|
+      Account.create(user_id: resource.id)
+    end
+  end
+
+  # Данный экшен переопределен полностью, тк убрали super
+  def edit
+  end
+end
+
+
 
 
 
