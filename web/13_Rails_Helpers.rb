@@ -48,11 +48,13 @@ truncate(@foo, length: 20)
 
 
 puts
-puts '                                  Встроенные routes хэлперы(для URL)'
+puts '                         Встроенные routes хэлперы(для URL). Именнованные маршруты'
 
 # Их можно посмотреть в routes или открым несуществующий URL или по адресу http://localhost:3000/rails/info. Их можно использовать с хелпером link_to, чтобы строить теги <a> для навигации внутри приложения.
 
 # Окончание хэлпера может быть _path или _url, например course_path, semesters_url – это routes helpers
+# resourses_path  -  '/resourses'                   -   тоесть относительный маршрут
+# resourses_url   -  'localhost:5000//resourses'    -   тоесть полный маршрут
 
 
 root_path # для ссылок на главную(get '/' root в маршруте), может содержать параметры, например для локалей

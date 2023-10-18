@@ -94,13 +94,18 @@ puts '                          Маршруты(routes.rb). Корневой м
 Rails.application.routes.draw do
   # Обычно home#index создаётся для главной страницы сайта, поэтому можно поменять корневой маршрут и прописать в нем вместо get 'home/index'(который был по умочанию):
   get '/' => 'home#index'  # определяем маршрут вручную(хардкод). Направили обработчик URL get '/' в экшен index контроллера home
-  # Теперь контроллер будет доступен по определенному URL
+  # Теперь экшен index контроллера home будет обрабатывать GET-запрос если от придет с URL-адреса '/'
+
+  # альт синтаксис тому что выше ??
+  get '/', to: 'home#index' # to: "home#index" - аргумент хэш
+  # to: указывает на то какой экшен будет обрабытывать запрос
+
 
   root "home#index", as: 'some' # альтернатива при помощи хэлпера root
   # as: 'some'  - не обязательное переименование(старый перестает работать) хэлпера root_path в some_path
   # Так же можно сосдавать хэлперы и для хардкод маршрутов вроде get '/' => 'home#index'
 
-  root to: "home#index" # to: "home#index" - аргумент хэш
+  root to: "home#index"
 end
 # Примечание: если мы прописываем несколько маршрутов URL для одного и тогоже экшена и контроллера, то он будет обрабатывать все эти маршруты
 
@@ -136,12 +141,19 @@ end
 puts
 puts '                                    Модели и миграции(ActiveRecord)'
 
-# Модели наследуются от ActiveRecord::Base
-# ActiveRecord::Base - (для методов AR ?) содержит has_many, validates итд
+# Миграции - это некий програмный код, с помощью которого мы можем описать, какие таблицы в БД нужно создать, модифицировать итд. Миграции располагаются по меткам времени(в названии 20230701043625_cr...), те можно четко отследить что и в какой последовательности делать. Когда наш проект переносится на другой носитель, то мы можем при помощи одной команды применить все миграции и таким образом наша БД оказывается сразу в нужном нам состоянии, со всеми нужными таблицами, связями итд
+
+# config/database.yml  -  в этом фаиле содержится инфа о том какие БД присудствуют в проекте(подробнее в этом фаиле на примере проекта AskIt с курса Круковского)
+
+# Создание БД через командную строку(в Rails 7 development.sqlite3 и создаст только test.sqlite3):
+# > rails db:create RAILS_ENV=development       -  для виндоус
+# > RAILS_ENV=development rails db:create       -  для никс-систем
+# Если используется другая СУБД например Постгресс, перед выполнением команды она должна быть запущена
+
 
 # По умолчанию Rails настроен на работу с СУБД sqlite3
 
-# Создание модели(В Синатре была в app.rb, в Рэилс в каталоге app) и миграции, таблицы, БД:
+# Создание модели(В Синатре была в app.rb, в Рэилс в каталоге app) и миграции, таблицы, БД(если еще не создана):
 
 # А. > rails g model Article title:string text:text    -   Создадим модель и миграцию:
 #   rails g(generate) - команда создания чегото;
@@ -150,12 +162,13 @@ puts '                                    Модели и миграции(Activ
 #   title:string text:text - свойства класса модели, те столбцы таблицы и типы данных для них;
 # После запуска при помощи active_record будет автоматически созданы и описаны в выводе:
 # 1. фаил модели(В Синатре была в app.rb)  app/models/article.rb
-class Article < ApplicationRecord
+class Article < ApplicationRecord # (Article - единственное число)
+  # Модели наследуются от главной модели ApplicationRecord а она от ActiveRecord::Base (для методов AR ?) содержит has_many, validates итд
 end
-# 2. миграция(с уже заполненным методом change)   db/migrate/20230701043625_create_articles.rb
+# 2. миграция(с уже заполненным методом change)   db/migrate/20230701043625_create_articles.rb (articles - множественное число)
 class CreateArticles < ActiveRecord::Migration[7.0]
   def change
-    create_table :articles do |t|
+    create_table :articles do |t|  # таблица создается в БД которая указана в конфигурации config/database.yml
       t.string :title
       t.text :text
 
@@ -166,11 +179,31 @@ end
 # 3. юнит тесты.
 
 # Б. rake db:migrate    -   далее выполняем миграцию.
+# > rails db:migrate    -   или так, алиасы ??.
 # База данных находится/создается в каталоге db/development.sqlite3
+
+# В. Отмена миграций, если сделали чтото не так
+# > rails db:rollback         - отменит все сделанные миграции(именно выполнение, те удалятся из схемы, но фаилы миграций останутся, делает дроп тайбл, тоесть данные теряются)
+# > rails db:rollback STEP=1  - отменит столько последних миграций какой указан параметр
 
 
 # Примечание. Почти всегда таблица это множественное число от модели, но иногда Рэилс делает нестандартно, например для модели Person создаст таблицу people а не persons
 # В книге Rails. Гибкая разработка веб-приложений (Руби, Томас, Хэнссон) можно прочитать про соглашения об именах.
+
+
+puts
+puts '                                     Rails console(работа с моделями)'
+
+# Консоль Рэилс похожа на tux что мы использовали в Синатре, работает точно так же. Можно писать в ней любой рубикод
+
+# > rails console  -  вход в консоль
+# > rails c        -  вход в консоль
+# exit             -  выход
+
+# Примеры работы:
+Contact.all #=> SELECT "contacts".* FROM "contacts"  => []
+Article.find(6) #=> SELECT "articles".* FROM "articles" WHERE "articles"."id" = ? LIMIT ?  [["id", 6], ["LIMIT", 1]]
+Contact.attribute_names #=> ["id", "email", "message", "created_at", "updated_at"] # узнать какие свойства(поля) у сущности
 
 
 puts
@@ -298,21 +331,6 @@ end
 
 # 5. Создадим представление contacts/new.html.erb и заполняем(формой)
 # Добавим предствление /app/views/contacts/create.html.erb
-
-
-puts
-puts '                                              Rails console'
-
-# Консоль Рэилс похожа на tux что мы использовали в Синатре, работает точно так же. Можно писать в ней любой рубикод
-
-# > rails console  -  вход в консоль
-# > rails c  -  вход в консоль
-# exit  -  выход
-
-# Примеры работы:
-Contact.all #=> SELECT "contacts".* FROM "contacts"  => []
-Article.find(6) #=> SELECT "articles".* FROM "articles" WHERE "articles"."id" = ? LIMIT ?  [["id", 6], ["LIMIT", 1]]
-Contact.attribute_names #=> ["id", "email", "message", "created_at", "updated_at"] # узнать какие свойства(поля) у сущности
 
 
 puts
@@ -475,6 +493,27 @@ class ArticlesController < ApplicationController
     params.require(:article).permit(:title, :text)
   end
 end
+
+
+puts
+puts '                                     Метод в модели для предсталения'
+
+# По курсу Круковского на примере проекта AskIt
+
+# модель
+class Question < ApplicationRecord
+  validates :title, presence: true, length: { minimum: 2 }
+  validates :body, presence: true, length: { minimum: 2 }
+
+  # Создадим метод в модели
+  def formatted_created_at
+    self.created_at.strftime('%Y-%m-%d %H:%M:%S') # можно с self
+    created_at.strftime('%Y-%m-%d %H:%M:%S') # но можно и просто тк created_at это инстанс метод модели
+  end
+end
+
+# будем использовать метод в виде для форматирования даты например так:
+question.created_at.formatted_created_at
 
 
 puts

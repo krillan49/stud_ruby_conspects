@@ -30,6 +30,7 @@ gem 'devise'
 #   devise:install
 #   devise:views
 # Те у нас появился генератор Devise с 4мя опциями(так же добавились devise-опции и в другие разделы)
+# ( rails generate devise:controllers users    - контроллеры генерим так)
 
 # 3. Введём:
 # > rails g devise:install
@@ -100,7 +101,7 @@ end
 
 
 # ПРИМЕЧАНИЕ из комментов(у меня эта ошибка не возникла):
-# В Rails 7 ошибка Undefined method 'user_url' при регистрации.
+# В Rails 7 может быть ошибка Undefined method 'user_url' при регистрации.
 # Нужно в config/initializers/devise.rb добавить/разкомментировать:
 # config.navigational_formats = ['*/*', :html, :turbo_stream]
 
