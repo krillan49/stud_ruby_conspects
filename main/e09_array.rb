@@ -275,6 +275,22 @@ moda = hh.map{|k, v| v > n ? [k]*3 : [k]*n}.flatten #=> ["3", "3", "3", "7", "7"
 
 
 puts
+puts '                                           replace(изменение на месте)'
+
+matrix = [[1, 2],[3, 4]]
+matrix.replace(matrix.reverse.transpose)
+p matrix #=> [[3, 1], [4, 2]]
+
+
+def izm_na_meste(m)
+  m.replace(m.reverse.transpose)
+end
+matrix = [[1, 2],[3, 4]]
+izm_na_meste(matrix)
+p matrix #=> [[3, 1], [4, 2]]
+
+
+puts
 puts "                                                Методы с блоками"
 
 # cycle Зацикленный вывод(будет выводить значения массива по кругу до принудительной остановки или бесконечно):
