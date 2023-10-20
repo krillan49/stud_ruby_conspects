@@ -1,0 +1,21 @@
+<h1>New question</h1>
+
+<!-- Далее генерируем форму при помощи вспомогательной функции -->
+<%= form_with model: @question do |f| %>
+  <!-- form_with - начиная с новых версий(6?) рекомендуется использовать эту вспомогательную функцию для генерации формы -->
+  <!-- model: @question  - используем экземпляр модели созданный в экшене new, создаст юрл как ниже -->
+  <!-- url: '/question' - альтернативный вариант предыдущему -->
+  <div>
+    <%= f.label :title %>
+    <%= f.text_field :title, required: true, minlength: 2, placeholder: 'Title' %>
+    <!-- required: true, minlength: 2  - атрибуты required="required" minlength="2" будут добавлены в тег, при помощи них браузер будет проводить валидацию поля на стороне клиента(что не отменяет неоходимости валидации на сервере, тк клиентскую проверку очень легко обойти) -->
+    <!-- placeholder: 'Title'  - атрибут placeholder="Title" будет добавлен в тег -->
+  </div>
+
+  <div>
+    <%= f.label :body %>
+    <%= f.text_area :body, required: true, minlength: 2 %>
+  </div>
+
+  <%= f.submit "Submit question!" %>
+<% end %>

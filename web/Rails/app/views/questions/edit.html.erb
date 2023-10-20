@@ -1,0 +1,20 @@
+<h1>Edit question</h1>
+
+<!-- Точно та же форма что и в new -->
+<%= form_with model: @question do |f| %>
+<!-- Формбилдер form_with с параметром model: @question, подставит action="/questions/1", айди для которого возьмет в объекте @question -->
+<!-- Так же будет добавлено скрытое поле <input type="hidden" name="_method" value="patch" autocomplete="off" /> -->
+
+  <!-- значения полей будут автоматически подставлены -->
+  <div>
+    <%= f.label :title %>
+    <%= f.text_field :title, required: true, minlength: 2, placeholder: 'Title' %>
+  </div>
+
+  <div>
+    <%= f.label :body %>
+    <%= f.text_area :body, required: true, minlength: 2 %>
+  </div>
+
+  <%= f.submit "Submit question!" %>
+<% end %>

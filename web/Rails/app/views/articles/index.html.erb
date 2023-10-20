@@ -14,7 +14,8 @@
   <!--                   Ссылки на просмотр и редактирование статьи при помощи синтаксиса Rails -->
   <p><%= link_to "Show article", article_path(article) %></p>
   <!-- <a href="/articles/2">Show article</a> -->
-  <!-- article_path(article) - параметром в метод(именованный маршрут) передается сущность article, в итоге перейдет на /articles/id -->
+  <!-- article_path(article) - параметром в метод(именованный маршрут) передается сущность article(объект статьи - экземпляр модели Article), для того чтобы id статьи подставить в :id URLа запроса, в итоге перейдет на /articles/id -->
+  <!-- article_path(article.id) - при желании можно писать и так но это лишнее, тк хэлпер вызовет метод .id автоматически -->
   <p><%= link_to "Edit article", edit_article_path(article) %></p>
   <!-- <a href="/articles/2/edit">Edit article</a> -->
   <!-- edit_article_path(article) - в итоге перейдет на /articles/id/edit -->

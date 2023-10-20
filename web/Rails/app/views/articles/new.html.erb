@@ -9,6 +9,7 @@
   <!-- :article - параметр в единственном числе, тк форма отправляет данные об одной сущности. В итоге если посмотреть код то будет создана форма:
     <form action="/articles/new" accept-charset="UTF-8" method="post">
       <input type="hidden" name="authenticity_token" value="DGyL-HHUE0zhYRgsnOmkAZGbJQ" autocomplete="off" />
+      скрытое поле нужно для безопасности приложения
   -->
   <!-- url: articles_path - (так же можно захардкодить: url: '/articles') направняет на корневой URL контроллера те '/articles') - добавляем его. Тк для URL "/articles/new", что у form_for :article по умолчанию, существует только GET-обработчик(new), потому при нажатии кнопки произойдет ошибка. Для POST используется экшен create c URL '/articles', соотв надо перенаправить форму на него. Теперь если посмотреть код то адрес в теге формы изменился:
     <form action="/articles" accept-charset="UTF-8" method="post">
@@ -48,7 +49,7 @@
   <%= f.label :commentable_type, class: 'form-label' %>
   <%= f.select :commentable_type, ["Post", "Image"], {}, class: 'form-select' %>
   <!-- Между значениями опций селектора и параметрами класса нужен пустой хэш -->
-  
+
 
   <p><%= f.submit %></p> <!-- <input type="submit" name="commit" value="Save Article" data-disable-with="Save Article" /> -->
 
