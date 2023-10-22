@@ -6,7 +6,7 @@ import * as bootstrap from "bootstrap"
 // Добавили все что идет далее:
 
 // Добавляем скрипты
-import Rails from "@rails/ujs"
+import Rails from "@rails/ujs"   // Подключаем потому что по умолчанию UJS отключен в Рэилс 7  ??
 import Turbolinks from "turbolinks"
 
 // Запускаем скрипты

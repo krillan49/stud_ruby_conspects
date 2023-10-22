@@ -121,7 +121,7 @@ end
 puts
 puts '                              params с гет-параметрами(из строки GET-запрса)'
 
-# http://localhost:3000/?name=kroker    -   если ввести это, те сослать гет запрос на нашу корневую страницу с гет-параметрами ?name=kroker, то params сможет получить эти данные по ключу соотв name.
+# http://localhost:3000/?name=kroker   -   если ввести это, те сослать гет запрос на нашу корневую страницу с гет-параметрами ?name=kroker, то params сможет получить эти данные по ключу соотв name.
 # (Подробности запроса описываются в консоли, где запущен сервер.)
 
 # Обработаем параметры в нашем контроллере:
@@ -138,6 +138,35 @@ end
 # 12:31:50 web.1  | Processing by PagesController#index as HTML
 # 12:31:50 web.1  |   Parameters: {"name"=>"kroker"}
 
+
+# http://localhost:5000/?name=kroker&pass=7   - несколько параметров чере &
+
+# Те можно посылать данные с разных ссылок или при помощи скрипта менять ссылку и отправлять данные в контроллер, например для меню выборки статы
+
+
+puts
+puts '                               Контроллер и роутинг статических страниц(не по REST)'
+
+# Статические страницы это те которые не изменяются динамически, те никаких some/id, а только some ?? и никакой динамической информации, те всегда отображаются одинаково ?? например просто передаются переменными из экшенов ??. Подходит например для страниц "О нас", "Контакты" итд
+
+# Удобно создать отдельный контроллер для статических страниц
+# > rails g controller pages
+
+# Создаётся контроллер /app/controllers/pages_controller.rb, добавим экшены:
+class PagesController < ApplicationController
+  def terms
+  end
+
+  def about
+  end
+end
+
+# Пропишем маршруты(тк удобнее получать их от корня, а не от /pages) в /config/routes.rb:
+get 'terms' => 'pages#terms'
+get 'about' => 'pages#about', as: 'about'
+# as: 'about' - для статических страниц создаются и хэлперы юрлов, тут about_path
+
+# Создадим представления /app/views/pages/terms.html.erb и /app/views/pages/about.html.erb
 
 
 puts
@@ -298,7 +327,7 @@ end
 
 
 puts
-puts '                                    Пошаговое создание контроллера(resourse)'
+puts '                                   Пошаговое создание контроллера(resourse)'
 
 # Сделаем страницу /contacts с формой для контактов. Чтобы на сервер и далее в БД передавались email и message из формы контактов.
 
@@ -476,7 +505,7 @@ end
 
 
 puts
-puts '                                         index(resourses)'
+puts '                                         index(CRUD-resourses)'
 
 # Выведем все наши статьи
 
@@ -534,7 +563,7 @@ question.created_at.formatted_created_at
 
 
 puts
-puts '                           PRG(Post Redirect Get). redirect_to. show(resourses)'
+puts '                           PRG(Post Redirect Get). redirect_to. show(CRUD-resourses)'
 
 # При обновлениии страницы, возвращенной пост запросом(тут post '/articles' articles#create), произойдет повторная отправка формы(выскакивает предупреждение от браузера), тк возвращается вид на тот же URL, что может вызвать проблемы например 2йной покупки и 2йного списания денег
 
@@ -584,7 +613,7 @@ puts '                                     разница между render и r
 
 
 puts
-puts '                          edit(resourses), update(resourses). Редактирование статьи'
+puts '                          edit, update - pедактирование статьи(CRUD-resourses)'
 
 # Добавим ссылку на редактирование в articles/index.html.erb
 
@@ -607,7 +636,7 @@ end
 
 
 puts
-puts '                                 Удаление статьи(resourses/destroy)'
+puts '                                 destroy - удаление статьи(CRUD-resourses)'
 
 # Все что нужно для удаления сущности это ее id
 
@@ -632,43 +661,17 @@ end
 
 
 puts
-puts '                               Контроллер и роутинг статических страниц(не по REST)'
+puts '                               Вспомогательная функция form_with. Паршалы'
 
-# Статические страницы это те которые не изменяются динамически, те никаких some/id, а только some ?? и никакой динамической информации, те всегда отображаются одинаково ?? например просто передаются переменными из экшенов ??. Подходит например для страниц "О нас", "Контакты" итд
+# По курсу Круковского и проекту AskIt
 
-# Удобно создать отдельный контроллер для статических страниц
-# > rails g controller pages
-
-# Создаётся контроллер /app/controllers/pages_controller.rb, добавим экшены:
-class PagesController < ApplicationController
-  def terms
-  end
-
-  def about
-  end
-end
-
-# Пропишем маршруты(тк удобнее получать их от корня, а не от /pages) в /config/routes.rb:
-get 'terms' => 'pages#terms'
-get 'about' => 'pages#about', as: 'about'
-# as: 'about' - для статических страниц создаются и хэлперы юрлов, тут about_path
-
-# Создадим представления /app/views/pages/terms.html.erb и /app/views/pages/about.html.erb
-
-
-puts
-puts '                                        Хз что пока что'
-
-# CRUD - по курсу Круковского и проекту AskIt
+# form_with - начиная с новых версий(6?) рекомендуется использовать эту вспомогательную функцию для генерации формы
 
 # контроллер
 class QuestionsController < ApplicationController
-  def index
-    @questions = Question.all
-  end
-
+  # ...
   def new
-    @question = Question.new # создаем пустую сущность в памяти для генерации формы
+    @question = Question.new # создаем пустую сущность в памяти для генерации формы при помощи form_with
   end
 
   def create
@@ -679,36 +682,14 @@ class QuestionsController < ApplicationController
       render :new
     end
   end
-
-  def show
-    @question = Question.find_by id: params[:id]
-  end
-
+  # ...
   def edit
     @question = Question.find_by id: params[:id]
   end
-
-  def update
-    @question = Question.find_by id: params[:id]
-    if @question.update question_params
-      redirect_to questions_path
-    else
-      render :edit
-    end
-  end
-
-  def destroy
-    @question = Question.find_by id: params[:id]
-    @question.destroy
-    redirect_to questions_path
-  end
-
-  private
-
-  def question_params
-    params.require(:question).permit(:title, :body)
-  end
+  # ...
 end
+# Для того чтобы избавиться от дублирования кода форм в edit и new, создадим фаил _form.html.erb, нижнее подчеркивание в начале имени указывает на то что данный фаил является не представлением, а частичным представлением(partial/паршал)
+# Частичным представление(partial/паршал) - это такое представление которое рендерится само по себе, но не вставляется в лэйаут, нужны для того чтоб вставлять кусочки разметки на разных страницах
 
 
 

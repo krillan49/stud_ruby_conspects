@@ -1,20 +1,9 @@
 <h1>Edit question</h1>
 
-<!-- Точно та же форма что и в new -->
-<%= form_with model: @question do |f| %>
-<!-- Формбилдер form_with с параметром model: @question, подставит action="/questions/1", айди для которого возьмет в объекте @question -->
-<!-- Так же будет добавлено скрытое поле <input type="hidden" name="_method" value="patch" autocomplete="off" /> -->
+<!-- Рендерим нашу фрму из фаила _form.html.erb -->
+<%= render 'form' %>
+<!-- render - используем для того чтоб подставить на эту позицию какуюто разметку -->
+<!-- 'form' - обозначает фаил _form.html.erb из которого будет взята разметка -->
 
-  <!-- значения полей будут автоматически подставлены -->
-  <div>
-    <%= f.label :title %>
-    <%= f.text_field :title, required: true, minlength: 2, placeholder: 'Title' %>
-  </div>
-
-  <div>
-    <%= f.label :body %>
-    <%= f.text_area :body, required: true, minlength: 2 %>
-  </div>
-
-  <%= f.submit "Submit question!" %>
-<% end %>
+<!-- По умолчанию берет фаил из текущей дериктории (представления в которое вставляется или которая привязана к экшену ??), если хотим отрендерить из другой директории то пишем например  -->
+<%= render 'pages/form' %>
