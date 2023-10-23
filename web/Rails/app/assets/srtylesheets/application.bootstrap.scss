@@ -1,0 +1,37 @@
+@import 'bootstrap/scss/bootstrap'; // загружаем все стили из данного фаила(с Гитхаба ??), но лучше загружать только отдельные компоненты а не все как тут
+@import 'bootstrap-icons/font/bootstrap-icons';
+
+
+// Данный фаил SCSS(препроцессор Sass), который заменаяет стандартный CSS фаил с тем же именем с импортами выше создан изначально в версии Рэилс 7 из уроков крукоовского
+// https://www.youtube.com/watch?v=8Vej-cKPdKA&list=PLWlFXymvoaJ_IY53-NQKwLCkR-KkZ_44-&index=5
+// Для Рэилс 6 пересмотреть уроки, там чуть по другому
+
+// Sass - препроцессор для CSS, который позволяет более удобно писать таблицы стилей
+
+
+// для примера аналог стилей ниже
+.field_with_errors .form-control { border-color: $red; }
+.field_with_errors .label { color: $red; }
+
+// В SCSS можно писать конструкции где внутренние элементы внутри материнских, вместо дублирования(аналог обычного CSS, что выше)
+.field_with_errors {
+  .form-control {
+    border-color: $red; // $red - переменная Sass, задающая цвет, она взята из бутстрэпа на гитхаб в разделе variables
+  }
+  label {
+    color: $red;
+  }
+}
+// Тоесть для всех .form-control и label что находятся внутри .field_with_errors - назначаем такието стили
+
+
+
+
+
+
+
+
+
+
+
+//

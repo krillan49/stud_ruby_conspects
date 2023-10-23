@@ -448,7 +448,7 @@ permitted.has_key?(:role) # => false
 
 
 puts
-puts '                                               Валидация'
+puts '                                 Валидация и сообщения об ошибках'
 
 # 1. Валидацию надо добавить в модель /app/models/contact.rb
 class Contact < ApplicationRecord
@@ -485,6 +485,16 @@ def new
   @contact = Contact.new # пустая сущность
 end
 # Вариант 2: без пустой сущности записать в /app/views/contacts/new.html.erb
+
+
+puts
+puts '                                  shared(дирректория для общих паршалов)'
+
+# Добавим в /app/views/contacts/new.html.erb сообщение об ошибках при помощи паршала.
+
+# shared - создадим дирректорию для общих(для видов всех контроллеров) паршалов
+
+# Создадим паршал _errors.html.erb и поместим в него сообщения об ошибках. Рэндерим его в паршал формы или в вид где форма
 
 
 puts
@@ -661,7 +671,7 @@ end
 
 
 puts
-puts '                               Вспомогательная функция form_with. Паршалы'
+puts '                                       form_with. Паршалы'
 
 # По курсу Круковского и проекту AskIt
 
@@ -673,15 +683,6 @@ class QuestionsController < ApplicationController
   def new
     @question = Question.new # создаем пустую сущность в памяти для генерации формы при помощи form_with
   end
-
-  def create
-    @question = Question.new question_params
-    if @question.save
-      redirect_to questions_path
-    else
-      render :new
-    end
-  end
   # ...
   def edit
     @question = Question.find_by id: params[:id]
@@ -690,6 +691,50 @@ class QuestionsController < ApplicationController
 end
 # Для того чтобы избавиться от дублирования кода форм в edit и new, создадим фаил _form.html.erb, нижнее подчеркивание в начале имени указывает на то что данный фаил является не представлением, а частичным представлением(partial/паршал)
 # Частичным представление(partial/паршал) - это такое представление которое рендерится само по себе, но не вставляется в лэйаут, нужны для того чтоб вставлять кусочки разметки на разных страницах
+
+
+puts
+puts '                                         flash/Флэш сообщения'
+
+# Флэш сообщения передаются в сессию и появляются только один раз и при перезагрузке страницы их уже не будет
+
+# Флэш сообщения удобны для оповещения позьзователя о создании, изменении или удалении сущности
+
+# flash - это хранилище похожее на хэш но не являющееся хэшэм
+
+# Удобнее всего отображать флэш сообщения в Лэйаут
+
+# контроллер
+class QuestionsController < ApplicationController
+  # ...
+  def create
+    @question = Question.new question_params
+    if @question.save
+      flash[:success] = "Question created!"
+      # Задаем ключ и значение для нашего флэш объекта, которые будем использовать в виде
+      redirect_to questions_path
+    else
+      render :new
+    end
+  end
+  # ...
+  def update
+    @question = Question.find_by id: params[:id]
+    if @question.update question_params
+      flash[:success] = "Question updated!"
+      redirect_to questions_path
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @question = Question.find_by id: params[:id]
+    @question.destroy
+    flash[:success] = "Question deleted!"
+    redirect_to questions_path
+  end
+end
 
 
 

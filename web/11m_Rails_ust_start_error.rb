@@ -30,7 +30,7 @@ puts '                                             Rails'
 # желательно поставить галочку на "Хотите ли вы доставить дополнительные компоненты для компилирования библиотек"(инструменты для компиляцмм библиотек, тк некоторые библиотеки нужно компилировать). Если галка не была поставлена, то нужно воспользоваться руководством тут https://github.com/nodejs/node-gyp  Говорит что нужно установить дополнительно
 # > node --version
 
-# https://yarnpkg.com/getting-started/install   - Установить пакетный менеджер Yarn. Если уже стоит Node.js, то достаточно воспользлваться командой:
+# https://yarnpkg.com/getting-started/install   - Установить пакетный менеджер Yarn(позволяет добавлять всякие штуки для фронтэнда). Если уже стоит Node.js, то достаточно воспользлваться командой:
 # > corepack enable        - обязательно нужно вводить в консоли от имени администратора
 # Инструкции по обновлению там же в разделе миграций(не делал)
 # > yarn -v               - работает только в классической командной строке
@@ -86,6 +86,8 @@ puts '                                           Создание приложе
 # (устанавливаемые: esbuild, rollup.js, Webpack(раньше использовали только его потому встречается чаще всех))
 # > rails new name -j webpack
 
+# (В 6й и более ранних версиях пришлось бы добавлять бутстрап отдельно комендой yarn add bootstrap)
+
 
 # > rails new blog                                                 -  для курса рубишколы
 # > rails new AskIt -T --css bootstrap -j webpack --skip-hotwire   -  для курса Круковского
@@ -126,11 +128,13 @@ puts '                                           Создание приложе
 puts
 puts '                                       Запуск бандла. Ошибки Windows'
 
+# Gemfile  -  есть инфа в нем тут
+
 # (!!! На Виндоус(64), решение для Рэилс 7). По умодлчанию будет выдавать ошибку таймзон(tzinfo-data is not present. Please add gem 'tzinfo-data' to your Gemfile and run bundle install (TZInfo::DataSourceNotFound)), поэтому нужны манипуляции:
-# 1. Изменить/подкрутить Gemfile. Найти в нем строку:
+# Изменить/подкрутить Gemfile. Найти в нем строку:
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]   # удаляем тут хэш доп настроек ...
 gem 'tzinfo-data'                                                 # ... сохраняем так
-# 2. > gem uninstall tzinfo-data
+# > gem uninstall tzinfo-data
 
 # > bundle install |или| > bundle update(лучше тк можно не писать gem uninstall tzinfo-data ??)
 
