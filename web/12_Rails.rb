@@ -467,6 +467,7 @@ def create
     # а если не валидно отрендерим/вернем нашу форму new.html.erb(но уже на URL /contacts) при помощи render
     render action: 'new' # полный вариант записи
     render 'new'         # сокращенный вариант записи
+    render :new          # сокращенный вариант записи
     # render - метод для возврата данных из экшена, тк это возврат, то(в отличие от redirect_to) сохраняет данные из метода, например переменные
     # action: - значит что возвращаем экшен(тело метода и соотв вид new ??)
     # 'new' - имя экшена
@@ -734,8 +735,79 @@ class QuestionsController < ApplicationController
     flash[:success] = "Question deleted!"
     redirect_to questions_path
   end
+  # ...
 end
 
+
+puts
+puts '                           before_action. Вынос в отдельный метод повторяющегося вызова модели'
+
+# before_action  -  это действие(метод), которое выполняется перед тем как запускается метод/экшен контроллера, который указан в параметрах(по умолчанию это любой/каждый)
+# действие/метод запускаемый при помощи before_action, так же называется фильтр.
+# (До Rails 5 у before_action был алиас before_filter, как и многие другие action-свойства включавшие в имени filter)
+
+# В экшенах контроллера Questions, есть повторяющийся код  @question = Question.find params[:id]
+class QuestionsController < ApplicationController
+  before_action :set_question!, only: %i[destroy update]
+  # set_question!  - имя метода(фильтра) который будет запускаться перед экшеном
+  # only: %i[destroy update]   -  экшены перед которыми будет запускаться метод set_question! Если не указывать данный параметр, то before_action будет выполнять метод перед любым(каждым) экшеном
+
+  # Получаем что все записи внутри методов ниже равноценны, перед каждом исполняется метод set_question! с кодом @question = Question.find params[:id] определяющим переменную экземпляра, которая теперь доступна в экшене
+  def show
+    @question = Question.find params[:id]  # тоже самое будет сделано ниже
+  end
+  def edit
+    set_question! # before_action :set_question! работает так же, тоесть это оналог простого помещения оператора метода в его тело
+    # ... какойто код ...
+  end
+  def update
+    # @question = Question.find params[:id]  -  вызваается при помощи before_action :set_question!
+  end
+  def destroy
+    # @question = Question.find params[:id]  -  вызваается при помощи before_action :set_question!
+  end
+
+  private
+
+  def set_question! # метод который будет запускаться при помощи before_action
+    @question = Question.find params[:id] # Соотв когда метод сработает то переменная @question будет объявлена, получит значение и будет доступна в экшенах
+    # Метод find для этой цели лучше find_by, тк если пользователь введет адрес несуществующего вопроса, например /questions/266666, то возникнет ошибка ActiveRecord::RecordNotFoundв контроллере(в этом методе), а не другая в виде, соотв проще будет ошибку обработать
+  end
+end
+
+
+puts
+puts '                                   concern. Обработка ошибок в контроллере.'
+
+# Исправим ошимбку ActiveRecord::RecordNotFound если пользователь введет адрес несуществующего вопроса, например /questions/266666
+
+# Вариант 1: Добавим код для обработки ошибки в главный контроллер application_controller.rb
+class ApplicationController < ActionController::Base
+  rescue_from ActiveRecord::RecordNotFound, with: :notfound
+  # rescue_from  -  спасает ошибку
+  # ActiveRecord::RecordNotFound  -  имя ошибки
+  # with: :notfound  - метод который обрабатывает ошибку
+
+  private
+
+  def notfound(exception)  # создадим метод который обрабатывает ошибку
+    # exception - параметр принимает саму ошибку
+    logger.warn exception # (не обязательно) запишем ошибку в журнал событий
+
+    render file: 'public/404.html', status: :not_found, layout: false # рэндерим/возвращаем HTML-фаил с сообщением для ошибки
+    # file:  -  ключ означает что рендерим фаил
+    # 'public/404.html'   -  рендерим фаил 404.html из директории public. Фаилы из директории public не проходят через Рэилс приложения, те вставок на Руби иметь не могут, это просто обычные статические HTML-фаилы, которые сгенерированы приложением, при желании можно его модифицировать вручную.
+    # layout: false   -  опция выводит HTML-фаилы без интеграции его в layout
+  end
+end
+# Теперь при возникновении ошибки ActiveRecord::RecordNotFound в любых контроллерах, пользователю будет возвращаться 404.html
+
+# concerns - отдельные фаилы с модулями(содержащими дополнительные способности) содержащими обработчики ошибок, они создаются в controllers/conxerns/
+
+# Вариант 2: Создадим отдельный фаил controllers/conxerns/error_handling.rb и обработаем ошибку в нем, а в материнский контроллер его просто подключим через модуль
+class ApplicationController < ActionController::Base
+  include ErrorHandling # подключаем модуль
+end
 
 
 

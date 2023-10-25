@@ -107,23 +107,20 @@ end
 
 
 puts
-puts '                                  before_action :authenticate_user!'
+puts '                                       Фильтр authenticate_user!'
 
 # Чтобы ограничить доступ неавторизированного пользователя к экшенам контроллера нужно через before_action поставить в контроллере фильтр devise - authenticate_user!.
 
 # 1. Начнем с того что заблокируем все экшены контроллера даже просмотр(/articles) для неавторизированных пользователей
 # Откроем /app/controllers/articles_controller.rb и добавим перед экшенами:
 class ArticlesController < ApplicationController
-  before_action :authenticate_user!
-  # before_action - перед работой любого экшена контроллера запускает фильр в аргументе(тут :authenticate_user!). (До Rails 5 у before_action был алиас before_filter, как и многие другие action-свойства включавшие в имени filter)
-  # :authenticate_user! - фильтр devise, делает методы контроллера недоступными неавторизованному юзеру и при запрсах будет перенаправлять на форму авторизации devise
+  before_action :authenticate_user! # :authenticate_user! - встроенный фильтр devise, делает методы контроллера недоступными неавторизованному юзеру и при запрсах будет перенаправлять на форму авторизации devise
 end
 # Теперь когда мы переходим на /articles то автоматически переходит на /users/sign_in и возвращает нам представление-devise с уже готовой стандартной формой devise для регистрации(sign up)/авторизации(sign_in).
 # Далее мы можем зарегистрироваться, наша User-сущность сохранится в БД и тогда мы получим доступ к экшенам
 
 
-# 2. Добавим ссылки входа и выхода в /app/views/layouts/application.html.erb
-
+# 2. Добавим ссылки входа и выхода в лэйаут /app/views/layouts/application.html.erb
 # Ссылка выхода по умолчанию не работала(?? по умочанию пост а нужен гет ??), необходимо в route.rb:
 devise_for :users # после этой строки...
 # написать еще маршрут(юзер в единственном числе):
