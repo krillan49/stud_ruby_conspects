@@ -84,6 +84,8 @@ p a.repeated_combination(2).with_object([]) {|com, arr| arr << com } #=> [[0, 0]
 [11,22,31,224,44].each.with_index { |el,i| puts "index: #{el} for #{i}" } # Индекс берется из объекта(0, 1, 2, 3, 4)
 [11,22,31,224,44].each.with_index(2) { |el,i| puts "index: #{el} for #{i}" } # Индекс берется из аргумента по возрастающей(2, 3, 4, 5, 6)
 
+p [1,2,3,4,5,6,7,8,9,10].reject.with_index(1){|e, i| [1,5,10].include?(i)} #=> [2, 3, 4, 6, 7, 8, 9]
+
 # Enumerable group_by
 [1, 2, 5, 1, 5, 7, 4, 2].group_by { |i| i } #=> {1=>[1, 1], 2=>[2, 2], 5=>[5, 5], 7=>[7], 4=>[4]}
 (1..6).group_by { |i| i%3 }   #=> {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}

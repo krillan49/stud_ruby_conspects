@@ -193,6 +193,17 @@ puts '                                             Ошибки разное'
 # 1. tmp\pids\server.pid  # Автоматически удаляется когда закрываем сервер, но если что-то пошло не так и он не удалился, то сервер может перестать запускаться, тогда этот фаил нужно удалить вручную
 
 
+puts
+puts '                                            Отладочный вывод'
+
+# В консоли выходит инфа о запросе, контроллере его обрабатывающем и том какие представления рэндерятся:
+# Started GET "/" for ::1 at 2023-10-16 12:19:23 +0300
+# 12:19:23 web.1  | Processing by PagesController#index as HTML
+# 12:19:23 web.1  |   Rendering layout layouts/application.html.erb
+# 12:19:23 web.1  |   Rendering pages/index.html.erb within layouts/application
+# 12:19:23 web.1  |   Rendered pages/index.html.erb within layouts/application (Duration: 20.8ms | Allocations: 159)
+# 12:19:23 web.1  |   Rendered layout layouts/application.html.erb (Duration: 35.5ms | Allocations: 3676)
+# 12:19:23 web.1  | Completed 200 OK in 51ms (Views: 47.1ms | ActiveRecord: 0.0ms | Allocations: 4556)
 
 
 
