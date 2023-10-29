@@ -26,12 +26,13 @@ puts '                                            Типы связей(AR)'
 puts
 puts '                               one-to-many. На примере Article 1 - * Comment'
 
-# Схема one-to-many: Article 1 - * Comment.
-# Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
-
 # https://railsguides.net/advanced-rails-model-generators/
 # https://guides.rubyonrails.org/association_basics.html
 # https://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html
+
+
+# Схема one-to-many: Article 1 - * Comment.
+# Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
 
 # Полезная особенность генераторов, возможность указывать reference columns - делать ссылки на другие сущности
 
@@ -56,7 +57,8 @@ end
 # /models/comment.rb:
 class Comment < ApplicationRecord
   belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. можно добавлять вручную если в генераторе не указать article:references
-  # + Теперь можно обращаться от любого коммента к статье которой он пренадлежит через Comment.find(1).article
+
+  # Comment.find(id).article - теперь можно обращаться от любого коммента к статье которой он пренадлежит через метод article
 end
 # rake db:migrate
 
@@ -64,9 +66,17 @@ end
 # 2. Допишем вручную в модель уже Article  /models/article.rb ...
 class Article < ApplicationRecord
   has_many :comments # добавим ассоциацию comments, тоесть статья связывается с комментами.
-  # Теперь можно обращаться от любой статьи к коллекции принадлежащих ей комментов через Article.find(id).comments
+
+  # Article.find(id).comments - теперь можно обращаться от любой статьи к коллекции(массив) принадлежащих ей комментов через метод comments
 end
 # Таким образом мы связали 2 сущности между собой.
+
+
+# Посмотрим в rails console:
+Article.comments           #=> будет ошибка тк у модели нет такого свойства comments
+@article = Article.find(1) #=> но если создать объект с одной статьей ...
+@article.comments          #=> ... то мы получаем доступ к списку всех комментов для этой статьи
+@article.comments.create(:author => 'Foo', :body => 'Bar') #=> создание коммента для данной статьи, через сущность статьи
 
 
 # 3. Напишем маршрут. У нас в /config/routes.rb есть строка:
@@ -86,15 +96,6 @@ end
 # Тут article_id то что в маршрутах articles являлось id, тут id это айди коммента
 
 
-# Посмотрим в rails console:
-Article.comments           #=> будет ошибка тк у модели нет такого свойства comments
-@article = Article.find(1) #=> но если создать объект с одной статьей ...
-@article.comments          #=> ... то мы получаем доступ к списку всех комментов для этой статьи
-@article.comments.create(:author => 'Foo', :body => 'Bar') #=> создание коммента для данной статьи, через сущность статьи
-Comment.last
-Comment.all                # все комменты ко всем статьям
-
-
 # 4. Добавим форму для комментариев на '/articles/id'  show.html.erb (Вывод комментариев там же)
 
 
@@ -105,7 +106,7 @@ class CommentsController < ApplicationController
   # Создадим метод create в /app/controllers/comments_controller.rb:
   def create # post '/articles/:article_id/comments'
     @article = Article.find(params[:article_id]) # :article_id тк это контроллер Comments и его карта маршрутов
-    @article.comments.create(comment_params) # создаем комментарий через сущность статьи
+    @article.comments.create(comment_params) # создаем комментарий через сущность статьи(так мы точно знаем что такая статья есть)
 
     # https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
 

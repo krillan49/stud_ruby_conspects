@@ -34,6 +34,10 @@ link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdo
   t I18n.locale
 end
 
+# tag - позволяет прописывать тег, его значение и другие параметры
+tag.div v, class: "alert", role: 'alert'
+# .div - в представлении поместится тег div
+# v  - значение/содержание тега
 
 # debug, тут выведет список параметров, чтобы их отслеживать
 debug(params)
@@ -45,11 +49,6 @@ simple_format(@foo)
 
 # А, также truncate - если есть длинная строка, то обрезается на строки под указанный размер:
 truncate(@foo, length: 20)
-
-# tag - позволяет прописывать тег, его значение и другие параметры
-tag.div v, class: "alert", role: 'alert'
-# .div - в представлении поместится тег div
-# v  - значение/содержание тега
 
 
 puts

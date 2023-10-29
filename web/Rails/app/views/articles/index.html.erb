@@ -5,6 +5,8 @@
   <h3><%= article.title %></h3>
   <p><%= article.text %></p>
 
+  <!--                                           Ссылки -->
+
   <!-- Можно писать и как в Синатре, но тогда получится хардкод: -->
   <a href="/articles/<%= article.id %>">Show article</a>
   <a href="/articles/<%= article.id %>/edit">Edit article</a>
@@ -28,7 +30,7 @@
   <!-- В Рэилс 6 была такая например ссылка для удаления, в 7й для такого необходимо подключить UJS -->
   <%= link_to 'Destroy', question_path(question), data: {method: :delete, confirm: 'Are you sure?'} %>
 
-    <!-- Ссылка выглядит так(не добавляет форму): -->
+    <!-- Ссылка выглядит так(не добавляет форму (?? в Рэилс 7 ??)): -->
       <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a>
     <!-- Кнопка выглядит так(добавляет форму): -->
       <form class="button_to" method="post" action="/articles/2">

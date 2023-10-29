@@ -100,6 +100,7 @@ puts '                                     Rails console(работа с мод�
 Contact.all #=> SELECT "contacts".* FROM "contacts"  => []
 Article.find(6) #=> SELECT "articles".* FROM "articles" WHERE "articles"."id" = ? LIMIT ?  [["id", 6], ["LIMIT", 1]]
 Contact.attribute_names #=> ["id", "email", "message", "created_at", "updated_at"] # узнать какие свойства(поля) у сущности
+Comment.last
 
 
 puts
