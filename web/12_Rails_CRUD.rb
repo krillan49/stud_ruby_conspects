@@ -202,8 +202,10 @@ class Question < ApplicationRecord
 
   # Создадим метод в модели
   def formatted_created_at
-    self.created_at.strftime('%Y-%m-%d %H:%M:%S') # можно с self
-    created_at.strftime('%Y-%m-%d %H:%M:%S') # но можно и просто тк created_at это инстанс метод модели
+    # можно с self
+    self.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    # но можно и просто тк created_at это инстанс метод модели
+    created_at.strftime('%Y-%m-%d %H:%M:%S')
   end
 end
 

@@ -1,15 +1,16 @@
-puts '                                               Sinatra + CSS'
+puts '                                           Sinatra + CSS'
 
 # фаил стилей styles.css(название можно любое) создаем в папке public(например public/css/styles.css)
 
 
 puts
-puts '                                                Bootstrap'
+puts '                                             Bootstrap'
 
 # https://getbootstrap.com/docs/5.3/getting-started/download/  (возможно инфа по совместимости с Руби)
 
 
-# (gem install sinatra-bootstrap  -    команда из комментов к уроку)
+# gem install sinatra-bootstrap    -    команда из комментов к уроку(альтернатива способу 2 ??)
+
 
 # Подключение:
 
