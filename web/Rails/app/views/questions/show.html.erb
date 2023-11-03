@@ -2,6 +2,7 @@
 <h1 class="mb-4"><%= @question.title %></h1>
 <!-- @question прописан и в create контроллере Answers, нужно на случай с непройденной валидацией и рендером этой страницы -->
 
+<!-- formatted_created_at - наш кастомный хэлпер, нужно прописать в модель Question -->
 <time datetime="<%= @question.formatted_created_at %>">
   <%= @question.formatted_created_at %>
 </time>
@@ -26,7 +27,7 @@
 <!-- Используем общий паршал для ошибок  -->
 <%= render 'shared/errors', object: @answer %>
 
-<%= form_with model: [@question, @answer] do |f| %>
+<%= form_with model: [@question, @answer] do |f| %> <!-- post '/questions/:question_id/answers' -->
 <!-- @answer = @question.answers.build  для создагия URL прописали в экшене show Questions -->
 
   <div class="mb-3 row">
@@ -43,6 +44,11 @@
 <% end %>
 
 
+<!-- Вариант 2: Можно прописать весь этот код формы прямо тут, а можно вынести в отдельный паршал формы в answers/_form.html.erb, причем поместить туда и фому и паршал ошибок. Что удобно тк эту форму вместе с паршалом ошибок можно использовать и в answers/edit.html.erb -->
+<%= render 'answers/form' %>
+<!-- И просто рендерим паршал формы из дркугой директории сюда используя путь с директорией, тк тут директория questions -->
+
+
 
 <!--                                           Вывод всех ответов -->
 <h2 class="mt-5">Answers</h2>
@@ -53,7 +59,7 @@
 
   <article class="mb-3">
 
-    <!-- formatted_created_at - наш кастомный хэлпер, нужно прописать в модель -->
+    <!-- formatted_created_at - наш кастомный хэлпер, нужно прописать в модель Answer -->
     <time datetime="<%= answer.formatted_created_at %>">
       <%= answer.formatted_created_at %>
     </time>
@@ -62,8 +68,10 @@
       <%= answer.body %>
     </p>
 
+    <!--                           Ссылки удаления, редактирования -->
     <%= link_to 'Delete', question_answer_path(@question, answer), data: {method: :delete, confirm: "Are you sure?"} %>
-    <!-- question_answer_path(@question, answer) - передаем 2 параметра тк для URL нам нужны оба айдишника, важно сохранить порядок чтою обладающая сущность стояла первой. Получим URL /questions/2/answers/2 -->
+    <!-- question_answer_path(@question, answer) - передаем 2 параметра тк для URL нам нужны оба айдишника, важно сохранить порядок чтоб обладающая сущность стояла первой. Получим URL /questions/2/answers/2 -->
+    <%= link_to 'Edit', edit_question_answer_path(@question, answer), class: 'btn btn-info btn-sm' %>
 
   </article>
 <% end %>

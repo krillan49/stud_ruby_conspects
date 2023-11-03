@@ -20,6 +20,8 @@ puts '                                            Типы связей(AR)'
 # id                                |  tag_id, article_id    |  id
 # has_and_belongs_to_many :articles |                        |  has_and_belongs_to_many :tags
 
+
+
 # Изучить: http://www.rusrails.ru/active-record-associations#foreign_key
 
 
@@ -81,7 +83,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_04_075512) do
   create_table "comments", force: :cascade do |t|
     # ...
     t.integer "article_id", null: false # поле для foreign_key ссылающееся на поле id таблицы articles
-    t.index ["article_id"], name: "index_comments_on_article_id"
+    t.index ["article_id"], name: "index_comments_on_article_id"  # по умолчанию для foreign_key создается и индекс
   end
 
   add_foreign_key "comments", "articles"
@@ -98,11 +100,13 @@ end
 
 
 # Посмотрим в rails console:
-Article.comments           #=> будет ошибка тк у модели нет такого свойства comments
+Article.comments           #=> будет ошибка тк у самой модели нет такого свойства comments
 @article = Article.find(1) #=> но если создать объект с одной статьей ...
 @article.comments          #=> ... то мы получаем доступ к списку всех комментов для этой статьи
+
 # Создание через create:
 @article.comments.create(:author => 'Foo', :body => 'Bar') #=> создание коммента для данной статьи, через сущность статьи
+
 # Создание через build:
 q = Question.first         #=> #<Question:0x0000024c7357e5b0  #->
 # SELECT "questions".* FROM "questions" ORDER BY "questions"."id" ASC LIMIT ?  [["LIMIT", 1]]
@@ -114,12 +118,19 @@ a.save #=> true #->
 # INSERT INTO "answers" ("body", "question_id", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["body", "My first answer"], ["question_id", 2], ["created_at", "2023-11-01 08:29:29.370745"], ["updated_at", "2023-11-01 08:29:29.370745"]]
 q.answers #=> [ #<Answer:0x0000024c7358dc90 id: 1, body: "My first answer", question_id: 2, created_at: Wed, 01 Nov 2023 08:29:29.370745000 UTC +00:00, updated_at: Wed, 01 Nov 2023 08:29:29.370745000 UTC +00:00>]
 
+# build и new работают с ассоциациями одинаково ?? Для рельсов 2.2 и более поздних версий new и build делают то же самое для отношений has_many и has_and_belongs_to_many.
+q.answers.build #=> #<Answer:0x000001fa4a53f958 id: nil, body: nil, question_id: 4, created_at: nil, updated_at: nil>
+q.answers.new   #=> #<Answer:0x000001fa47c4bc90 id: nil, body: nil, question_id: 4, created_at: nil, updated_at: nil>
+
+# https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
+
 
 # 3. Напишем маршрут. У нас в /config/routes.rb есть строка:
 resources :articles
 # Изменим ее и сделаем вложенный маршрут:
 resources :articles do
-  resources :comments # создает список маршрутов по REST, но вложенный(одни ресурсы в других)
+  resources :comments, exсept: %i[new show] # создает карту маршрутов по REST, но вложенный(одни ресурсы в других)
+  # exсept: %i[new show] - (для AskIt) создадим все маршруты кроме указанных в параметре
 end
 # article_comments_path     GET      /articles/:article_id/comments          comments#index
 # new_article_comment_path  GET      /articles/:article_id/comments/new      comments#new
@@ -133,7 +144,7 @@ end
 
 
 # 4a. Добавим форму для комментариев на '/articles/id'  articles/show.html.erb (Вывод комментариев там же)
-# 4b. Либо вариант для form_with(там же путь ссылки на связанную сущность) и проекта AskIt questions/show.html.erb
+# 4b. Либо вариант для form_with(там же про путь ссылки на связанную сущность) и проекта AskIt questions/show.html.erb
 
 
 # 5a. Добавляем контроллер для комментариев
@@ -142,10 +153,8 @@ end
 class CommentsController < ApplicationController
   # Создадим метод create в /app/controllers/comments_controller.rb:
   def create # post '/articles/:article_id/comments'
-    @article = Article.find(params[:article_id]) # :article_id тк это контроллер Comments и его карта маршрутов
+    @article = Article.find(params[:article_id]) # используем :article_id тк это контроллер Comments и его карта маршрутов
     @article.comments.create(comment_params) # создаем комментарий через сущность статьи(так мы точно знаем что такая статья есть)
-
-    # https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
 
     redirect_to article_path(@article) # get '/articles/id'  articles#show
   end
@@ -157,11 +166,13 @@ class CommentsController < ApplicationController
   end
 end
 
-# 5b. answer_controller.rb
+# 5b. (AskIt) answer_controller.rb
 class AnswersController < ApplicationController
   before_action :set_question!
+  before_action :set_answer!, except: :create
+  # Порядок before_action-ов важкен, тк нам сначала нужно найти вопрос и уже потом из его коллекции найти ответ
 
-  def create
+  def create # post '/questions/:question_id/answers'
     @answer = @question.answers.build answer_params # создаем сущность при помощи метода build
 
     if @answer.save
@@ -173,9 +184,21 @@ class AnswersController < ApplicationController
     end
   end
 
-  def destroy
-    answer = @question.answers.find params[:id]
-    answer.destroy
+  def edit
+    # set_answer!
+  end
+
+  def update
+    if @answer.update answer_params # set_answer!
+      flash[:success] = "Answer updated!"
+      redirect_to question_path(@question)
+    else
+      render :edit
+    end
+  end
+
+  def destroy # delete(get ??) '/questions/:question_id/answers/:id'
+    @answer.destroy # set_answer!
     flash[:success] = "Answer deleted!"
     redirect_to question_path(@question)
   end
@@ -189,6 +212,10 @@ class AnswersController < ApplicationController
   def set_question!
     @question = Question.find params[:question_id]
   end
+
+  def set_answer!
+    @answer = @question.answers.find params[:id]
+  end
 end
 
 # Экшен show контроллера Question
@@ -200,7 +227,7 @@ end
 
 # Настроим владеющую модель чтобы можно было удалять вопрос со всеми зависимыми ответами(сперва удаляет ответы а потом вопрос)
 class Question < ApplicationRecord
-  has_many :answers, dependent: :destroy # dependent: :destroy  - параметр который и позволит нам удалять
+  has_many :answers, dependent: :destroy # dependent: :destroy  - параметр который и позволит нам удалять вопросы у которых созданы принадлежащие им ответы
 end
 
 
