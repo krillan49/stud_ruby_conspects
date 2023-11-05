@@ -1,0 +1,57 @@
+<!--                      Лэйаут для демонстрации хэлперов для меню и второстепенных yield -->
+
+<!--  (helper) - в названии фаила просто для отличия, чтоб сделать не захламленную копию лэйаут -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <!--                      Хэлпер для названия вкладки с названием страницы -->
+
+    <!-- Интегрируем в тайтл значение хэлпера, с названием и сайта и конкретной страницы -->
+    <title><%= full_title(yield(:page_title)) %></title>
+    <!-- full_title - название/оператор нашего хэлпера -->
+    <!-- yield(:page_title) - дополнительный, не главный yield, принадлежащий параметру хэлпера -->
+    <!-- :page_title - название(можно любое)для конкретного yield -->
+    <!-- Теперь из вида, что подставлен в данный момент уже в главный елд(например questions/index.html.erb) из provide :page_title передастся в этот yield значение, определив его по имени :page_title и далее значение отправляется в хэлпер, обрабатывается и подставляется в название вкладки -->
+
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+  <body>
+
+    <!-- Интегрируем паршал _menu.html.erb но при помощи второстепенного yield вместо рэндер, тк по имени :main_menu из видов мы сможем передавать в этот yield то на какой мы странице меню находимся, чтобы подсветить нужную ссылку в меню отдельными стилями -->
+    <%= yield :main_menu %>
+
+
+    <main class="container mt-3">
+      <% flash.each do |k, v| %>
+        <%= tag.div v, class: "alert alert-#{k}", role: 'alert' %>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--   -->
