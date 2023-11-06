@@ -99,6 +99,10 @@ end
 # Таким образом мы связали 2 сущности между собой.
 
 
+# Дополнение1:
+Article.find(1).comments # этот синтаксис аналогичен ...
+Comment.where(article_id: Article.find(1).id) # ... этому(.id  - не обязательно)
+
 # Посмотрим в rails console:
 Article.comments           #=> будет ошибка тк у самой модели нет такого свойства comments
 @article = Article.find(1) #=> но если создать объект с одной статьей ...

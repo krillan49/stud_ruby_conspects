@@ -1,16 +1,22 @@
+<!--  Этот паршал рендерится в хэлпере currently_at -->
 
-<!--  provide :main_menu do оборачиваем блок, чтобы данное меню подставлялось в yield :main_menu в лэйаут -->
+<!--  provide :main_menu do  - оборачиваем меню в блок, чтобы передать его в yield :main_menu в лэйаут -->
 <%= provide :main_menu do %>
 
   <header class="p-3 bg-dark text-white">
     <div class="container">
       <nav class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><%= link_to 'Home', root_path, class: 'nav-link px-2 text-white' %></li>
-          <li><%= link_to 'Questions', questions_path, class: 'nav-link px-2 text-white' %></li>
+
+          <!--  Заменим link_to на наш хэлпер nav_tab, чтобы менять стили в зависимости от страницы, он будет принимать все теже параметры что и link_to, за исключением классов для цвета(хотя можно и полностью классы убрать и все определять в теле хэлпера) -->
+          <li><%= nav_tab 'Home', root_path, class: 'nav-link px-2', current_page: current_page %></li>
+          <!--  current_page: current_page  - используем как параметр элемент хэша, где локальная переменная current_page(тут со значением 'Questions'), которую мы задали в хэлпере currently_at будет значением, а символ :current_page ключем для хэша-параметра options в параметрах хэлпера nav_tab -->
+          <!-- В итоге сюда вернется ссылка возвращаемаая хэлпером nav_tab -->
+          <li><%= nav_tab 'Questions', questions_path, class: 'nav-link px-2', current_page: current_page %></li>
+
         </ul>
       </nav>
     </div>
   </header>
-  
+
 <% end %>

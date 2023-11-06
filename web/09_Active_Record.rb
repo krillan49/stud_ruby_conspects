@@ -245,6 +245,9 @@ Barber.order "created_at DESC" # получаем всю таблицу barbers(
 
 Contact.attribute_names #=> ["id", "email", "message", "created_at", "updated_at"] # узнать какие свойства(поля) у сущности
 
+# Чейнинг - запись методов подряд(но нужно чтобы возвращали то что подходит ??)
+Answer.where(question: @question).limit(2).order(created_at: :desc)
+
 
 puts
 puts '                                          Вывод в представления'
