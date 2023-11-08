@@ -415,6 +415,25 @@ class QuestionsController < ApplicationController
 end
 
 
+puts
+puts '                            Редирект по ссылке-якорю, после обновления сущности'
+
+# На примере AskIt и сущности Answer создающейся в виде questions/show.html.erb
+
+# 1. Допищем id для якоря в выводе каждого ответа в questions/show.html.erb
+
+# 2. Добавим в answers_controller.rb в экшен update
+def update
+  if @answer.update answer_params
+    flash[:success] = "Answer updated!"
+
+    # Указываем доп параметры в хэлпер URL-а:
+    redirect_to question_path(@question, anchor: "answer-#{@answer.id}") # редиректит на URL /questions/2#answer-6
+    # anchor: "answer-#{@answer.id}" - при помощи данного хэша редирект будет генерировать ссылку с указанным якорем
+  else
+    render :edit
+  end
+end
 
 
 

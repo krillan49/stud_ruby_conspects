@@ -7,9 +7,17 @@
   <%= @question.formatted_created_at %>
 </time>
 
-<p class="lead my-3">
+<!-- На примере вывода тела вопроса - хэлперы обработки тегов в тексте -->
+<div class="lead my-3">
+  <!-- 1. По умолчанию введенные пользователем в поле теги не обрабатываются, но их символы остаются -->
   <%= @question.body %>
-</p>
+  <!-- 2. html_safe - обрабатывает любые теги -->
+  <%= @question.body.html_safe %>
+  <!-- 3. sanitize - обрабатывает только безопасные теги -->
+  <%= sanitize @question.body %>
+  <!-- 4. Удаляет символы тегов, не обрабатывает их отавляя только текст из их тел -->
+  <%= strip_tags @question.body %>
+</div>
 
 <%= link_to 'Show', question_path(@question), class: 'btn btn-primary' %>
 <%= link_to 'Edit', edit_question_path(@question), class: 'btn btn-secondary' %>
@@ -57,7 +65,8 @@
 <!-- @answers = @question.answers.order created_at: :desc  -  прописали в экшене show контроллера Questions, похоже на хардкод вместо @question.answers -->
 <!-- Тоже самое прописали и в create контроллере Answers, нужно на случай с непройденной валидацией и рендером этой страницы -->
 
-  <article class="mb-3">
+  <article class="mb-3" id="answer-<%= answer.id %>">
+  <!-- id="answer-... - добавим id для ссылки-якоря, в которой значением будет id из БД конкретного ответа -->
 
     <!-- formatted_created_at - наш кастомный хэлпер, нужно прописать в модель Answer -->
     <time datetime="<%= answer.formatted_created_at %>">

@@ -17,7 +17,9 @@ puts '                                             Bootstrap'
 # Способ 1: CDN
 # CDN - это сеть доставки контента(content delivery network). Это сервера(в разных локациях для скорости загрузки) хранящие необходимые фаилы
 
-# Способ 2(лучше тк специальный для для синатры): https://github.com/bootstrap-ruby/sinatra-bootstrap(https://github.com/krdprog/rubyschool-notes/blob/master/one-by-one/lesson-21.md)
+# Способ 2(лучше тк специальный для для синатры):
+# https://github.com/bootstrap-ruby/sinatra-bootstrap
+# https://github.com/krdprog/rubyschool-notes/blob/master/one-by-one/lesson-21.md
 # В каталоге кторый нам нужен(например app) выполняем команды из ссылки:
 # 1.  git clone https://github.com/bootstrap-ruby/sinatra-bootstrap.git
 	#(клонируются все необходимые фаилы в каталоге sinatra-bootstrap в наш каталог)
