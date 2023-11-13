@@ -423,7 +423,7 @@ puts '                            Редирект по ссылке-якорю,
 
 # 1. Допищем id для якоря в выводе каждого ответа в questions/show.html.erb
 
-# 2. Добавим в answers_controller.rb в экшен update
+# 2а(Вариант 1 обычный). Добавим в answers_controller.rb в экшен update
 def update
   if @answer.update answer_params
     flash[:success] = "Answer updated!"
@@ -435,6 +435,22 @@ def update
     # "answer-#{@answer.id}" - значение которое и будет якорем
   else
     render :edit
+  end
+end
+
+# 2б(Вариант 2 с хэлпером dom_id). Добавим в answers_controller.rb в экшен update
+class AnswersController < ApplicationController
+  include ActionView::RecordIdentifier # по умолчанию метод dom_id в контроллерах не работает, поэтому нужно его подключить, если хотим его применить и в контроллере, но можно просто наисать в контроллере якорб в ручную как выше, а хэлпер использовать только в видах
+
+  def update
+    if @answer.update answer_params
+      flash[:success] = "Answer updated!"
+
+      redirect_to question_path(@question, anchor: dom_id(@answer))
+      # dom_id(@answer) - значение якоря 
+    else
+      render :edit
+    end
   end
 end
 
