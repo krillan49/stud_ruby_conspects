@@ -9,14 +9,14 @@ gem 'kaminari', '~> 1.2'
 # > bundle i
 
 
-# По умолчанию в kaminari есть базовая конфигурация, которая задает все параметры пагинации, но их можно изменить применяя методы к коллекции сущностей, либо сгенерировать конфигурацию и отредактировать:
+# По умолчанию в kaminari есть базовая конфигурация, которая задает все параметры пагинации, но их можно либо изменить применяя методы к коллекции сущностей, либо сгенерировать конфигурацию и отредактировать ее:
 # > rails g kaminari:config  -  сгенерирует фаил конфигурации config/initializers/kaminari_config.rb, где можно редактировать параметры пагинации
 
 
 # Разобьем по страницам на примере AskIt questions/index.html.erb и соотв контроллера questions_controller.rb
 def index
   @questions = Question.order(created_at: :desc).page(params[:page]).per(2)
-  # page params[:page] - метод kaminari который будет разбивать вопросы по отдельным страницам(по умолчаниюпо 25 штук)
+  # page - метод kaminari который будет разбивать вопросы по отдельным страницам(по умолчаниюпо 25 штук)
   # params[:page] - папаметр :page определяет какую страницу хочет запросить пользователь
   # При переключении страниц адрес меняется так /questions?page=2
   # per(2) - необязательный метод изменяющий колличество вопросов на страниице(по умолчанию 25)
@@ -39,9 +39,9 @@ puts '                                              Pagy'
 
 # https://ddnexus.github.io/pagy/
 # https://github.com/ddnexus/pagy
-# https://ddnexus.github.io/pagy/docs/migration-guide/   -  перейти с каминари или других гемов
+# https://ddnexus.github.io/pagy/docs/migration-guide/   -  перейти с Каминари или других гемов
 
-# pagy - гем для пагинации, альтернатива для kaminari, он чуть сложнее но работает быстрее особенно для большого коллич данных. Так же его возможности по кастомизации больше. Так же он может работать с самыми разными данными, а не только с Актив Рекорд. Поодержка бутстрап 5 уже есть.
+# pagy - гем для пагинации, альтернатива для kaminari, он чуть сложнее но работает быстрее особенно для большого коллич данных. Так же его возможности по кастомизации больше. Так же он может работать с самыми разными данными, а не только с Актив Рекорд. Поодержка бутстрап 5 есть при помощи хэлпера.
 
 
 
@@ -49,7 +49,7 @@ puts '                                              Pagy'
 
 # 1. Создаем конфигурационный фаил config/initializers/pagy.rb
 # https://github.com/ddnexus/pagy/blob/master/lib/config/pagy.rb   -  отсюда копируем весь код в config/initializers/pagy.rb
-# Далее добавим в config/initializers/pagy.rb строку
+# Далее добавим в config/initializers/pagy.rb строку:
 require 'pagy/extras/bootstrap' # Это специальные методы которые будут выводить пагинацию со стилями бутстрэп
 
 # 2. Gemfile - удалим каминари и добавим вместо него пэйджи
@@ -65,13 +65,29 @@ module ApplicationHelper
   include Pagy::Frontend
 end
 
-# 5. Заменим метод в экшенах контроллера questions_controller.rb с page(каминари) на синтаксис pagy
+# 5. Заменим в экшенах контроллера questions_controller.rb метод page(каминари) на синтаксис pagy
 def index
   @pagy, @questions = pagy Question.order(created_at: :desc)
   # pagy - метод создает массив из 2х элементов, поэтому помещаем их в переменные @pagy(зарезервировано ??) и @questions(наше название). Эти элементы это:
   # @pagy - специальный объект с помощью которого будет отрисовываться навигация
   # @questions - вопросы уже разбитые по страницам
   # адрес при переключении страниц будет /questions?page=1
+end
+def show
+  @answer = @question.answers.build
+  @pagy, @answers = pagy @question.answers.order(created_at: :desc)
+end
+# контроллер answers_controller.rb
+def create
+  @answer = @question.answers.build answer_params
+
+  if @answer.save
+    flash[:success] = "Answer created!"
+    redirect_to question_path(@question)
+  else
+    @pagy, @answers = pagy @question.answers.order(created_at: :desc)
+    render 'questions/show'
+  end
 end
 # Добавим в questions/index.html.erb специальный хэлпер pagy  - pagy_bootstrap_nav для того чтобы переключаться по страницам и сразу со стилями бутстрап.
 pagy_bootstrap_nav @pagy # Этот метод для бутстрап, есть и другие со всякими параметрами

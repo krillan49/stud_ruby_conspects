@@ -8,7 +8,9 @@ puts '                                             Авторизация'
 # Работа технологии: для того чтобы авторизоваться, пользователь подключается к серверу, посылает свой логин и пароль, а сервер возвращает ему уникальный Cookie(токен). Cookie остается у пользователя. Далее когда от данного пользователя поступает следующий запрос, то вместе с ним посылается эта уникальная Cookie, по ней сервер определяет состояние пользователя. Когда пользователь разлогинивается эта Cookie удаляется. Тоесть куки тут это временный идентификатор пользователя.
 
 # Сервер распознает Cookie с помощью криптографических алгоритмов, которые не требуют обращения к БД. Механизм шифрования основан на цифровой подписи.
+
 # В Rails главный секретный ключ(нужен чтобы устанавливать куки для пользователей) config.secret_key =(изначально закоменчен) находится /config/initializers/devise.rb
+
 # (можно залогиниться автоматически не зная логина и пароля но зная куки для сайта, пока не было разлогина и если куки не привязаны к айпи адресу)
 
 
@@ -25,11 +27,11 @@ session['key'] = 'value'
 puts
 puts '                               Базовый способ регистрации и авторизации'
 
-# Ruby on Rails предоставляет максимально простой вариант системы авторизации на сайте. Все функции и действия уже прописаны но необходимо их активировать. Для добавления авторизации необходимо добавить команду http_basic_authenticate_with в контроллере а также указать логин и пароль.
+# Rails предоставляет максимально простой вариант системы авторизации на сайте. Все функции и действия уже прописаны но необходимо их активировать. Для добавления авторизации необходимо добавить команду http_basic_authenticate_with в контроллере а также указать логин и пароль.
 
 # Существует две конструкции:
-# «except» - указываем страницы что будут доступны для незарегистрированных пользователей;
-# «only» - указываем страницы что будут доступны только для зарегистрированных пользователей.
+# except (кроме) - указываем страницы что будут доступны для незарегистрированных пользователей;
+# only (только) - указываем страницы что будут доступны только для зарегистрированных пользователей.
 
 # На примере blog_ip и его контроллера posts:
 class PostsController < ApplicationController
@@ -42,6 +44,114 @@ end
 # В итоге при попытке зайти на не разрешенную гостю страницу, будет вызванно всплывающее окно с выше заданными полями, если значения не верны то перевызовется, если нажать отмена то выдаст пустую страницу с сообщением, а если верны, то произойдет вход
 # Пользователь както сохраняется(через куки??)
 # Хз как выйти из "акаунта" ??
+
+
+puts
+puts '                               Способы для авторизаци и регистрации на Рэилс'
+
+# 1. Можно использовать строронние решения(гемы), такие как:
+# Devise
+# Clearance
+# Sorcery
+
+# 2. Сделать собственное решение, не такое сложное и навороченое, как например Devise
+
+
+puts
+puts '                               Кастомный способ регистрации и авторизации'
+
+# (На примере AskIt)
+
+# 1. подключим гем bcrypt-ruby для хэширования(криптографич алгоритмы) паролей
+# Обычный пароль не подойдет, тк он будет доступен из БД любому разрабу, поэтому нужно хэширование, тоесть делаем из пароля строку символов при помощи хэширования, когда пользователь вводит пароль, он тоже хэшируется и сравниваются 2 эти строки.
+# https://github.com/bcrypt-ruby/bcrypt-ruby
+# В Gemfile он есть по умолчанию просто его нужно раскомментировать
+gem "bcrypt", "~> 3.1.7"
+# > bundle i
+
+# В Рэилс уже есть встроенный метод has_secure_password, для работы с этим гемом
+# https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html
+has_secure_password(attribute = :password, validations: true)
+# password - виртуальный атрибут, на его основе необходимо назвать наши атрибуты XXX_digest, XXX_confirmation, XXX_challenge
+
+
+# 2. сгенерируем модель User с использованием антрибута password_digest от bcrypt-ruby
+# > rails g model User email:string name:string password_digest:string
+
+# Миграция ..._create_users.rb
+def change
+  create_table :users do |t|
+    t.string :email, null: false, index: {unique: true} # Добавим атрибуты null: false - чтобы поле обязательно было заполнено, index: {unique: true} - индекс для ускорения и проверки уникальности имэиля, чтобы не было 2 одинаковых. Это проверки на уровне БД, тоесть они будут сделаны любом формате обращения в БД, хоть нарямую, поэтому неплохо самые важные данные проверять и тут, а не только в модели
+    t.string :name
+    t.string :password_digest
+
+    t.timestamps
+  end
+end
+# > rails db:migrate
+
+# Модель user.rb
+class User < ApplicationRecord
+  # добавим метод bcrypt-ruby, тут по умолчанию, но можно добавить всякие настройки
+  has_secure_password
+  # назначим базовые валидации(происходят уже на уровне програмного кода, только при создании через Рэилс):
+  validates :email, presence: true, uniqueness: true
+  validates :name, presence: true
+end
+
+# Проверим в консоли Рэилс(> rails c)
+u = User.new #=> #<User:0x0000015823feddb0 id: nil, email: nil, name: nil, password_digest: nil, created_at: nil, updated_at: nil>
+# Метод has_secure_password добавит 2 виртуальных атрибута password и password_confirmation:
+u.password #=> nil    # пароль
+u.password_confirmation #=> nil   # подтверждение пароля
+# виртуальные атрибуты это те, которые можно вызывать на экземпляре класса, но которые не существуют в БД, тоесть ни пароль ни подтверждение пароля не попадут в БД и нужны только для того, чтобы пользователь мог ввести пароль в форму для того чтобы мы его обработали, но в БД попадет только password_digest - хэшированный пароль.
+# Зарегистрируемся:
+u.password = "test" #=> "test"
+u.password_confirmation = "test" #=> "test"
+u.email = "test@test.com" #=> "test@test.com"
+u.name = "aaa" #=> "aaa"
+u.save #=> true # далее видно что в БД создался password_digest - захешированный пароль, значение которого скрыто для доп защиты ??
+# INSERT INTO "users" ("email", "name", "password_digest", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)  [["email", "testtest.com"], ["name", "aaa"], ["password_digest", "[FILTERED]"], ["created_at", "2023-11-15 11:45:31.167301"], ["updated_at", "2023-11-15 11:45:31.167301"]]
+# Если посмотреть через sqlite3:
+# 1|testtest.com|aaa|$2a$12$RdiNXOPOIqzs6dd9mRS.c.AlGKBjWBcalMeKR90g93.0TKd4qCJku|2023-11-15 11:45:31.167301|2023-11-15 11:45:31.167301
+
+# метод для того чтобы пустить юзера в систему, он принимает пароль, хэширует его, сравнивает со значением хэшированного пароля в поле password_digest и возврвщает true(объект пользователя) или false
+u.authenticate "notright" #=> false
+u.authenticate "test" #=> #<User:0x0000015823feddb0 id: 1, email: "testtest.com", name: "aaa", password_digest: "[FILTERED]", created_at: Wed, 15 Nov 2023 11:45:31.167301000 UTC +00:00, updated_at: Wed, 15 Nov 2023 11:45:31.167301000 UTC +00:00>
+
+
+# 3. Создадим маршруты для users
+Rails.application.routes.draw do
+  resources :users, only: %i[new create]
+end
+
+
+# 4. создадим контроллер users_controller.rb
+class UsersController < ApplicationController
+  def new
+    @user = User.new
+  end
+
+  def create
+    @user = User.new user_params
+    if @user.save
+      session[:user_id] = @user.id
+      flash[:success] = "Welcome to the app, #{@user.name}!"
+      redirect_to root_path
+    else
+      render :new
+    end
+  end
+
+  private
+
+  def user_params
+    params.require(:user).permit(:email, :name, :password, :password_confirmation)
+  end
+end
+
+
+
 
 
 
