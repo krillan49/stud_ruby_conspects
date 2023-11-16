@@ -326,6 +326,42 @@ bmw.auto_pilot_program #=> (NoMethodError) # attr_writer - нельзя выво
 
 
 puts
+puts '                               Что под капотом у атрибутов. Кастомный accessor'
+
+# attr_reader, attr_writer и attr_accessor - это операторы соотв методов класса(какого ?), которые встроены, принимающие значения переменых аргументами и создающие одноименные сеттеры и геттеры
+# Соотв помещая такой оператор вызова с параметрами, мы исполняем его, вызывая метод и создавая сеттеры и геттеры
+class SuperFoo
+  attr_accessor :data
+
+  def initialize
+    @data = {}
+  end
+
+  def SuperFoo.data_accessor(*args)
+    args.each do |meth|
+      define_method(meth.to_s){ @data[meth] } # в блоке тело метода, он сработает при обращении к методу
+      define_method(meth.to_s + '='){|v| @data[meth] = v } # имя значение переменной будем хранить в хэше
+      # В итоге мы определим геттер и сеттер для переменных которые зададим параметрами в качстомный акссессор
+    end
+  end
+end
+
+class SubFoo < SuperFoo
+  data_accessor :fizz, :pi # тут мы вызываем метод SuperFoo.data_accessor(*args) и создаем сеттеры и геттеры для переменных, имена и значения которых будем хранить в @data
+end
+
+sub_foo = SubFoo.new
+
+sub_foo.fizz = "FIZZ"
+p sub_foo.fizz #=> "FIZZ"
+sub_foo.pi = 3.14
+p sub_foo.pi #=> 3.14
+
+p sub_foo.data #=> {:fizz => "FIZZ", :pi => 3.14}
+p sub_foo.instance_variables #=> [:@data]
+
+
+puts
 puts '                                    alias_method(псевдонимы методов в классе)'
 
 # При помощи кодового слова alias_method можно сделать вызов одного метода разными атрибутами, названием метода и новым произвольным атрибутом.
@@ -493,4 +529,4 @@ end
 
 
 
-# 
+#
