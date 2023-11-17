@@ -147,6 +147,8 @@ puts '                                      Factory Bot. Настройка'
 
 # Factory Bot - помогает при тестировании, чтобы не создавать в AR объекты для теста и тестовую БД, вместо этого создаётся фабрика, и она будет создавать нам объекты для теста. Это соотв принципу DRY тк не нужно создавать тестовую БД
 
+# ?? Создается именно в БД просто данные после теста затираются ??
+
 # Раньше был другой гем gem Factory Girl(устарел)
 # https://github.com/thoughtbot/factory_bot/blob/v4.9.0/UPGRADE_FROM_FACTORY_GIRL.md
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md

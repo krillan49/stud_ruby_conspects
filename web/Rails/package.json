@@ -14,7 +14,8 @@
     "webpack-cli": "^5.1.4",
 
     "@rails/ujs": "^6.0.0",
-    
+    "turbolinks": "^5.2.0"
+
   },
   "scripts": {
     "build": "webpack --config webpack.config.js",
