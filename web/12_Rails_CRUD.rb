@@ -447,13 +447,41 @@ class AnswersController < ApplicationController
       flash[:success] = "Answer updated!"
 
       redirect_to question_path(@question, anchor: dom_id(@answer))
-      # dom_id(@answer) - значение якоря 
+      # dom_id(@answer) - значение якоря
     else
       render :edit
     end
   end
 end
 
+
+puts
+puts '                                Миграция обновления свойства поля'
+
+# AskIt
+
+# Сделаем миграцию которая запретит значения NULL в полях таблиц questions и answers(валидация на уровне БД)
+
+# > rails g migration add_missing_null_checks
+
+# db/migrate/20231119083044_add_missing_null_checks.rb
+class AddMissingNullChecks < ActiveRecord::Migration[7.0]
+  def change
+    change_column_null :questions, :title, false
+    # change_column_null - метод длятого чтобы запретить/разрешить NULL в колонке
+    # :questions, :title - названия таблицы и ее поля
+    # false - означает, что значения NULL быть не может в данной колонке
+    change_column_null :questions, :body, false
+    change_column_null :answers, :body, false
+  end
+end
+
+# > rails db:migrate
+
+# Теперь в схеме эти колонки получили опцию null: false
+t.string "title", null: false
+
+# При такой миграции никакие данные потеряны не будут
 
 
 

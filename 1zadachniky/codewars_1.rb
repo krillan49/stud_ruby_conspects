@@ -25,6 +25,8 @@ class Breaker
       @piece_border = []
     end
     make_pieces
+    res = reject_bad_pieces
+    res.map{|arr| arr.map(&:join).join("\n")}#.join("\n")
   end
 
   def find_start_cross
@@ -67,7 +69,7 @@ class Breaker
   end
 
   def make_pieces # create pieces using strokes
-    @pieces.map do |piece|
+    @pieces.map! do |piece|
       arr = []
       piece.map do |y, x|
         arr[y] = [] if !arr[y]
@@ -99,7 +101,17 @@ class Breaker
       end
       arr = arr.map{|a| a[im..jm]} # cut off the excess on the right and left
       arr = delete_pluses_in_lines(arr)
-      arr.map(&:join).join("\n")
+      # arr.map(&:join).join("\n")
+    end
+  end
+
+  def reject_bad_pieces # отбраковываем куски где под '-' находится '|'
+    @pieces.reject do |piece|
+      piece.find.with_index{|arr, i|
+        arr.find.with_index{|e, j|
+          e == '-' && piece[i+1] && piece[i+1][j] =='|'
+        }
+      }
     end
   end
 
@@ -133,7 +145,7 @@ end
 
 # грязный вариант для тестирования в редакторе
 class Breaker
-  attr_reader :ceils
+  # attr_reader :ceils
   def initialize(shape)
     # @ceils_check - для проверки тк @ceils меняет элементы на ' '
     @ceils_check = shape.split("\n").map.with_index{|a, y| a.split('').map.with_index{|e, x| [[y, x], e]}}.flatten(1).to_h
@@ -157,6 +169,8 @@ class Breaker
       @piece_border = []
     end
     make_pieces
+    res = reject_bad_pieces
+    res.map{|arr| arr.map(&:join).join("\n")}#.join("\n")
   end
 
   def find_start_cross
@@ -191,7 +205,6 @@ class Breaker
     ([@piece_border[0]] + @piece_border.reverse[0..-2]).each do |y, x| # поиск вниз
       if @ceils[[y, x]] == '+'
         count = [[y+1, x], [y-1, x], [y, x+1], [y, x-1]].count{|i, j| @ceils[[i, j]] && ['+', '-', '|'].include?(@ceils[[i, j]])}
-        # p [i, count, @delete, [y, x]]
         @delete = count < 3 && @delete ? true : false
       end
       @delete_border << [y, x] if @delete
@@ -200,15 +213,13 @@ class Breaker
   end
 
   def make_pieces # создаем куски по обводкам
-    @pieces.map do |piece|
-      # p piece
+    @pieces.map! do |piece|
       arr = [] # для элементов куска
       piece.map do |y, x|
         arr[y] = [] if !arr[y]
         arr[y][x] = @ceils_check[[y, x]]
       end
 
-      # arr = arr.compact.map{|a| a.map{|e| e ? e : ' '}}  # старый вариант
       arr = arr.map.with_index do |a, i| # новый вариант(заполняем внутренне пространство элементами сетки и внешнее пробелами)
         if a
           zone = 0
@@ -234,7 +245,17 @@ class Breaker
       end
       arr = arr.map{|a| a[im..jm]} # обрезаем лишнее справа и слева
       arr = delete_pluses_in_lines(arr)
-      arr.map(&:join)#.join("\n") # возвращаем кусок в виде строки
+      # arr.map(&:join)#.join("\n") # возвращаем кусок в виде строки
+    end
+  end
+
+  def reject_bad_pieces # отбраковываем куски где под '-' находится '|'
+    @pieces.reject do |piece|
+      piece.find.with_index{|arr, i|
+        arr.find.with_index{|e, j|
+          e == '-' && piece[i+1] && piece[i+1][j] =='|'
+        }
+      }
     end
   end
 
@@ -263,7 +284,6 @@ end
 
 def break_evil_pieces(shape)
   return [] if shape == ''
-  # p shape.split("\n")
   breaker = Breaker.new(shape)
   # breaker.find_start_cross
   # breaker.find_piece
@@ -272,5 +292,5 @@ def break_evil_pieces(shape)
   # breaker.ceils.map{|k, v| v}.each_slice(shape.split("\n")[0].size).map(&:join)
 end
 
-shape = " ++ ++ ++\n || || ||\n || || ||\n+++-++-++--------------+\n|                      |\n++-++-++---------------+\n|| || ||\n|| || ||\n++ ++ ++"
+shape = "++\n||\n||\n||\n|+---------------+\n|             +--+\n|             |\n|             +--+\n+----------------+"
 pp break_evil_pieces(shape)

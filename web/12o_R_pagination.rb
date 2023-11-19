@@ -23,6 +23,7 @@ def index
 end
 # Добавим в questions/index.html.erb специальный хэлпер kaminari - paginate для того чтобы переключаться по страницам
 paginate @questions # Этот метод базовый, есть и другие со всякими параметрами
+
 # Если всего вопросов будет меньше или равно числу на одной странице то ссылки пагинации не будут отображаться
 
 
@@ -100,6 +101,17 @@ raw (pagy_bootstrap_nav @pagy).html_safe # вар 2: функция raw
 # > bundle u
 
 # 7. Удалим папку каминари с паршалами и фаил каминари из конфига
+
+# 8. Тк в pagy нет по умолчанию скрытия меню пагинации если всего одна страница, то сделаем это кастомно на примере questions/index.html.erb так же вынесем это в кастомный хэлпер pagination для удобства
+module ApplicationHelper
+  include Pagy::Frontend
+
+  def pagination(obj)
+    # obj - параметр принимающий @pagy
+    raw(pagy_bootstrap_nav(obj)) if obj.pages > 1
+    # raw - придется использовать его(почему это не == ?)
+  end
+end
 
 
 
