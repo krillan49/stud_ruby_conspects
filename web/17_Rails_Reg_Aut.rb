@@ -72,7 +72,7 @@ gem "bcrypt", "~> 3.1.7"
 # В Рэилс уже есть встроенный метод для модели has_secure_password, для работы с bcrypt гемом и виртуальными атрибутами
 # https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html
 has_secure_password(attribute = :password, validations: true)
-# password - встроенный виртуальный атрибут, на его основе необходимо назвать наш атрибут XXX_digest и виртуальные атрибуты XXX_confirmation, XXX_challenge
+# password - встроенный виртуальный атрибут, на его основе необходимо назвать наш атрибут XXX_digest и виртуальные атрибуты XXX_confirmation, XXX_challenge.
 
 
 # 2. сгенерируем модель User с использованием в генераторе антрибута password_digest от bcrypt-ruby
@@ -92,11 +92,10 @@ end
 
 # Модель user.rb
 class User < ApplicationRecord
-  # добавим метод bcrypt-ruby, тут по умолчанию, но можно добавить всякие настройки
+  # добавим метод bcrypt-ruby (можно добавить всякие настройки к нему) чтобы создать атрибуты и добавить метод authenticate
   has_secure_password
   # назначим базовые валидации(происходят уже на уровне програмного кода, только при создании через Рэилс):
   validates :email, presence: true, uniqueness: true
-  # validates :name, presence: true
 end
 
 # Проверим в консоли Рэилс(> rails c)
@@ -112,12 +111,12 @@ u.password = "test" #=> "test"
 u.password_confirmation = "test" #=> "test"
 u.email = "test@test.com" #=> "test@test.com"
 u.name = "aaa" #=> "aaa"
-u.save #=> true # далее видно что в БД создался password_digest - захешированный пароль, значение которого скрыто для доп защиты ??
+u.save #=> true # далее видно что в БД создался password_digest - захешированный пароль, его значение скрыто для доп защиты
 # INSERT INTO "users" ("email", "name", "password_digest", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)  [["email", "testtest.com"], ["name", "aaa"], ["password_digest", "[FILTERED]"], ["created_at", "2023-11-15 11:45:31.167301"], ["updated_at", "2023-11-15 11:45:31.167301"]]
 # Если посмотреть через sqlite3:
 # 1|testtest.com|aaa|$2a$12$RdiNXOPOIqzs6dd9mRS.c.AlGKBjWBcalMeKR90g93.0TKd4qCJku|2023-11-15 11:45:31.167301|2023-11-15 11:45:31.167301
 
-# authenticate - метод для того чтобы пустить юзера в систему, он принимает пароль, хэширует его, сравнивает со значением хэшированного пароля в поле password_digest и возврвщает true(объект пользователя) или false
+# authenticate - метод для того чтобы пустить(проверить) юзера в систему, он принимает пароль(строку), хэширует его, сравнивает со значением хэшированного пароля в поле password_digest и возврвщает true(объект пользователя) или false
 u.authenticate "notright" #=> false
 u.authenticate "test" #=> #<User:0x0000015823feddb0 id: 1, email: "testtest.com", name: "aaa", password_digest: "[FILTERED]", created_at: Wed, 15 Nov 2023 11:45:31.167301000 UTC +00:00, updated_at: Wed, 15 Nov 2023 11:45:31.167301000 UTC +00:00>
 
@@ -138,7 +137,7 @@ class UsersController < ApplicationController
     @user = User.new user_params
     if @user.save
       session[:user_id] = @user.id # используем механизм сессий для того чтобы пустить пользователя в систему(те поставить признак говорящий о том что пользователь зарегистрирован и вошел в систему). Сессия действует только ограниченное время, например пользователь закроет браузер и сессия закончится, те запись из хэша удалится. Сессия не может как куки запоминать пользователя и пускать его например на след день.
-      flash[:success] = "Welcome to the app, #{@user.name}!" # можем сразу использовать имя созданной сущьности в сообщении
+      flash[:success] = "Welcome to the app, #{@user.name}!" # можем сразу использовать имя созданной сущности в сообщении
       redirect_to root_path
     else
       render :new
@@ -169,12 +168,18 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :user_signed_in? # сделаем данные вспомогательные методы хэлперами, тоесть они будут доступны в представлениях
 end
 
+# 5-б. Чтобы не захламлять главный контроллер создадим новый консерн authentication.rb и поместим в него хэлперы из application_controller.rb и подключим его в application_controller.rb
+class ApplicationController < ActionController::Base
+  include Authentication
+end
+
 
 puts
 puts '                                          Декораторы. draper'
 
 # Хэлперы лежвт в глобальном пространстве имен, поэтому не всегда стоит их использовать, а можно воспользоваться декораторами
-# Декораторы нужны для того, чтобы добавлять к нашим объектам дополнительные методы и эти методы в себя включают логику с отображением именно этого объекта. Это чтото вроде вспомогательных методов но они живут не в глобальном промтранстве имен а только для тех объектов, для которых мы скажем
+
+# Декораторы нужны для того, чтобы добавлять к нашим объектам дополнительные методы и эти методы в себя включают логику с отображением именно этого объекта. Это чтото вроде вспомогательных методов но они живут не в глобальном промтранстве имен а только для тех объектов, для которых мы их назначим
 
 # draper - гем декоратор
 # https://github.com/drapergem/draper
@@ -195,16 +200,16 @@ end
 # > rails generate decorator User
 # app/decorators/user_decorator.rb
 class UserDecorator < ApplicationDecorator
-  delegate_all # это(создано при генерации) нужно чтобы делегировать неизвестные методы самому объекту, который мы декорируем. Например методы типа name email они будут делегированы туда в модель
+  delegate_all # это(создано при генерации) нужно чтобы делегировать неизвестные методы(изначальные методы, например name email) в Модель самому объекту, который мы декорируем. Тоесть если декорируемый объект вызовет метод которого нет в декораторе, то этот метод он получит от модели. Тоесть это чтото вроде super ??
 
-  # Создадим метод, который будет проверять есть ли у данного объекта имя или нет
+  # Создадим метод, который будет возвращаьб метод name если имя есть у объекта иначе вернет разпарсеный email
   def name_or_email
     return name if name.present? # если имя есть то просто его выведем
     email.split('@')[0] # если имени нет, то сделаем его из имэила, взяв строку до символа @
   end
 end
 
-# 3. Задекорируем юзера(сделаем юзера способным вызывать методы декоратора ??) прямо в хэлпере в в application_controller.rb (в том месте где его находим/определяем)
+# 3. Задекорируем юзера(сделаем юзера способным вызывать методы декоратора ??) прямо в хэлпере в application_controller.rb(или в соотв консерне) (в том месте где его находим/определяем)
 def current_user
   @current_user ||= User.find_by(id: session[:user_id]).decorate if session[:user_id].present?
   # decorate - метод который делает объект декорируемым
@@ -215,12 +220,11 @@ end
 # Теперь когда юзер не введет имя при регистрации, то будет использоваться его преобразованный email
 # Естественно в своих декораторах мы можем дополнительно прописать всякий другой функционал
 
-# 5. В users_controller.rb в экшен create тоже нужно добавить наш метод
+# 5. В users_controller.rb в экшен create тоже стоит добавить наш метод name_or_email вместо name
 def create
   @user = User.new user_params
   if @user.save
     session[:user_id] = @user.id
-    # flash[:success] = "Welcome to the app, #{@user.name}!" Заменим эту строку на ...
     flash[:success] = "Welcome to the app, #{current_user.name_or_email}!" # можно было бы и задекорировать @user, но удобнее использовать current_user, тк тут он уже доступен тк пользователь зарегистрирован и впущен в систему
     redirect_to root_path
   else
@@ -228,6 +232,8 @@ def create
   end
 end
 
+
+puts
 # 6. Сгенерируем дополнительный декоратор для вопроса для того чтобы поместить в него метод для форматирования даты из модели question.rb
 # > rails generate decorator Question
 # app/decorators/question_decorator.rb
@@ -267,9 +273,50 @@ end
 
 
 puts
-# 5. Чтобы не захламлять главный контроллер создадим новый консерн authentication.rb и поместим в него хэлперы из application_controller.rb и подключим его в application_controller.rb
-class ApplicationController < ActionController::Base
-  include Authentication
+puts '                                Log in/вход в систему(Создание сессии)'
+
+# Для этого создадим отдельные маршруты и контроллер для сессий(создания и удаления, тоесть входа и выхода из системы). (можно было бы создать доп маршруты и экшены для контроллера пользователя, но это было бы не лучшее решение)
+
+# 1. Создадим новый ресурс с маршрутами для создания(входа в систему) и удаления(выхода из системы) сессии
+Rails.application.routes.draw do
+  resource :session, only: %i[new create destroy] # создадим новый ресурс
+end
+
+# 2. Добавим в _menu.html.erb ссылку входа в систему на URL new_session_path те GET 'sessin/new'
+
+# 3. Создадим контроллер сессий sessions_controller.rb
+class SessionsController < ApplicationController
+  def new
+    # Никакого объекта создавать не нужно, тк ничего в базу вноситься не будет, а в форму просто введем URL
+    # вернет вид с формой sessions/new.html.erb
+  end
+
+  def create # Ничего в БД помещать не будем, а просто проверим, можно ли впустить пользователя или нет
+    user = User.find_by email: params[:email] # используем параметры по отдельным полям (ищем пользователя по его имэйлу)
+    if user&.authenticate(params[:password]) # используем метод authenticate для того чтобы проверить пользователя сравнив введенный хэшированный пароль с паролем из БД.
+    # & - добавим амперсант, тк user может вернуть nil и соотв вызов метода выдаст ошибку, а данный синтаксис вместо вызова метода в случае нил просто вернет nil
+
+      # вар 1 создаем для юзера сессию если все ок
+      session[:user_id] = user.id
+      # вар 2 но лучше вынести это в наш консерн authentication.rb в отдельный метод(тк далее эта логика может стать сложнее)
+      sign_in user # тоже применим и в контроллере юзеров
+
+      flash[:success] = "Welcome back, #{current_user.name_or_email}!"
+      redirect_to root_path
+    else
+      # вариант 1
+      flash[:warning] = "Incorrect email and/or password!" # не будем сообщать что точно введено неправильно, чтобы не упрощать жизнь злоумышленникам
+      redirect_to new_session_path
+      # вариант 2. Если мы хотим заново отрендерить форму, то к флэш сообщению нужно применить метод now
+      flash.now[:warning] = "Incorrect email and/or password!"
+      render :new
+    end
+  end
+
+  def destroy
+  end
+
+  # Разрешать параметры нам тут не нужно, тк ни в какие БД данные в этом контроллере заноситься не будут
 end
 
 

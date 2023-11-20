@@ -113,6 +113,23 @@ permitted.has_key?(:role) # => false
 
 
 puts
+# проверить params в приложении(AskIt session/create)
+def create
+  render plain: params.to_yaml # рэндерим params
+end
+#=>
+# --- !ruby/object:ActionController::Parameters
+# parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+#   authenticity_token: EIe2q9uVSAa_pnzea-Zw2Bhr9lIn5D1VHMS7UdCQWN4IY5zG6wPlIFsA7pP8d9zK49qTFdmG2vKFsG15eKWH9A
+#   email: kroker@mail.ru
+#   password: '123456'
+#   commit: Sign In!
+#   controller: sessions
+#   action: create
+# permitted: false
+
+
+puts
 puts '                                params и параметры из строки GET-запрса'
 
 # params - хранит и может вернуть данные из URL гет запроса

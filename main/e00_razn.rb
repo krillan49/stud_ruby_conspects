@@ -17,6 +17,14 @@
 p Kernel.methods #=> все методы, по которым можно посмотреть и другие методы
 
 
+# Защита от вызова метода от nil при помощи синтаксиса амперсанта &
+p nil&.some_meth #=> nil
+str1, str2 = 'aaa', nil
+p str1.split('') #=> ["a", "a", "a"]
+p str2.split('') #=> undefined method `split' for nil:NilClass (NoMethodError)
+p str2&.split('') #=> nil
+
+
 require 'some' # require - требовать
 
 # перевод 2ичной строки в 8битные числа перевод в 10чные и применение к ним .chr

@@ -15,6 +15,7 @@
           <li><%= nav_tab 'Questions', questions_path, class: 'nav-link px-2', current_page: current_page %></li>
         </ul>
 
+
         <!-- Кастомный способ регистрации и авторизации -->
         <ul class="nav col-12 col-lg-auto mb-2 mb-md-0">
           <!-- Используем наши кастомные хэлперы user_signed_in? и current_user -->
@@ -25,6 +26,8 @@
             <li><a class="nav-link px-2 text-white" href="#"><%= current_user.name_or_email %></a></li>
           <% else %>
             <li><%= nav_tab 'Sign Up', new_user_path, class: 'nav-link px-2', current_page: current_page %></li>
+            <!-- Log in/вход в систему(Создание сессии) -->
+            <li><%= nav_tab 'Log In', new_session_path, class: 'nav-link px-2', current_page: current_page %></li>
           <% end %>
         </ul>
 
