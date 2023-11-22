@@ -6,7 +6,7 @@
 <!-- в паршал выносить не будем тк эта форма используется только тут -->
 
 <%= form_with url: session_path do |f| %>
-<!-- url: session_path  - используем URL так как никакой таблицы модели и соотв объекта у нас нет -->
+<!-- url: session_path  - используем URL так как никакой таблицы модели и соотв объекта у нас нет, соответсвенно и значения атрибутов name будут простыми а не хэшем -->
 
   <!-- Будем делать аутотентификацию пользователя при помощи имэйла и пароля -->
   <div class="mb-3 row">
@@ -16,6 +16,7 @@
 
     <div class="col-sm-10">
       <%= f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg' %>
+      <!-- <input placeholder="E-mail" class="form-control form-control-lg" type="email" name="email" id="email" /> -->
     </div>
   </div>
 
@@ -26,8 +27,24 @@
 
     <div class="col-sm-10">
       <%= f.password_field :password, class: 'form-control form-control-lg' %>
+      <!-- <input class="form-control form-control-lg" type="password" name="password" id="password" /> -->
     </div>
   </div>
 
   <%= f.submit "Sign In!", class: 'btn btn-primary btn-lg' %>
 <% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->

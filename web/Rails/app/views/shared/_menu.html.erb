@@ -16,18 +16,35 @@
         </ul>
 
 
-        <!-- Кастомный способ регистрации и авторизации -->
+        <!--                        Кастомный способ регистрации и авторизации -->
         <ul class="nav col-12 col-lg-auto mb-2 mb-md-0">
           <!-- Используем наши кастомные хэлперы user_signed_in? и current_user -->
           <% if user_signed_in? %>
+
             <!-- 1 Обычный вариант с current_user.name -->
             <li><a class="nav-link px-2 text-white" href="#"><%= current_user.name %></a></li>
+
             <!-- 2 Вариант с декоратором если name опционально, те его может не быть -->
             <li><a class="nav-link px-2 text-white" href="#"><%= current_user.name_or_email %></a></li>
+
+            <!-- 3 Вариант с дропдаун меню из бутстрап (так же со ссылками удаления сессии и редактирования юзера) -->
+            <li class="dropdown">
+              <%= nav_tab current_user.name_or_email, '#',
+                class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'}, current_page: current_page %>
+                <!-- Заменим ссылку на наш варик с хэлпером заодно, если хотим отображать на какой мы странице -->
+              <ul class="dropdown-menu">
+                <li><%= link_to 'Edit profile', edit_user_path(current_user), class: 'dropdown-item' %></li>
+                <li><hr class="dropdown-divider"></li> <!-- разделитель для красоты -->
+                <li><%= link_to 'Log Out', session_path, class: 'dropdown-item', data: {method: :delete} %></li>
+              </ul>
+            </li>
+
           <% else %>
+
             <li><%= nav_tab 'Sign Up', new_user_path, class: 'nav-link px-2', current_page: current_page %></li>
             <!-- Log in/вход в систему(Создание сессии) -->
             <li><%= nav_tab 'Log In', new_session_path, class: 'nav-link px-2', current_page: current_page %></li>
+
           <% end %>
         </ul>
 

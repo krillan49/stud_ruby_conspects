@@ -250,7 +250,7 @@ Answer.where(question: @question).limit(2).order(created_at: :desc)
 
 
 puts
-puts '                                          Вывод в представления'
+puts '                                    Вывод данных из БД в представления'
 
 # Вывод становится намного проще тк нам больше не нужно думать о подключении БД в каждый метод, тк она подключена на весь фаил при помощи activerecord
 
@@ -267,9 +267,8 @@ class Barber < ActiveRecord::Base
 end
 
 
-# Запись данных в таблицу
 before do
-	@barbers = Barber.all # используем запрос для всех обработчиков
+	@barbers = Barber.all # используем запрос для всех обработчиков(втч Сохранение данных из формы)
 end
 
 get '/' do
@@ -278,15 +277,19 @@ end
 
 # Обработчик однотипных страниц: если список парикмахеров на главной странице со ссылками
 get '/barber/:id' do
-  @barber = Barber.find(params[:id]) # params[:id] - как и раньше принимает значение из адреса обработчика
+  @barber = Barber.find(params[:id]) # params[:id] принимает значение из URL
   erb :hq_barbershop_barber
 end
 
+
+puts
+puts '                                    Сохранение данных из формы'
+
+# 1. Сохранение данных в БД через отдельные параметры атрибута name (ламерский способ)
 get '/visit' do
 	erb :hq_barbershop_visit
 end
 
-# 1. Сохранение через Client.create(хэш)
 post '/visit' do
 	@username = params[:username]
 	@phone    = params[:phone]
@@ -294,20 +297,10 @@ post '/visit' do
 	@barber   = params[:barber]
 	@color    = params[:color]
 
-  # Записываем новые данные в БД(Создаем новую сущность клиента и вводим данные в БД через параметр-хэш, где значения ключей это названия столбцов в фаиле миграции)
+  # а. Сохранение через Client.create(хэш) - Записываем новые данные в БД(Создаем новую сущность клиента и вводим данные в БД через параметр-хэш, где значения ключей это названия столбцов в фаиле миграции)
   Client.create(name: @username, phone: @phone, datestamp: @datetime, barber: @barber, color: @color)
 
-	erb "OK, username is #{@username}, #{@phone}, #{@datetime}, #{@barber}, #{@color}"
-end
-
-# 2. Сохранение через Client.new в столбик(тоже ламерский способ)
-post '/visit' do
-	@username = params[:username]
-	@phone    = params[:phone]
-	@datetime = params[:datetime]
-	@barber   = params[:barber]
-	@color    = params[:color]
-
+  # б. Сохранение через Client.new в столбик
   c = Client.new
   c.name = @username
   c.phone = @phone
@@ -319,14 +312,15 @@ post '/visit' do
 	erb "OK, username is #{@username}, #{@phone}, #{@datetime}, #{@barber}, #{@color}"
 end
 
-# 3. Сохранение данных в БД тру способом(без отдельных параметров и кучи переменных)
+
+# 2. Сохранение данных в БД через общий параметр-хэш (тру способ)
 get '/visit' do
   # Чтобы данный способ работал нужно изменить значения атрибутов name в виде hq_barbershop_visit_true
 	erb :hq_barbershop_visit_true
 end
 
 post '/visit' do
-  c = Client.new params[:client] # Вместо client можно написать что угодно(главное в виде написать тоже самое название  client[имя_столбца]). В итоге мы получаем хэш со всеми значениями полей обозначенными названиями колонок БД для них.
+  c = Client.new params[:client] # Вместо client можно написать что угодно(главное в виде написать тоже самое название  client[имя_столбца]). В итоге мы получаем хэш со всеми значениями полей миграции.
   # К нам на сервер так и передается например 'client[name]' потом уже обрабатывается и получается хэш(в классе Client ??)
   # params[:client] = name: 'Имя', phone: '98766876', datestamp: 'дата', barber: 'Вася', color: '#6d7a80'
   c.save
@@ -336,7 +330,7 @@ end
 
 
 puts
-puts '                                       Валидация и метод validates'
+puts '                                       Валидация: метод validates'
 
 # https://guides.rubyonrails.org/active_record_validations.html  -   Active Record Validations — Ruby on Rails Guides
 
@@ -345,7 +339,7 @@ puts '                                       Валидация и метод va
 # Хоть валидация и выполняется автоматически, но нужно ее настроить в модели(в Синатре в app.rb) к которой относятся данные при помощи метода validates. Настройки могут позволить проводить валидацию по различным параметрам: длинна строки, значение строки итд.
 
 class Client < ActiveRecord::Base
-  validates :name, presence: true  # проверка на то чтобы значение для столбца name не было пустым(NULL или '' ??)
+  validates :name, presence: true  # проверка на то чтобы значение поля name не было пустым
   # :name - название столбца для проверки
   # presence: true -  хэш с условиями проверки.
   validates :phone, presence: true, length: { minimum: 6 }  # можжно делать по нескольким типам проверки сразу
@@ -354,19 +348,18 @@ class Client < ActiveRecord::Base
 
   #                           Некоторые другие популярные методы проверки:
 
-  #     1. length - проверяем по допустимой длинне
-  validates :name, length: { minimum: 2 }             # minimum - длинна не менее чем
-  validates :bio, length: { maximum: 500 }            # maximum - длинна не более чем(можно указать одновременно с предыдущим)
+  # 1. length - проверяем по допустимой длинне
+  validates :name, length: { minimum: 2 }             # minimum - длинна не менее чем(можно указать одновременно с maximum)
+  validates :bio, length: { maximum: 500 }            # maximum - длинна не более чем(можно указать одновременно с minimum)
   validates :password, length: { in: 6..20 }          # in - допустимая длинна находится в интервале
   validates :registration_number, length: { is: 6 }   # is - точное указание длинны
 
-  #     2. inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
+  # 2. inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
   validates :size, inclusion: { in: %w(small medium large), message: "%{value} is not a valid size" }
 
   # numericality: true - проверка, введены ли числа
-
 end
-# если больше ничего не добавлять для валидации в программе, то будет просто не сохранять в БД, если проверка не пройдена, те метод вернул false и чтобы ошибка както отображалась, нужно это дополнительно проверить.
+# если больше ничего не добавлять для валидации в программе, то будет просто не сохранять в БД, если проверка не пройдена, те метод вернул false, но чтобы ошибка както отображалась, нужно это дополнительно проверить.
 
 # Если мы проверим незаполненного клиента в tux то:
 c = Client.new     #=> #<Client id: nil, name: nil, phone: nil, datestamp: nil, barber: nil, color: nil, created_at: nil, updated_at: nil>
@@ -396,7 +389,7 @@ post '/visit' do
   if @c.save # валидация проводится по условиям из модели, вносит или не вносит Client.new в базу и возвращает true или false
 		erb "<p>Thank you!</p>" # тут мб лучше редирект
 	else
-    # В значения временной сущности добавляются пустые строки в незаполненных столбцах
+    # В значения временной сущности добавляются пустые строки в незаполненных столбцах(??)
 
     @error = @c.errors.full_messages.first #=> из хэша ошибок(errors) вернет массив значений(["Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank"] ?? почемуто 3 раза ??) и выберет из них первую, тоесть сообщит о первом из незаполненных полей.
 		erb :hq_barbershop_visit_true
@@ -405,11 +398,11 @@ end
 
 
 puts
-puts '                         Значения по умолчанию у столбца в миграции. Pizzashop'
+puts '                           Значения по умолчанию у столбца в миграции'
 
 # На примере Pizzashop
 
-# 1 содержание основного фаила
+# 1. содержание основного фаила
 require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/activerecord'
@@ -419,7 +412,7 @@ set :database, { adapter: 'sqlite3', database: 'pizzashop.db' }
 class Product < ActiveRecord::Base
 end
 
-# 2 миграция для создания таблицы с пицами
+# 2. миграция для создания таблицы с пицами
 rake db:create_migration NAME=create_products
 
 class CreateProducts < ActiveRecord::Migration[7.0]
@@ -452,7 +445,7 @@ rake db:create_migration NAME=add_products
 # добавляется db/migrate/786238472_add_products.rb
 
 # 2. Заполняем фаил миграции - создаем в нем сущности.
-class AddProducts < ActiveRecord::Migration[5.2]
+class AddProducts < ActiveRecord::Migration[7.0]
   def change
     # синтаксис метода create требует: либо указания хотя бы 1го аргумента после вызова метода; либо чтоб начать аргументы с новой строки нужно взять их в круглые скобки. А иначе 1м аргументом будет считаться \n что вызовет ошибку.
     Product.create :title => 'Гавайская',
@@ -488,6 +481,9 @@ puts
 puts '                              Форма со скрытым полем(использование JS)'
 
 # На примере Pizzashop - форма для отправки заказов
+
+# Фаил для jS скриптов создаем в папке public(можно сделать и отдельную подпапку) например script.js и подключаем так <script src="/script.js"></script> в лэйаут
+
 
 # Модель для клиентов(и выполняем для него миграцию естественно)
 class Client < ActiveRecord::Base

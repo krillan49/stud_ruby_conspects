@@ -4,7 +4,7 @@
 	<% @products.each do |pizza| %>
 			<div><%= pizza.title %></div>
 			<div>
-				<img src="<%= pizza.path_to_image %>" alt=""> <!-- Добавляем относительный путь картинки -->
+				<img src="<%= pizza.path_to_image %>" alt=""> <!-- Добавляем относительный путь картинки в src -->
 			</div>
 			<div><%= pizza.description %></div>
 			<div>Size: <%= pizza.size %> cm</div>
@@ -23,11 +23,14 @@
 <div>
 
 	<form action="/cart" method="POST">
-		<!-- Скрытое(type="hidden") текстовое поле для ввода данных о заказе вида 'product_1=5,product_2=4,product_3=6,' чтобы передать его на сервер -->
-		<input type="hidden" name="orders" id="orders_input"> <!-- id="orders_input" - по этому селектору мы будем обращаться к полю через jquery, которое вставит в значение поля 'product_1=5,product_2=4,product_3=6,' -->
+
+		<input type="hidden" name="orders" id="orders_input">
+		<!-- type="hidden" - делает текстовое поле скрытым, для ввода данных о заказе вида 'product_1=5,product_2=4,product_3=6,' чтобы передать его на сервер -->
+		<!-- id="orders_input" - по этому селектору мы будем обращаться к полю через jquery, которое вставит в значение поля 'product_1=5,product_2=4,product_3=6,' -->
 
 		<!-- Кнопка отправки -->
-		<input type="submit" id="orders_button"> <!-- id="orders_button" - добавим информацию о заказе в название кнопки -->
+		<input type="submit" id="orders_button">
+		<!-- id="orders_button" - добавим информацию о заказе в название кнопки -->
 	</form>
 
 </div>
