@@ -1,74 +1,83 @@
-puts '                                    Мета-программирование. Функция send'
+puts '                                     Мета-программирование'
 
-# send - альтернативный способ вызова(отправка сообщений объекту) метода который позволяет задавать имя метода объектом класса symbol или string, которые можно присваивать значениями в переменные или ключами в хэши
+
+puts
+puts                                          'Функция send'
+
+# send - альтернативный способ вызова метода (отправка сообщений объекту) который позволяет задавать имя метода объектом класса symbol или string, которые можно присваивать значениями в переменные или ключами в хэши
 # Вызов функции при помощи send - мета-программирование.
-def mm
-  puts 'hi'
-end
-mm # Стандартный способ вызова
-send :mm  # Вызов при помощи send 1й вариант
-send "mm" # Вызов при помощи send 2й вариант
 
-# Этим способом мы можем вызвать функцию вызвав ее через переменную, в том числе например пользовательским вводом:
+def mm
+  'hi'
+end
+p mm        #=> "hi"   # Стандартный способ вызова
+p send :mm  #=> "hi"   # Вызов при помощи send 1й вариант
+p send "mm" #=> "hi"   # Вызов при помощи send 2й вариант
+
+# Этим способом мы можем вызвать метод присвоенный в переменную, в том числе с пользовательским вводом:
 a = gets.strip # если введем имя функции вызываемой сенд, то она будет вызвана или не будет если имя не подходит.
 send a
 
 
 # Передача аргументов осуществляется через запятую после имени метода
-def nn par1
-  puts "num #{par1}"
+def nn par1, par2
+  "num #{par1} str #{par2}"
 end
-send :nn, 555 # Передаем аргумент 555
-send 'nn', 555
+p send :nn, 555, 'aaa' #=> "num 555 str aaa"
+p send 'nn', 555, 'aaa' #=> "num 555 str aaa"
 
-# Передача опций(хэша)
+# Передача хэша
 def nm hh
-  puts "x #{hh[:x]} y #{hh[:y]}"
+  p "x #{hh[:x]} y #{hh[:y]}"
 end
-nm x: 1, y: 2 # Обычный способ
-send :nm, x: 1, y: 2 # Передаем хэш через send
-send 'nm', x: 1, y: 2
+nm x: 1, y: 2          #=> "x 1 y 2"
+send :nm, x: 1, y: 2   #=> "x 1 y 2" # Передаем хэш через send
+send 'nm', x: 1, y: 2  #=> "x 1 y 2"
 
-# Для ленивого вывода(вывести не результат а лямбду из которой при желании уже потом можно будет вывести результат)
+
+# Можно использовать для ленивого вывода(вывести лямбду из которой при желании уже потом можно будет вывести результат)
 def add(a, b)
   a + b
 end
 def make_lazy(func , *args)
   lambda{send func, *args}
 end
-make_lazy :add, 2, 3
+p make_lazy :add, 2, 3       #=> #<Proc:0x00000256c34e2138 E:/doc/ruby_exemples/test3.rb:6 (lambda)>
+p make_lazy(:add, 2, 3).call #=> 5
 
-# Пример с применением метода из класса
+# Пример с применением внешнего метода из класса
 class String
-  def each_char(method)
-    self.chars.map{|e| send method, e}.join
+  def every_char(method)
+    self.chars.map{|e| send(method, e)}.join
   end
 end
+def f(c)
+  c.upcase
+end
+p "hello".every_char(:f) #=> "HELLO"
 
-def f(c) c.upcase end
-p "hello".each_char(:f) #=> "HELLO"
 
-
-# Присвоение send объекту
+# Вызов метода экземпляра через send
 def dynamic_caller(obj, method)
   obj.send method
 end
 p dynamic_caller('zaphod beeblebrox', :upcase) #=> "ZAPHOD BEEBLEBROX"
 
 
-# Пример применения для встроенных методов
-action = suspects[name].include?(guess) ? :select! : :reject!
-suspects.send(action){|_, chars| chars.include?(guess)}
+# send для математических операторов. Передача оператора и присвоение send объекту
+def basic_op(operator, value1, value2)
+  value1.send(operator, value2)
+end
+p basic_op('+', 3, 2) #=> 5
 
 
-# пример с аргументами для метода и параллельной передачей блока
+# Пример с аргументами для метода и параллельной передачей блока(создание нового метода принимающего аргументы или блоки)
 class Array
   def each_count(*args, &block)
-    raise ArgsBlockSametime if args! = [] and block
+    raise ArgsBlockSametime if args != [] && block
     if block
-      self.map{|e| block.call(e)}.tally
+      self.map(&block).tally # (&block) == {|e| block.call(e)}
     elsif args != []
-      args[0] = args[0].to_sym
       self.map{|e| e.send(*args)}.tally
     else
       self.tally
@@ -79,102 +88,29 @@ cities = ["Melbourne", "Dallas", "Taipei", "Toronto", "Dallas", "Kathmandu"]
 cities.each_count # {"Melbourne"=>1, "Dallas"=>2, "Taipei"=>1, "Toronto"=>1, "Kathmandu"=>1}
 cities.each_count(:length) # {9=>2, 6=>3, 7=>1}
 cities.each_count(:gsub, /[aeiou]/, 'x') # {"Mxlbxxrnx"=>1, "Dxllxs"=>2, "Txxpxx"=>1, "Txrxntx"=>1, "Kxthmxndx"=>1}
-cities.each_count {|city| city.length % 3 == 0} # {true=>5, false=>1}
+cities.each_count{|city| city.length % 3 == 0} # {true=>5, false=>1}
 cities.each_count(:length) {|city| city.length % 3 == 0} # raise ArgsBlockSametime
 
 
-# пример с передачей массива объектов и блоком для проверки
-class Array
-  def invoke2(name, *args, &block) # мой вариант
-    res = []
-    self.each do |obj|
-      if block
-        res << obj.send(name, *args) if block.call(obj) # блок проверяет нужно ли вызывать метод(true/false)
-      else
-        res << obj.send(name, *args) # вызываем метод и передаем аргументы
-      end
-    end
-    res
-  end
-
-  def invoke(method, *args, &block)
-    #self.select(&block).map{|x| x.send(method, *args)}
-    select(&block).map{|item| item.send(method, *args) } # оптимальный вариант
-  end
-end
-
-class ExampleItem
-  def update(arg1, arg2)
-    (arg1 && arg2) ? "updated" : 'wrong args'
-  end
-end
-
-items = [ExampleItem.new, nil, ExampleItem.new] # массив объектов
-p items.invoke(:update, "argument 1", "argument 2") {|item| item != nil} # ['updated', 'updated']
-
-
 puts
-puts '                                              define_method'
-
-# define_method это один из параметров функции send, затем через запятую название метода('aaa'), затем блок
-send :define_method, "aaa" do   # можно заменить do end  на  {}
-  puts "Hello, I'm new method"
-end
-# вызываем метод define_method, передаем в него название "aaa" и блок, в итоге создается метод aaa с телом из блока
-aaa #=> Hello, I'm new method  # Вызов обычный
-send 'aaa' #=> Hello, I'm new method  # Вызов через send
-
-
-# Позволяет задавать имя метода значением и например определять его из консоли при помощи gets
-method_name = gets.strip
-send :define_method, method_name do
-  puts "Hello, I'm new method"
-end
-send method_name # в случае с переменной вызов только через send если не в ручную
-
-
-puts
-# определение метода(define_method) в методе класса
-class Conjurer
-  def Conjurer.conjure(name, lamb)
-    send :define_method, name do
-      lamb.call
-    end
-  end
-end
-Conjurer.conjure(:one_through_five, ->{(1..5).to_a})
-Conjurer.new.one_through_five # => [1, 2, 3, 4, 5]
-
-# Вариант 2
-class Conjurer
-  def self.conjure name, lmbda
-    define_method(name, lmbda)
-  end
-end
-
-
-puts
-puts '                             Объявление переменной внутри класса при помощи send'
+puts '                          Инициализация переменных экземпляра при помощи send'
 
 # Мета-программирование используется для инициализации свойств класса
 class Something
-  attr_accessor :name # Когда мы обявляем attr_accessor, то автоматически создается метод для каждой переменной с названием(в данном случае) name=
+  attr_accessor :name # при объявлении attr_accessor, создаются методы name и name= для переменной @name
   def initialize
-    send('name=', 'Mike') # Конструкция инициализации переменной, обращается к методу name= Присваивает переменной значение 'Mike'
+    send('name=', 'Mike') # инициализация переменной: обращается к методу name= присваиваем переменной значение 'Mike'
   end
 end
 s = Something.new
 s.name #=> "Mike"
 
-
 # Объявление переменных через хэш при помощи send. Удобно использовать если нужно инициализировать много переменных.
 class Some
 	attr_accessor :x, :y
-
-  # если переменных много не удобно инициализировать обычным способом, получится слишком громоздский столдец из @name = name
-	def initialize hash # Потому лучше использовать хэш и send
+	def initialize hash
 		hash.each do |key, value|
-			send "#{key}=", value # Ключ хэша именует переменную ичерез метод= присваивает в нее значение значения переданного из хэша. Получается как @x = 1, @y = 2
+			send "#{key}=", value # Получается как @x = 1, @y = 2
 	  end
 	end
 end
@@ -182,33 +118,73 @@ s = Some.new x: 1, y: 2
 puts s.x #=> 1
 puts s.y #=> 2
 
-
-puts
-puts '                                      send для математических операторов'
-
-# Передача оператора и присвоение send объекту
-def basic_op(operator, value1, value2)
-  value1.send(operator, value2)
-end
-p basic_op('+', 3, 2) #=> 5
-
-
-puts
-# с attr_accessor
+# Без конструктора
 class Character
   attr_accessor :strength
-  def initialize
-    @strength = 5
-  end
 end
 char = Character.new
-p old = char.send(:strength) # 5
-p char.send("strength=", 1 + old) # 6
-p char.send(:strength) # 6
+char.send("strength=", 5)
+p old = char.send(:strength) #=> 5
+char.send("strength=", 1 + old)
+p char.send(:strength) #=> 6
 
 
 puts
-puts '                                      Мета-программирование. method_missing'
+puts '                                         define_method'
+
+# define_method это один из параметров функции send, затем через запятую название метода, затем блок с телом метода
+send :define_method, "aaa" do   # можно заменить do end  на  {}
+  puts "Hello, I'm new method"
+end
+# вызываем метод define_method, передаем в него название "aaa" и блок, в итоге создается метод aaa с телом из блока
+aaa        #=> Hello, I'm new method
+send 'aaa' #=> Hello, I'm new method
+
+# Позволяет задавать имя метода значением и например определять его из консоли при помощи gets
+method = gets.strip
+send(:define_method, method){ "Hello, I'm new method" }
+send method # в случае с переменной вызов только через send если не в ручную
+
+# С параметрами(передаются в блок)
+send :define_method, "some" do |p1, p2|
+  "params is #{p1} #{p2}"
+end
+p some(5, 7) #=> params is 5 7"
+
+
+# Альтернативный синтаксис, в котором блок/лямбда передается как 2й параметр
+meth = :one_to_five
+lmbd = ->{(1..5).to_a}
+define_method(meth, lmbd)
+p one_to_five #=> [1, 2, 3, 4, 5]
+
+# С параметрами
+meth = :one_to_five
+lmbd = ->(p1, p2){(p1..p2).to_a}
+define_method(meth, lmbd)
+p one_to_five(3, 8) #=> [3, 4, 5, 6, 7, 8]
+
+
+puts
+# Создание метода экземпляра в методе класса
+class Conjurer
+  # Вариант 2
+  def Conjurer.conjure(name, lamb)
+    send :define_method, name do
+      lamb.call
+    end
+  end
+  # Вариант 2
+  def self.conjure name, lmbda
+    define_method(name, lmbda)
+  end
+end
+Conjurer.conjure(:one_to_five, ->{(1..5).to_a})
+p Conjurer.new.one_to_five #=> [1, 2, 3, 4, 5]
+
+
+puts
+puts '                                          method_missing'
 
 # method_missing(резервированное название метода) принимает значение при обращении к несуществующему методу класса, значением будет имя этого несуществующего метода
 class Something
