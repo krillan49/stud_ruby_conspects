@@ -57,7 +57,7 @@ describe Hero do # метод принимает тестируемый клас
   # Тест 2
   it "can power up" do
     hero = Hero.new 'foo'
-    expect(hero.power_up).to eq 110
+    expect(hero.power_up).to eq(110), 'fuck' # чтобы вывести дополнительное сообщение, нужно просто дописать его в конце, но придется брать аргумент метода eq в скобки
   end
 end
 

@@ -136,7 +136,7 @@ CompleteInfinity = NegativeInfinity..PositiveInfinity #=> -Infinity..Infinity
 
 
 puts
-# Класс Math для математических операций
+# Модуль Math для математических операций
 Math::E # константа е
 Math::PI # константа пи
 

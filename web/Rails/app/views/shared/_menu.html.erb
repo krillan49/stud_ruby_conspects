@@ -17,6 +17,7 @@
 
 
         <!--                        Кастомный способ регистрации и авторизации -->
+
         <ul class="nav col-12 col-lg-auto mb-2 mb-md-0">
           <!-- Используем наши кастомные хэлперы user_signed_in? и current_user -->
           <% if user_signed_in? %>
@@ -31,8 +32,9 @@
             <li class="dropdown">
               <%= nav_tab current_user.name_or_email, '#',
                 class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'}, current_page: current_page %>
-                <!-- Заменим ссылку на наш варик с хэлпером заодно, если хотим отображать на какой мы странице -->
+                <!-- Заменим ссылку на наш варик с хэлпером, если хотим отображать на какой мы странице -->
               <ul class="dropdown-menu">
+                <!-- Передаем в юрл айди текущего пользователя, те редактируем себя -->
                 <li><%= link_to 'Edit profile', edit_user_path(current_user), class: 'dropdown-item' %></li>
                 <li><hr class="dropdown-divider"></li> <!-- разделитель для красоты -->
                 <li><%= link_to 'Log Out', session_path, class: 'dropdown-item', data: {method: :delete} %></li>

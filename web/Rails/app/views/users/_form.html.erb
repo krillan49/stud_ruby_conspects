@@ -43,7 +43,9 @@
     </div>
   </div>
 
-  <%= f.submit "Register!", class: 'btn btn-primary btn-lg' %>
+  <!-- Добавим условие чтобы название кнопки соответсвовало либо регистрации либо сохранению редактирования -->
+  <%= f.submit (@user.new_record? ? "Register!" : "Save"), class: 'btn btn-primary btn-lg' %>
+  <!-- new_record? те новый объект существующий только в памяти а не в базе -->
 <% end %>
 
 
