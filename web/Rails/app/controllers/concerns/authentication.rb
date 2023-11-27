@@ -22,15 +22,15 @@ module Authentication
       @current_user = nil
     end
 
-    def require_authentication # тоесть доступ только для тех кто уже есть в системе
-      return if user_signed_in? # тоесть выходим до кода ограничений если пользователь в системе
+    def require_authentication # доступ только для тех кто уже есть в системе
+      return if user_signed_in? # выходим до кода ограничений если пользователь в системе
       flash[:warning] = "You are not signed in!"
       redirect_to root_path
     end
 
-    def require_no_authentication # тоесть доступ только для тех кого еще нет в системе
-      return unless user_signed_in? # тоесть если пользователь не в системе, то код далее с ограничением не исполняется
-      # а если пользователь уже есть в системе, то редиректим на главную, говоря ему что он уже в системе и регистрировапться/входить нет смысла
+    def require_no_authentication # доступ только для тех кого еще нет в системе
+      return unless user_signed_in? # если пользователь не в системе, то код далее с ограничением не исполняется
+      # а если пользователь уже есть в системе, то редиректим на главную, тк регистрировапться/входить нет смысла
       flash[:warning] = "You are already signed in!"
       redirect_to root_path
     end

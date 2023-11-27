@@ -54,7 +54,7 @@ puts '                               Способы для авторизаци 
 # Clearance
 # Sorcery
 
-# 2. Сделать собственное решение, не такое сложное и навороченое, как например Devise
+# 2. Сделать собственное решение, например не такое сложное и навороченое
 
 
 puts
@@ -69,13 +69,13 @@ gem "bcrypt", "~> 3.1.7" # В Gemfile он есть по умолчанию пр
 
 # Обычный пароль не подойдет, тк он будет доступен из БД любому разрабу, поэтому нужно хэширование, тоесть делаем из пароля строку символов при помощи хэширования, когда пользователь вводит пароль при логине, он тоже хэшируется и сравниваются 2 эти зашифрованные строки.
 
-# В Рэилс уже есть встроенный метод для модели has_secure_password, для работы с bcrypt гемом и виртуальными атрибутами
+# В Рэилс уже есть встроенный метод bcrypt гема для модели - has_secure_password
 # https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html
-has_secure_password(attribute = :password, validations: true)
+has_secure_password(attribute = :password, validations: true) # опции метода по умолчанию ??
 # password - встроенный виртуальный атрибут, на его основе необходимо назвать наш атрибут для таблицы с хэшированным паролем XXX_digest и виртуальные атрибуты XXX_confirmation, XXX_challenge.
 
 
-# 2. сгенерируем модель User с использованием в генераторе атрибута password_digest от bcrypt-ruby
+# 2. сгенерируем модель User с названием колонки для пароля == атрибуту password_digest от bcrypt-ruby
 # > rails g model User email:string name:string password_digest:string
 
 # Миграция ..._create_users.rb
@@ -127,7 +127,7 @@ Rails.application.routes.draw do
 end
 
 
-# 4. создадим контроллер users_controller.rb и представления users/new.html.erb и users/_form.html.erb, а так же добавляем ссылки регистрации в shared/_menu.html.erb
+# 4. создадим контроллер users_controller.rb и представления users/new.html.erb и users/_form.html.erb, а так же добавляем ссылку регистрации в shared/_menu.html.erb
 class UsersController < ApplicationController
   def new
     @user = User.new # новый юзер который будет заполняться в форме
@@ -177,9 +177,11 @@ end
 puts
 puts '                                          Декораторы. draper'
 
-# Хэлперы лежвт в глобальном пространстве имен, поэтому не всегда стоит их использовать, а можно воспользоваться декораторами
+# Хэлперы лежат в глобальном пространстве имен, поэтому не всегда стоит их использовать, а можно воспользоваться декораторами
 
 # Декораторы нужны для того, чтобы добавлять к нашим объектам дополнительные методы и эти методы в себя включают логику с отображением именно этого объекта. Это чтото вроде вспомогательных методов но они живут не в глобальном промтранстве имен а только для тех объектов, для которых мы их назначим
+
+# ?? Декоратор это управляющая прослойка/фильтр над моделью ??
 
 # draper - гем декоратор
 # https://github.com/drapergem/draper
@@ -192,7 +194,7 @@ puts
 
 # 1. Сгенерируем application декоратор (базовый)
 # > rails generate draper:install
-# app/decorators/application_decorator.rb - создалась директория и декоратор
+# app/decorators/application_decorator.rb - создалась директория и материнский декоратор
 class ApplicationDecorator < Draper::Decorator
 end
 
@@ -213,7 +215,7 @@ end
 def current_user
   @current_user ||= User.find_by(id: session[:user_id]).decorate if session[:user_id].present?
   # @current_user - присваиваем в переменную от которой будем вызывать методы(вернется хэлпером)
-  # decorate - метод который делает объект декорируемым
+  # decorate - метод который делает объект декорируемым(?? переключает обработку методы от модели в декоратор ??)
 end
 
 # 4. Теперь мы можем использовать наш метод декоратора name_or_email на юзере в _menu.html.erb
@@ -235,7 +237,7 @@ end
 
 
 puts
-# 6. Сгенерируем дополнительные декораторы для вопроса и ответа для того чтобы поместить в них метод для форматирования даты из моделtq question.rb и answer.rb:
+# 6. Сгенерируем дополнительные декораторы для вопроса и ответа для того чтобы поместить в них методы для форматирования даты из моделей question.rb и answer.rb:
 
 # > rails generate decorator Question
 # app/decorators/question_decorator.rb
@@ -258,7 +260,7 @@ end
 # Далее просто задекорируем объекты в экшенах контроллера questions, чтобы все работало
 def index
   @pagy, @questions = pagy Question.order(created_at: :desc)#.decorate  - так делать нельзя тк произойдет конфликт decorate с pagy изза чего в пагинации будет отображаться только 1 страница
-  @questions = @questions.decorate # задекорируем этот объекты вопросов(так не будет конфликта с pagy).
+  @questions = @questions.decorate # задекорируем объект вопросов отдельно(так не будет конфликта с pagy).
 end
 def show
   @question = @question.decorate # добавим эту строку - предварительно задекорируем
@@ -387,9 +389,86 @@ end
 
 
 puts
+puts '                         Проверка корректности введенного имэйла в валидации'
+
+# Чтобы проверить вообще соответсвует ли введенный текст имэйлу, а не какойто херней
+
+# 1. Задействуем сторонний гем valid_email2. Тк он умеет проверять не только корректность имэйла, но и по ДНСу может проверять существует ли такая доменная зона вообще или нет, а так же всякое другое, что можно дополнительно подключать в валидациях
+# https://github.com/micke/valid_email2
+# Добавим в Gemfile:
+gem "valid_email2"
+# > bundle
+# Или если простая установка
+# > gem install valid_email2
+
+# 2. Модель user.rb
+class User < ApplicationRecord
+  has_secure_password
+
+  validates :email, presence: true, uniqueness: true, 'valid_email_2/email': true
+  # 'valid_email_2/email': true  - собственно проверка гемом на коррктность формата имэйла
+end
+
+
+puts
 puts '                   Защита при редактировании пользователя. old_password + валидации'
 
-# Лучше сделать требования введения старого пароля при редактировании пользователя(особенно при смене пароля), на случай, если ктото полоучит доступ(например пользователь забыл выйти и ктото сел за его аккаунтом)
+# Лучше сделать требования введения старого пароля при редактировании пользователя(особенно для смены пароля), на случай, если ктото полоучит доступ(например пользователь забыл выйти и ктото сел за его аккаунтом)
+
+# 1. Добавим собственно новое поле для ввода старого пароля в форму users\_form.html.erb
+
+# 2. Разрешим поле старого пароля в контроллере users_controller.rb (но сравнивать будем в модели)
+class UsersController < ApplicationController
+  # ...
+  def user_params
+    params.require(:user).permit(:email, :name, :password, :password_confirmation, :old_password)
+  end
+end
+
+# 3. В модели user.rb сщздадим новые валидации, в том числе и кастомные и переопределим валидации метода has_secure_password, так же дополнительно проверим корректность введенного имэйла
+class User < ApplicationRecord
+  attr_accessor :old_password # добавим новый виртуальный атрибут в модель, тк будем вводить в него данные в форме
+
+  has_secure_password validations: false # отключим встроенные валидации виртуальных атрибутов bcrypt, чтобы далее написать их самим
+
+  # ?? Отличия validate от validates ??
+
+  validate :password_presence # тк ниже в валидацию :password добавлено allow_blank: true, это значит что пароль может быть пустым во всех случаях, даже при создании нового юзера, что естественно нам не подходит, поэтому сделаем кастомную валидацию (метод ниже), для того чтобы запретить пустое поле пароля если это форма создает нового пользователя
+
+  validate :correct_old_password, on: :update, if: -> { password.present? } # наш кастомный метод валидации для проверки правильности старого пароля(сравнение с тем что в модели или БД)
+  # on: :update - валидация будет происходить только при обновлении записи, а при создании нового юзера нет
+  # if: -> { password.present? } - (если не хотим чтобы спрашивало старый пароль при изменении чего угодно кроме пароля) поставим такую лямбду и валидация будет происходить только если новый пароль был указан, тоесть не пустой, тоесть только если меняем и пароль
+
+  validates :password, confirmation: true, allow_blank: true, length: {minimum: 8, maximum: 70}
+  # confirmation: true - значит что значение поле :password должно совпадать со значением в поле :password_confirmation, тоесть пароль в фрмедолжен быть подтвержден
+  # allow_blank: true - при редактировании учетной записи можно оставить поле пустым(когда не хотим менять пароль, тк по умолчанию поле пароля в форме edit не заполняется автоматически как все остальные)
+
+  validate :password_complexity # наш кастомный метод валидации(сам метод ниже) для проверки сложности пароля
+
+  validates :email, presence: true, uniqueness: true, 'valid_email_2/email': true
+
+  private
+
+  def correct_old_password
+    # return if authenticate(old_password) - так делать нельзя(если нам удалось аутентифицировать пользователя со старым паролем это значит он правильный), тк есть баг, сравнивает с новым сгенереным в памяти хэшированным паролем, а не со старым, если новый и старый пароли ввести одинаковыми
+    return if BCrypt::Password.new(password_digest_was).is_password?(old_password) # поэтому придется вызывать методы BCrypt напрямую (тут мы ничего не делаем если введенный старый пароль соответсвует старому паролю из БД)
+    # password_digest_was - это специальный метод созданный Rails автоматически - берет хэшированный пароль из БД
+    # is_password?(old_password) - сравниваем со значением (предварительно хешируя его) введенным в поле old_password
+
+    errors.add :old_password, 'is incorrect' # вызываем ошибку валидации с сообщением если значение в поле старый пароль неправильное (не соответсвует паролю из БД)
+  end
+
+  def password_complexity # https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a  - взято отсюда(Девайс)
+    return if password.blank? || password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
+    # Если пароль пустой или соответсвует регулярке, то ничего не делает, а если нет то запускается ошибка валидации неже
+    errors.add :password, 'complexity requirement not met. Length should be 8-70 characters and include: 1 uppercase, 1 lowercase, 1 digit and 1 special character' # запускает ошибку валидации и выводит сообщение
+  end
+
+  def password_presence
+    errors.add(:password, :blank) unless password_digest.present?
+    # запускаем ошибку валидации при пустом поле пароля, только если password_digest еще не существует в БД, тоесть при создании нового профиля пользователя
+  end
+end
 
 
 
