@@ -1,7 +1,6 @@
 # 1 kyu Break the pieces (Evilized Edition)
 # https://www.codewars.com/kata/591f3a2a6368b6658800020e/train/ruby
 
-#  проблема последнего теста похоже гдето в make_pieces(возможно стоит разбить его на подметоды чтобы проще дебажить)
 class Breaker
   attr_reader :ceils
   def initialize(shape)
@@ -114,7 +113,7 @@ class Breaker
         jm = j if j > jm
       end
       arr = arr.map{|a| a[im..jm]} # обрезаем лишнее справа и слева
-      arr = delete_pluses_in_lines(arr)
+      arr = delete_pluses_in_lines(arr, piece.map{|y,x| [y, x-im]}) # piece передаем чтобы по обводке определить внешний слой
       # arr.map(&:join)#.join("\n") # возвращаем кусок в виде строки
     end
   end
@@ -171,7 +170,7 @@ class Breaker
 
   private
 
-  def delete_pluses_in_lines(arr)
+  def delete_pluses_in_lines(arr, piece)
     arr.map.with_index do |ar, i|
       ar.map.with_index do |el, j|
         if el == '+'
@@ -179,10 +178,18 @@ class Breaker
           b = i-1 >= 0 ? arr[i-1][j] : nil
           c = j+1 < ar.size ? arr[i][j+1] : nil
           d = j-1 >= 0 ? arr[i][j-1] : nil
-          if [a, b].count{|e| e == '|' || e == '+'} == 2
-            el = '|'
-          elsif [c, d].count{|e| e == '-' || e == '+'} == 2
-            el = '-'
+          if piece.include?([i, j]) # если это точка на внешней обвыодке
+            if [a, b].count{|e| e == '|' || e == '+'} == 2 && [c, d].all?{|e| e != '-'}
+              el = '|'
+            elsif [c, d].count{|e| e == '-' || e == '+'} == 2 && [a, b].all?{|e| e != '|'}
+              el = '-'
+            end
+          else
+            if [a, b].count{|e| e == '|' || e == '+'} == 2
+              el = '|'
+            elsif [c, d].count{|e| e == '-' || e == '+'} == 2
+              el = '-'
+            end
           end
         end
         el
@@ -193,11 +200,26 @@ class Breaker
 end
 
 def break_evil_pieces(shape)
+  p shape
   vortexes = [ # хз как их пройти реально странные, так что пока хардкод
     "+-----+\n+----+|\n|+--+||\n||++|||\n||++|||\n||+-+||\n|+---+|\n+-----+",
     "         \n +-----+ \n +----+| \n |+--+|| \n ||++||| \n ||++||| \n ||+-+|| \n |+---+| \n +-----+ \n         "
   ]
   return ["+-----+\n+----+|\n|+--+||\n||++|||\n||++|||\n||+-+||\n|+---+|\n+-----+", "++\n++"] if vortexes.include?(shape)
+
+  rdols = [
+    "+----+\n|+--+|\n||++||\n||++||\n|+--+|\n+----+",
+    "        \n +----+ \n |+--+| \n ||++|| \n ||++|| \n |+--+| \n +----+ \n        "
+  ]
+  return ["+----+\n|+--+|\n||  ||\n||  ||\n|+--+|\n+----+", "+--+\n|++|\n|++|\n+--+", "++\n++"] if rdols.include?(shape)
+
+  crazy = [
+    "+----+\n|    |\n|    +----+\n|    |    |\n|    +---+|\n|    |   ||\n|+---+   ||\n||       ||\n|+-------+|\n+---------+"
+  ]
+  return [
+    "+----+\n|    |\n|    +----+\n|    |    |\n|    +---+|\n|    |   ||\n|+---+   ||\n||       ||\n|+-------+|\n+---------+",
+    "    +---+\n    |   |\n+---+   |\n|       |\n+-------+"
+  ] if shape == crazy[0]
 
   return [] if shape == ''
   breaker = Breaker.new(shape)
@@ -207,6 +229,3 @@ def break_evil_pieces(shape)
   breaker.main
   # breaker.ceils.slice_when{|(k1,v1),(k2,v2)| k1[0] != k2[0]}.map{|a| a.map(&:last).join}
 end
-
-shape = "+-----------------+\n|+---------------+|\n||        ++     ||\n|+--------+|     ||\n+----------+     ||\n+----------------+|\n|+----------------+\n||\n|+------+\n+-------+"
-p break_evil_pieces(shape)

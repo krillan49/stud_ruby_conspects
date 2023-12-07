@@ -90,7 +90,20 @@ p figure2.num_sides #=> 3
 p figure2.perimeter #=> 24
 
 
+# В методе класса можно вызвать другой метод класса без префикса
+class Code
+  def self.some
+    some2
+  end
 
+  private
+
+  def self.some2
+    p 'some2'
+  end
+end
+
+Code.some #=> some2
 
 
 
