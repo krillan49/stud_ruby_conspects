@@ -27,6 +27,9 @@ p str2&.split('') #=> nil
 # Это triple equals. case/when так сравнивает например
 (97..122) === 100 #=> true
 
+# and return в конце действия, потом проверить
+render plain: params.to_yaml and return
+
 self # это метод, возвращающий текущий объект ??
 
 # класс внутри класса методы в строку с =

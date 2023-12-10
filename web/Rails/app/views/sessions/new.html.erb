@@ -15,7 +15,9 @@
     </div>
 
     <div class="col-sm-10">
-      <%= f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg' %>
+      <%= f.email_field :email, value: params[:email], placeholder: 'E-mail', class: 'form-control form-control-lg' %>
+      <!-- value: params[:email]  - значение поле, чтоб не вводить заново, если при входе ввели неправильный пароль -->
+
       <!-- <input placeholder="E-mail" class="form-control form-control-lg" type="email" name="email" id="email" /> -->
     </div>
   </div>
@@ -28,6 +30,18 @@
     <div class="col-sm-10">
       <%= f.password_field :password, class: 'form-control form-control-lg' %>
       <!-- <input class="form-control form-control-lg" type="password" name="password" id="password" /> -->
+    </div>
+  </div>
+
+  <!-- Добавим чекбокс для запоминания пользователя -->
+  <div class="row mb-3">
+    <div class="offset-sm-2 col-sm-10">
+      <div class="form-check">
+        <%= f.check_box :remember_me, class: 'form-check-input', value: '1' %>
+        <!-- f.check_box - вспомогательная функция для чекбокса -->
+        <!-- value: '1' - задаем какое значение будет передавать чекбокс если галочка поставлена, соотв '0', если не поставлена. Это можно посмотреть вернув render plain: params.to_yaml в экшене create, то среди прочего там будет remember_me: '0' -->
+        <%= f.label :remember_me, class: 'form-check-label' %>
+      </div>
     </div>
   </div>
 

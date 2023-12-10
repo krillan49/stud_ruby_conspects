@@ -54,7 +54,7 @@ puts '                               Способы для авторизаци 
 # Clearance
 # Sorcery
 
-# 2. Сделать собственное решение, например не такое сложное и навороченое
+# 2. Сделать собственное решение (например не такое сложное и навороченое)
 
 
 puts
@@ -73,6 +73,7 @@ gem "bcrypt", "~> 3.1.7" # В Gemfile он есть по умолчанию пр
 # https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html
 has_secure_password(attribute = :password, validations: true) # опции метода по умолчанию ??
 # password - встроенный виртуальный атрибут, на его основе необходимо назвать наш атрибут для таблицы с хэшированным паролем XXX_digest и виртуальные атрибуты XXX_confirmation, XXX_challenge.
+# validations: true  - по умолчанию проводит валидации своих атрибутов ??
 
 
 # 2. сгенерируем модель User с колонкой для хэшированного пароля password_digest (== атрибуту метода has_secure_password)
@@ -104,6 +105,7 @@ u = User.new #=> #<User:0x0000015823feddb0 id: nil, email: nil, name: nil, passw
 # Метод has_secure_password добавит 2 виртуальных атрибута password и password_confirmation:
 u.password #=> nil                # пароль
 u.password_confirmation #=> nil   # подтверждение пароля
+
 # Виртуальные атрибуты это те, которые можно вызывать на экземпляре модели, тоесть существуют в модели, но которые не существуют в БД, тоесть ни пароль ни подтверждение пароля не попадут в БД и нужны только для того, чтобы пользователь мог ввести пароль в форму для того чтобы мы его обработали, но в БД попадет только password_digest - хэшированный пароль.
 
 # Зарегистрируемся:
@@ -151,14 +153,14 @@ class UsersController < ApplicationController
   end
 end
 
-# 5. Используем session[:user_id] для создания хэлпера текущего пользователя в контроллере, который проверяет вошел пользователь в систему или нет. Добавим его в application_controller.rb:
+# 5. Создадим хэлперы current_user (возвращает текущего пользователя) и user_signed_in? (проверяет что пользователь залогинен а не гость) при помощи session[:user_id] в контроллере application_controller.rb:
 class ApplicationController < ActionController::Base
 
   private
 
   def current_user # подобные вспомогательные методы обычно называют с префиксом current, например current_admin
     @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id].present?
-    # session[:user_id] - используем значение из сессии, чтобы определить юзера, если такое айди в сессии есть
+    # session[:user_id] - используем значение из сессии, чтобы найти и определить юзера, если такое айди в сессии есть
     # @current_user - присваиваем в переменную от которой будем вызывать методы(вернется хэлпером)
   end
 
@@ -282,8 +284,8 @@ Rails.application.routes.draw do
 end
 
 # 2. Добавим в _menu.html.erb:
-# ссылку входа в систему на URL new_session_path те GET '/session/new'
-# ссылку выхода из системы на URL session_path те DELETE '/session'
+# ссылку входа в систему(создание сессии) на URL new_session_path те GET '/session/new'
+# ссылку выхода из системы(удаление сессии) на URL session_path те DELETE '/session'
 
 # 3. Создадим контроллер сессий sessions_controller.rb
 class SessionsController < ApplicationController
@@ -469,6 +471,80 @@ class User < ApplicationRecord
 end
 
 
+puts
+puts '                        Запоминание авторизированного пользователя в БД(куки)'
+
+# Можно запомнить пользователя в куки, а не только в сессии, например закрыли браузер без выхода, то сессия удалилась, но куки остался в БД
+
+
+# 1. Добавим чекбокс в форму сессии sessions/new,html.erb для того чтобы пользователь выбрал запоминать или нет его в куки
+
+
+# 2. Добавим в таблицу users новое поле remember_token_digest, которое будет содержать хэшированный токен при помощи которого мы будем запоминать пользователя
+# > rails g migration add_remember_token_digest_to_users remember_token_digest:string
+class AddRememberTokenDigestToUsers < ActiveRecord::Migration[7.0]
+  def change
+    add_column :users, :remember_token_digest, :string
+  end
+end
+# > rails db:migrate
+
+
+# 3. Сгенерируем токен и поместим его в таблицу, для этого добавим методы в модель user.rb
+class User < ApplicationRecord
+  # ...
+  attr_accessor :remember_token # создадим виртуальный атрибут для токена
+
+  # ...
+
+  # метод запоминающий пользователя(создает и помешяет токен в таблицу)
+  def remember_me
+    self.remember_token = SecureRandom.urlsafe_base64
+    # self.remember_token - помещаем сгенерированный токен в виртуальный атрибут юзера(переменная экземпляра)
+    # SecureRandom.urlsafe_base64 - генерируем токен при помщи SecureRandom, который далее будем хэшировать
+    update_column :remember_token_digest, digest(remember_token) # remember_token - можно и без self
+    # update_column - метод помещающий чтото в таблицу(тут хэшированный токен)
+    # :remember_token_digest - имя столбца в который помещаем
+    # digest(remember_token) - значение которое помещаем (тут метод digest возвращает хэшированный токен)
+  end
+
+  # метод для сравнения передаваемого токена(будет зажеширован) и хэшированного токена из БД
+  def remember_token_authenticated?(remember_token)
+    return false if remember_token_digest.blank?
+    BCrypt::Password.new(remember_token_digest).is_password?(remember_token)
+    # те сравниваем хэш токена из БД remember_token_digest с токеном remember_token, который передаем в метод
+  end
+
+  private
+
+  # метод хэширования токена, генерирует хэш из строки токена (используем в нем код "украденый" из has_secure_password)
+  def digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
+  end
+
+  # ...
+end
+
+
+# 4. В контроллеле sessions_controller.rb собственно запомним пользователя в зависимости от значения чекбокса
+class SessionsController < ApplicationController
+  # ...
+
+  def create
+    user = User.find_by email: params[:email]
+    if user&.authenticate(params[:password])
+      sign_in user
+      flash[:success] = "Welcome back, #{current_user.name_or_email}!"
+      redirect_to root_path
+    else
+      flash.now[:warning] = "Incorrect email and/or password!"
+      render :new
+    end
+  end
+
+  # ...
+end
 
 
 
