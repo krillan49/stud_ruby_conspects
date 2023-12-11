@@ -40,7 +40,8 @@
         <%= f.check_box :remember_me, class: 'form-check-input', value: '1' %>
         <!-- f.check_box - вспомогательная функция для чекбокса -->
         <!-- value: '1' - задаем какое значение будет передавать чекбокс если галочка поставлена, соотв '0', если не поставлена. Это можно посмотреть вернув render plain: params.to_yaml в экшене create, то среди прочего там будет remember_me: '0' -->
-        <%= f.label :remember_me, class: 'form-check-label' %>
+        <%= f.label :remember_me, 'some', class: 'form-check-label' %>
+        <!-- 'some' - подпись рядом с чекбоксом например запомнить на сколькото дней -->
       </div>
     </div>
   </div>
