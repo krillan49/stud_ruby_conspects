@@ -1,0 +1,13 @@
+require: # подключаем гемы-расширения
+  - rubocop-performance
+  - rubocop-rails
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.1
+
+Style/Documentation:
+  Enabled: false # отключаем проверки документации. Style/Documentation - берем из описания ошибки в выводе Рубокопа
+
+Rails/FilePath:
+  EnforcedStyle: arguments # делаем пути ('some', 'some') правильными

@@ -1,6 +1,6 @@
 puts '                                           Отправка e-mail'
 
-# У отправки имэила(Transactional emails) непростая структура. Для отправки необходимо обратиться к серверу и нужно гдето его взять.
+# Отправка имэила/Transactional emails. Для отправки необходимо обратиться к серверу и нужно гдето его взять.
 # Transactional emails - имэйлы которые реагируют на определенные события в нашем сайте(напр пользователь написал коммент)
 
 # SMTP-сервер. Где его взять:
@@ -22,3 +22,16 @@ puts '                                           Отправка e-mail'
 # http://rusrails.ru/action-mailer-basics
 # https://www.youtube.com/watch?v=FNOhpAWbiKA
 # https://github.com/mikel/mail
+
+
+
+
+
+
+
+
+
+
+
+
+#

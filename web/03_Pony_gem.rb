@@ -21,14 +21,8 @@ puts
 require 'pony'
 
 my_mail = 'gigantkroker@gmail.com' # переменная с адресом почты отправителя(нашим)
-
-puts "Введите пароль от вашей почты #{my_mail} для отправки письма:"
 password = STDIN.gets.chomp  # lokflkbvmodiyvgy
-
-puts "Кому отправить письмо?(укажите почту)"
 send_to = STDIN.gets.chomp  # почта получателя
-
-puts "Что написать в письме?"
 body = STDIN.gets.chomp # текст письма
 
 # В библиотеке pony есть класс Pony, в котором есть метод mail, который и позволяет нам отправлять письма. В метод mail нужно передать параметры в виде хэша:

@@ -2,7 +2,7 @@ puts '                                           bundle'
 
 # Останавливаем сервер Рэилс при манипуляциях с бандл
 
-# > bundle install
+# > bundle install      - устанавливает гемы, указанные в Gemfile проекта, учитывая указанные версии
 # > bundle i            - тоже самое что и bundle install
 # > bundle              - тоже самое что и bundle install, раньше этого не было
 # > bundle update

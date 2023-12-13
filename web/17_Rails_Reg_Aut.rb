@@ -474,9 +474,10 @@ end
 puts
 puts '                        Запоминание авторизированного пользователя в БД(куки)'
 
-# ?? Почемуто когда ставим галочку пускает с неверным паролем в акаунт ??
+# ?? Почемуто когда ставим галочку пускает с неверным паролем в акаунт. Мб изза метода update_column, тк все валидации прпускаются ??
 
-# Можно запомнить пользователя в куки, а не только в сессии, например закрыли браузер без выхода, то сессия удалилась, но хэшированный токен остался в БД и его можно сверить с куки в браузере. Тоесть запоминание - генерируем токен, хэшируем, помещаем в БД и в куки браузера, забывание - удаляем токен из БД и браузера.
+# Можно запомнить пользователя в куки, а не только в сессии, например закрыли браузер без выхода, то сессия удалилась, но хэшированный токен остался в БД и его можно сверить с куки в браузере.
+# Тоесть запоминание - генерируем токен, хэшируем, помещаем в БД и в куки браузера, забывание - удаляем токен из БД и браузера.
 
 # Куки и сессии можно посмотреть в консоли браузера в разделе Application
 
@@ -494,7 +495,7 @@ end
 # > rails db:migrate
 
 
-# 3. Создадим методы запоминания пользователя(сгенерируем токен и поместим его в таблицу) и для забывания пользователя(соотв удаления токена из БД) в модели user.rb
+# 3. В модели user.rb. Создадим методы для запоминания пользователя(сгенерируем токен и поместим его в таблицу) и для забывания пользователя(соотв удаления токена из БД)
 class User < ApplicationRecord
   # ...
   attr_accessor :remember_token # создадим виртуальный атрибут для токена
@@ -504,8 +505,8 @@ class User < ApplicationRecord
   # метод запоминающий пользователя(создает и помещяет токен в таблицу)
   def remember_me
     self.remember_token = SecureRandom.urlsafe_base64
-    # self.remember_token - помещаем сгенерированный токен в виртуальный атрибут юзера(переменная экземпляра)
     # SecureRandom.urlsafe_base64 - генерируем токен
+    # self.remember_token - помещаем сгенерированный токен в виртуальный атрибут юзера(переменная экземпляра)
     update_column :remember_token_digest, digest(remember_token) # remember_token - можно и без self
     # update_column - метод помещающий чтото в колонку таблицы
     # :remember_token_digest - имя столбца в который помещаем
@@ -520,7 +521,7 @@ class User < ApplicationRecord
 
   # метод для сравнения передаваемого токена(будет захеширован) и хэшированного токена из БД
   def remember_token_authenticated?(remember_token)
-    return false if remember_token_digest.blank? # вернем фалсе если в поле токена нулл
+    return false if remember_token_digest.blank? # вернем false если в поле токена null
     BCrypt::Password.new(remember_token_digest).is_password?(remember_token)
     # те сравниваем хэш токена из БД remember_token_digest с токеном remember_token, который передаем в метод
   end
@@ -540,7 +541,6 @@ end
 # 4. В контроллеле sessions_controller.rb собственно запомним пользователя в зависимости от значения чекбокса
 class SessionsController < ApplicationController
   # ...
-
   def create
     user = User.find_by email: params[:email]
     remember(user) if params[:remember_me] == '1' # запоминаем пользователя, только если в чекбоксе стоит галочка('1')
@@ -554,14 +554,30 @@ class SessionsController < ApplicationController
       render :new
     end
   end
-
+  # Или отрефакторим по рекомендации рубокопа(вынесем логику входа в систему в подметод)
+  def create
+    user = User.find_by email: params[:email]
+    if user&.authenticate(params[:password])
+      do_sign_in user
+    else
+      flash.now[:warning] = 'Incorrect email and/or password!'
+      render :new
+    end
+  end
+  private
+  def do_sign_in(user)
+    sign_in user
+    remember(user) if params[:remember_me] == '1'
+    flash[:success] = "Welcome back, #{current_user.name_or_email}!"
+    redirect_to root_path
+  end
   # ...
 end
 
 
 # 5. так же в консерне authentication.rb:
 # модифицируем хэлпер current_user, чтобы он определял пользователя по куки если у него нет сессии
-# добавим метод забывающий пользователя(те удаляющий токен из куки)
+# добавим функцию forget забывающую пользователя(те удаляющий токен из куки), запускать ее будем в методе sign_out, но можно и в экшене sessions#destroy
 
 
 
