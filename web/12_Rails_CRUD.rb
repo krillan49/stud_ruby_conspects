@@ -11,60 +11,50 @@ puts '                               CRUD. params. Формы. Валидаци�
 
 
 puts
-puts '                                       Форма form_for. render'
+puts '                                 new(resourses). Форма form_for. render'
 
-# 1. Создадим вручную файл c представлением app/views/articles/new.html.erb если он не был сгенерирован. Иначе от http://localhost:3000/articles/new - выпадет ошибка ArticlesController#new is missing a template for request formats: text/html. Ошибка говорит о том что отсутствует шаблон(представление)
-# Создаем форму в articles/new.html.erb
+# 1. Создадим представление app/views/articles/new.html.erb. Без него при обращении к http://localhost:3000/articles/new - выпадет ошибка ArticlesController#new is missing a template for request formats: text/html.(отсутствует шаблон/представление)
+# Создаем форму form_for (устарела ??) в articles/new.html.erb
 
-# 2. Добавим в app/controllers/articles_controller.rb экшен create для обработки данных отправленных формой из new.html.erb:
+# 2. Добавим в app/controllers/articles_controller.rb экшен create для обработки данных формы из new.html.erb:
 class ArticlesController < ApplicationController
   def new # get '/articles/new'
     # по умолчанию возвращает new.html.erb
   end
   def create # post '/articles'
     render plain: params[:article].inspect
-    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL экшена create те post '/articles';
+    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL экшена create: post '/articles';
     # plain: - ключ хеша(обозначает что будет выведен просто текст);
     # params[:article].inspect - значение хеша.
     # В итоге выведет #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
-    # так же можно вывести и весь params и что угодно еще. Пример вывода для render plain: params:
-    # {
-    #   "authenticity_token"=>"73qb1Y3HRbnFXbkKtZNPHiBV-cp2xSQHyjCVA5qMH3FAyLE0_odUBhaSsouzuYzvuRBuAtHpgDACLVNLSOXhBA",
-    #   "question"=>{"title"=>"some title", "body"=>"some question"},
-    #   "commit"=>"Submit question!",
-    #   "controller"=>"questions",
-    #   "action"=>"create"
-    # }
 
     # по умолчанию возвращает(рэндерит) create.html.erb(render 'articles/create')
   end
 end
-
 # Страницу /articles пользователь не сможет открыть вручную, тк для нее сейчас есть только POST-обработчик, но нет GET(index)
 
 
 puts
 puts '                             Запись в БД. Разрешение на использование атрибутов'
 
-# Откроем /app/controllers/contacts_controller.rb и запишем код.
+# Изменим /app/controllers/contacts_controller.rb
 class ContactsController < ApplicationController
   def new
   end
 
   def create # принимает данные введенные пользователем в форму
-    @contact = Contact.new(params[:contact])
-    # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
-    # Аттрибуты params[:some] по умолчанию запрещены(связано с безопасностью) и их нужно разрешить, для этого используется специальный синтаксис:
+    @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
+    # Аттрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого используется специальный синтаксис:
     @contact = Contact.new(contact_params) # вместо params[:contact] вызываем наш разрешающий метод
     @contact.save
   end
 
   private
 
-  def contact_params # название метода обычно такое(сущность_params), хотя можно любое
+  def contact_params # название метода обычно сущность_params, хотя можно любое
     params.require(:contact).permit(:email, :message)
-    # require(:contact) - ищет форму или хэш ??
-    # permit(:email, :message) - содержит те столбцы, которые мы разрешаем передать в экшен
+    # require(:contact) - получаем соответсвующий подхэш в params
+    # permit(:email, :message) - разрешает вносить данные пд этими ключами в БД ??
   end
 end
 # Теперь мы можем добавить запись в БД через форму /contacts/new
@@ -87,7 +77,7 @@ params = ActionController::Parameters.new({
 })
 
 params = ActionController::Parameters.new
-params.permitted? #=> false  # проверяем разрешен или нет только что созданный params. Тоже самое автоматически проверяется методами(методами сущности а не контроллера) изменяющими БД: save, create, updste, destroy
+params.permitted? #=> false  # проверяем разрешен или нет только что созданный params. Тоже самое автоматически проверяется методами модели изменяющими БД: save, create, updste, destroy
 
 # require(:contact) - требует наличия параметров.
 ActionController::Parameters.new(person: { name: "Francesco" }).require(:person) #=> #<ActionController::Parameters {"name"=>"Francesco"} permitted: false>
@@ -102,7 +92,7 @@ permitted.has_key?(:age)  # => true
 permitted.has_key?(:role) # => false
 # permit – метод, который определяет разрешенные параметры в нашем ресурсе для передачи их значений в контроллер. Мы указываем только то, что хотим получить!
 
-# Тоесть тут мы разрешили только параметры name и age для сущности user. И теперь если хакер захочет админские права(или прислать данные с айди чтоб перебить его) и нам передаст в запросе чтото вроде:
+# Тоесть тут мы разрешили только параметры name и age для сущности user. И теперь если хакер захочет админские права(или прислать данные с айди чтоб перебить его) и отправит в запросе чтото вроде:
 # user[name]=Francesco&user[age]=22&user[role]=admin
 # то механизм разрешений отсечет все лишнее и пропустит только:
 # user[name]=Francesco&user[age]=22
@@ -113,20 +103,28 @@ permitted.has_key?(:role) # => false
 
 
 puts
-# проверить params в приложении(AskIt session/create)
+# посмотреть/проверить содержание всего params в приложении:
 def create
-  render plain: params.to_yaml # рэндерим params
+  render plain: params #=>
+  # {
+  #   "authenticity_token"=>"73qb1Y3HRbnFXbkKtZNPHiBV-cp2xSQHyjCVA5qMH3FAyLE0_odUBhaSsouzuYzvuRBuAtHpgDACLVNLSOXhBA",
+  #   "question"=>{"title"=>"some title", "body"=>"some question"},
+  #   "commit"=>"Submit question!",
+  #   "controller"=>"questions",
+  #   "action"=>"create"
+  # }
+
+  render plain: params.to_yaml #=>
+  # --- !ruby/object:ActionController::Parameters
+  # parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+  #   authenticity_token: EIe2q9uVSAa_pnzea-Zw2Bhr9lIn5D1VHMS7UdCQWN4IY5zG6wPlIFsA7pP8d9zK49qTFdmG2vKFsG15eKWH9A
+  #   email: kroker@mail.ru
+  #   password: '123456'
+  #   commit: Sign In!
+  #   controller: sessions
+  #   action: create
+  # permitted: false
 end
-#=>
-# --- !ruby/object:ActionController::Parameters
-# parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
-#   authenticity_token: EIe2q9uVSAa_pnzea-Zw2Bhr9lIn5D1VHMS7UdCQWN4IY5zG6wPlIFsA7pP8d9zK49qTFdmG2vKFsG15eKWH9A
-#   email: kroker@mail.ru
-#   password: '123456'
-#   commit: Sign In!
-#   controller: sessions
-#   action: create
-# permitted: false
 
 
 puts
@@ -152,7 +150,23 @@ end
 # 12:31:50 web.1  |   Parameters: {"name"=>"kroker"}
 
 
-# Те можно посылать данные с разных ссылок или при помощи скрипта менять ссылку и отправлять данные в контроллер, например для меню выборки статы. (Пример можно посмотреть(мб потом сюда добавить) в Chess/app/.../home/...)
+puts
+# Те можно посылать данные с разных ссылок или при помощи скрипта менять ссылку и отправлять данные в контроллер, например для меню выборки статы. (Работающий пример можно посмотреть в Chess/app/.../home/...)
+
+# Добавим экшен и представление stata, в представлении создадим ссылки отправляющие данные что будем использовать
+class HomeController < ApplicationController
+  def stata
+    order = params[:order]
+    res = params[:result]
+
+    if [order, res].all?{|e| e == ''}
+      @accounts = Account.all
+    else
+      # @accounts = Account.order("? ?", [(res == '' ? 'id' : res), (order == '' ? 'ASC' : order)]) # так не сработало ??
+      @accounts = Account.order("#{res == '' ? 'id' : res} #{order == '' ? 'ASC' : order}")
+    end
+  end
+end
 
 
 puts

@@ -2,22 +2,20 @@
 
 <!--                                            Форма form_for -->
 
-<!-- Этот синтаксис Рэилс для формы не обязателен и можно просто писать HTML как в формах Синатры -->
+<!-- Синтаксис Рэилс для формы не обязателен и можно использовать обычный HTML, как в формах Синатры -->
 
 <%= form_for :article, url: articles_path, data: {turbo:false} do |f| %> <!-- Тут именно с %= -->
-  <!-- form_for - стандартный форм билдер(хэлпер), создает форму.(Существуют разные форм билдеры, например для формы Бутсрапа, есть ещё форм билдер Simple form итд, собственно form_for используется не так часто.) -->
-  <!-- :article - параметр в единственном числе, тк форма отправляет данные об одной сущности. В итоге если посмотреть код то будет создана форма:
-    <form action="/articles/new" accept-charset="UTF-8" method="post">
-      <input type="hidden" name="authenticity_token" value="DGyL-HHUE0zhYRgsnOmkAZGbJQ" autocomplete="off" />
-      скрытое поле нужно для безопасности приложения
+  <!-- form_for - стандартный форм билдер(хэлпер), создает форму, используется не так часто тк есть другие форм билдеры, например для формы Бутсрапа, есть ещё форм билдер Simple form итд -->
+  <!-- :article - параметр в единственном числе, тк форма отправляет данные об одной сущности. В итоге если посмотреть код то будет создана форма и скрытое поле в ней(нужно для безопасности приложения):
+  <form action="/articles/new" accept-charset="UTF-8" method="post">
+    <input type="hidden" name="authenticity_token" value="DGyL-HHUE0zhYRgsnOmkAZGbJQ" autocomplete="off" />
   -->
-  <!-- url: articles_path - (так же можно захардкодить: url: '/articles') направняет на корневой URL контроллера те '/articles') - добавляем его. Тк для URL "/articles/new", что у form_for :article по умолчанию, существует только GET-обработчик(new), потому при нажатии кнопки произойдет ошибка. Для POST используется экшен create c URL '/articles', соотв надо перенаправить форму на него. Теперь если посмотреть код то адрес в теге формы изменился:
+  <!-- url: articles_path (можно и захардкодить: url: '/articles') - запрос POST '/articles'. Добавляем его, тк по умолчанию у form_for :article стоит URL GET "/articles/new" и при нажатии кнопки произойдет ошибка(тк по данному URL существует только GET-обработчик в экшене new). Для POST используется экшен create c URL '/articles', соотв надо перенаправить форму на него. Теперь если посмотреть код то адрес в теге формы изменился:
     <form action="/articles" accept-charset="UTF-8" method="post">
   -->
   <!-- data: {turbo:false} - нужно дописать, если в /articles/new при нажатии на кнопку submit не происходит перенаправления на /articles. Форма опять изменилась: -->
     <!-- <form data-turbo="false" action="/articles" accept-charset="UTF-8" method="post">
   -->
-
   <!-- url: '/articles', data: {turbo:false}  - это и все дополнительное это хэш -->
 
 
@@ -27,8 +25,8 @@
 
   <p>
     <%= f.label :title %><br> <!-- <label for="article_title">Title</label> -->
-      <!-- label - название/обозначение тега -->
-      <!-- title - название столбца в таблице -->
+      <!-- label - название/обозначение тега label -->
+      <!-- title - название столбца в таблице/модели -->
     <%= f.text_field :title %> <!-- <input type="text" name="article[title]" id="article_title" /> -->
   </p>
 

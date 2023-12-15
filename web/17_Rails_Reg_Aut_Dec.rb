@@ -270,6 +270,19 @@ def show
   @pagy, @answers = pagy @question.answers.order(created_at: :desc)
   @answers = @answers.decorate # декорируем answers тут в экшенe show questions(тк ответ обрабатывается в нем)
 end
+# Так же задекорируем объекты в экшенах контроллера answers, чтобы все работало
+def create
+  @answer = @question.answers.build answer_params
+  if @answer.save
+    flash[:success] = 'Answer created!'
+    redirect_to question_path(@question)
+  else
+    @question = @question.decorate # добавим эту строку - предварительно задекорируем
+    @pagy, @answers = pagy @question.answers.order created_at: :desc
+    @answers = @answers.decorate # декорируем answers
+    render 'questions/show'
+  end
+end
 
 
 puts
@@ -474,8 +487,6 @@ end
 puts
 puts '                        Запоминание авторизированного пользователя в БД(куки)'
 
-# ?? Почемуто когда ставим галочку пускает с неверным паролем в акаунт. Мб изза метода update_column, тк все валидации прпускаются ??
-
 # Можно запомнить пользователя в куки, а не только в сессии, например закрыли браузер без выхода, то сессия удалилась, но хэшированный токен остался в БД и его можно сверить с куки в браузере.
 # Тоесть запоминание - генерируем токен, хэшируем, помещаем в БД и в куки браузера, забывание - удаляем токен из БД и браузера.
 
@@ -519,9 +530,9 @@ class User < ApplicationRecord
     self.remember_token = nil # (не обязательно) заодно разопределим и переменную экземпляра
   end
 
-  # метод для сравнения передаваемого токена(будет захеширован) и хэшированного токена из БД
+  # метод для сравнения токена из куки браузера(будет захеширован перед сравнением) и хэшированного токена из БД
   def remember_token_authenticated?(remember_token)
-    return false if remember_token_digest.blank? # вернем false если в поле токена null
+    return false if remember_token_digest.blank? # вернем false если в БД в поле токена null
     BCrypt::Password.new(remember_token_digest).is_password?(remember_token)
     # те сравниваем хэш токена из БД remember_token_digest с токеном remember_token, который передаем в метод
   end
@@ -538,7 +549,7 @@ class User < ApplicationRecord
 end
 
 
-# 4. В контроллеле sessions_controller.rb собственно запомним пользователя в зависимости от значения чекбокса
+# 4. В sessions_controller.rb запомним пользователя в зависимости от значения чекбокса :remember_me('0' или '1')
 class SessionsController < ApplicationController
   # ...
   def create

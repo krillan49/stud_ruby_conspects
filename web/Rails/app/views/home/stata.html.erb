@@ -1,0 +1,61 @@
+<h1>Stata page</h1>
+
+
+<!-- Меню сортировки -->
+<select onchange="selectors()">
+  <option value="" disabled selected>Выберете порядок</option>
+  <option value="order=ASC&">По возрастанию</option>
+  <option value="order=DESC&">По убыванию</option>
+</select>
+
+<select onchange="selectors()">
+  <option value="" disabled selected>Выберете тип результата</option>
+  <option value="result=games&">Игры</option>
+  <option value="result=wins&">Победы</option>
+  <option value="result=loses&">Поражения</option>
+  <option value="result=draws">Ничьи</option>
+</select>
+
+<!-- Ссылка для отправки данных в экшен -->
+<a href="/" id="select-link">Применить параметры сортировки</a>
+
+<!-- Таблица отсортированных данных -->
+<table>
+  <thead>
+    <tr><th>Имя</th><th>Игры</th><th>Победы</th><th>Поражения</th><th>Ничьи</th></tr>
+  </thead>
+  <tbody>
+    <% @accounts.each do |account| %>
+      <tr>
+        <td><%= account.user.username %></td>
+        <td><%= account.games %></td>
+        <td><%= account.wins %></td>
+        <td><%= account.loses %></td>
+        <td><%= account.draws %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<!-- Функция добавляет параметры выбранные в селекторах в ссылку -->
+<script>
+  function selectors() {
+    var res = "/?"
+
+    var arr = document.getElementsByTagName('select'); // собираем данные из селекторов
+    for (var i = 0; i < arr.length; i++){
+      res += arr[i].value;
+    }
+
+    var link = document.getElementById('select-link'); // помещаем данные в URL ссылки
+    link.href = res
+  }
+</script>
+
+
+
+
+
+
+
+<!--  -->
