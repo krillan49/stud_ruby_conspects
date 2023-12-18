@@ -3,6 +3,12 @@
 
 <h1 class="mb-4">Admin Users</h1>
 
+<!-- ссылка/кнопка для работы с форматом zip. Загрузит для пользователя(админа) данные(XLSX) в формате архива(zip) -->
+<div class="btn-group mb-3">
+  <%= link_to 'Download zipped XLSX', admin_users_path(format: :zip), class: 'btn btn-secondary' %>
+  <!-- admin_users_path(format: :zip) - добавляем в хэлпер URL параметр format: :zip, это значит что к URL допишется .zip -->
+</div>
+
 <%= pagination @pagy %>
 
 <table class="table table-striped table-hover">
