@@ -27,6 +27,8 @@ production:
   <<: *default
   database: db/production.sqlite3
 
+# У тестовой разработческой и продакшн баз должны быть разные названия
+
 
 
 

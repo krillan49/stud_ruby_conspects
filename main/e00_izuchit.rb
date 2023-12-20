@@ -8,3 +8,11 @@
 # мап без переменной
 # gets в блоке
 # itself метод вызывающий сам объект ?
+
+
+# странный синтаксис параметров протестить
+class ApplicationService
+  def self.call(...)
+    new(...).call
+  end
+end
