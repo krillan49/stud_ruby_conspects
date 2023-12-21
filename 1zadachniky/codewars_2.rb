@@ -2,28 +2,55 @@
 # https://www.codewars.com/kata/584daf7215ac503d5a0001ae/train/ruby
 class DiffExp
   def initialize(exp)
-    @exp = exp_to_arr(exp)
+    @exp = exp_to_arr(exp) # ["-", ["+", {"x"=>1}, {"x"=>1}], {"x"=>1}]
+    @oexp = ''
   end
 
   def main
-    recursion_cycle(@exp)
+    @exp = recursion_cycle(@exp) if @exp.class == Array
+    derivative
+    [@oexp, @exp]
   end
 
-  def recursion_cycle(exp) # гдето тут тупняк с рекурсией
-    exp.map do |e|
-      e = recursion_cycle(e) if e.class == Array
-      e
+  def derivative # производная
+    if @exp[0] == 'sin'
+      @oexp = '(cos x)' # потом вставим упрощенное @exp вместо x
+      @exp = @exp[1]
+    elsif @exp[0] == 'cos'
+      @oexp = '(* -1 (sin x))'
+      @exp = @exp[1]
+    elsif @exp[0] == 'exp'
+      @oexp = '(exp x)'
+      @exp = @exp[1]
+    elsif @exp[0] == 'ln'
+      @oexp = '(/ 1 x)'
+      @exp = @exp[1]
+    end
+  end
+
+  def recursion_cycle(exp) # упрощаем выражение
+    exp = exp.map do |ex|
+      if ex.class == Array
+        ex.any?{|e| e.class == Array} ? recursion_cycle(ex) : simplify_inner_exp(ex)
+      else
+        ex
+      end
     end
     simplify_inner_exp(exp)
   end
 
-  def simplify_inner_exp(exp)
-    p exp
-    if exp.size == 1 && /^\d$/ === exp[0]
-      '0'
-    elsif !(/^\d$/ === exp[1]) && exp[1] == exp[2]
-      hh = {'+'=>{exp[1]=>2}, '-'=>'0', '/'=>'1', '*'=>"(^ #{exp[1]} 2)"}
-      hh[exp[0]]
+  def simplify_inner_exp(exp) # упрощаем внутренний массив
+    # p exp
+    if exp[1].class == Hash && exp[2].class == Hash && %w[+ -].include?(exp[0])  # оба с переменными
+      k = exp[1].keys[0]
+      exp = {k => exp[1][k].send(exp[0], exp[2][k])}
+    elsif exp[1..-1].any?{|e| e.class == Hash} && exp[1..-1].any?{|e| e.class != Hash} && %w[* /].include?(exp[0]) # одно с переменной
+      hh = exp[1..-1].find{|e| e.class == Hash}
+      n = exp[1..-1].find{|e| e.class != Hash}
+      k = hh.keys[0]
+      res = hh[k].send(exp[0], n.to_f)
+      res = res.to_i if res % 1 == 0
+      exp = {k => res}
     else
       exp
     end
@@ -36,9 +63,11 @@ class DiffExp
              .split('')
              .map{|e| e.chars.slice_when{|a, b| a == '[' || b == ']'}.map(&:join)}
              .flatten
-             .map{|e|  /^\d*$|\[|\]| / === e ? e : "'#{e}'"}
+             .map{|e| /^\d*$|\[|\]| / === e ? e : "'#{e}'"}
              .join
              .gsub(/ /, ',')
+             .gsub(/'e''x''p'/, "'exp'")
+             .gsub(/'x'/, '{"x" => 1}')
     eval(exp)
   end
 
@@ -50,7 +79,8 @@ def diff(s)
   dif_exp.main
 end
 
-p diff("(- (+ x x) x)") # "1"
+p diff("(cos x)") #
+
 
 config = [
   ["constant should return 0",                       "0",                    "5"],
@@ -72,6 +102,4 @@ config = [
   ["sin(x+1) should return cos(x+1)",                "(cos (+ x 1))",        "(sin (+ x 1))"],
   ["sin(2*x) should return 2*cos(2*x)",              "(* 2 (cos (* 2 x)))",  "(sin (* 2 x))"],
   ["exp(2*x) should return 2*exp(2*x)",              "(* 2 (exp (* 2 x)))",  "(exp (* 2 x))"],
-  ["Second deriv. sin(x) should return -1 * sin(x)", "(* -1 (sin x))",       "(sin x)"],
-  ["Second deriv. exp(x) should return exp(x)",      "(exp x)",              "(exp x)"]
 ]
