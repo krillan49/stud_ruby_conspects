@@ -1,11 +1,11 @@
 <h1>List of articles</h1>
 
-<!--                                       Вывод всех статей -->
+<!--                                             Вывод всех статей -->
 <% @articles.each do |article| %>
   <h3><%= article.title %></h3>
   <p><%= article.text %></p>
 
-  <!--                                           Ссылки -->
+  <!--                                      Ссылки на show, edit, destroy -->
 
   <!-- Можно писать и как в Синатре, но тогда получится хардкод: -->
   <a href="/articles/<%= article.id %>">Show article</a>
@@ -13,25 +13,24 @@
 
   <!-- https://guides.rubyonrails.org/routing.html#path-and-url-helpers  - _path методы -->
 
-  <!--                   Ссылки на просмотр и редактирование статьи при помощи синтаксиса Rails -->
-  <%= link_to "Show article", article_path(article) %>
-  <!-- <a href="/articles/2">Show article</a> -->
-  <!-- article_path(article) - параметром в метод(именованный маршрут) передается сущность article(объект статьи - экземпляр модели Article), для того чтобы id статьи подставить в :id URLа запроса, в итоге перейдет на /articles/id -->
+  <!--                              Ссылки на show, edit при помощи синтаксиса Rails -->
+  <%= link_to "Show article", article_path(article) %> <!-- <a href="/articles/2">Show article</a> -->
+  <!-- article_path(article) - параметром в хэлпер(именованный маршрут) передается сущность article (объект статьи - экземпляр модели Article), для того чтобы id статьи подставить в :id URLа запроса, в итоге перейдет на /articles/id -->
   <!-- article_path(article.id) - при желании можно писать и так но это лишнее, тк хэлпер вызовет метод .id автоматически -->
-  <%= link_to "Edit article", edit_article_path(article) %>
-  <!-- <a href="/articles/2/edit">Edit article</a> -->
+  <%= link_to "Edit article", edit_article_path(article) %> <!-- <a href="/articles/2/edit">Edit article</a> -->
   <!-- edit_article_path(article) - в итоге перейдет на /articles/id/edit -->
 
-  <!--                  Ссылка/кнопка на удаление статьи -->
+  <!--                             Ссылка/кнопка на удаление статьи -->
   <%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %>
   <!-- ?? data: { turbo_method: "post" } ?? для link_to с включенным хотваир -->
-  <!-- button_to - для кнопки удаления вместо ссылки удаления link_to, тк на Rails версии 7+ вероятен баг - не удаляется статья (из браузера). Это происходит из-за того, что в Rails 7 отключен UJS. -->
+  <!-- button_to - для кнопки удаления вместо ссылки удаления link_to, тк на Rails версии 7 не удаляется по ссылке. Это происходит из-за того, что в Rails 7 отключен UJS. -->
 
   <!-- В Рэилс 6 была такая например ссылка для удаления, в 7й для такого необходимо подключить UJS -->
   <%= link_to 'Destroy', question_path(question), data: {method: :delete, confirm: 'Are you sure?'} %>
 
     <!-- Ссылка выглядит так(не добавляет форму (?? в Рэилс 7 ??)): -->
       <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a>
+      
     <!-- Кнопка выглядит так(добавляет форму): -->
       <form class="button_to" method="post" action="/articles/2">
         <input type="hidden" name="_method" value="delete" autocomplete="off" />
