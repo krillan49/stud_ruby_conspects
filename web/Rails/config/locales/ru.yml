@@ -1,0 +1,8 @@
+en:
+  en: 'Английский'
+  ru: 'Русский'
+  menu: # pages/index
+    home: Главная
+  pages:
+    index:
+      title: Добро пожаловать в AskIt!

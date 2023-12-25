@@ -29,10 +29,16 @@
 # To learn more, please read the Rails Internationalization guide
 # available at https://guides.rubyonrails.org/i18n.html.
 
-en: #  - указывает на локаль(удалять не нужно)
+en: #  указывает на локаль(удалять не нужно)
   # перевод названий локали для t(locale)
   en: 'English'
   ru: 'Russian'
+  # pages/index
+  menu:
+    home: Home
+  pages:
+    index:
+      title: Welcome to AskIt!
   # просто каталоги
   contacts: # Обязательно должны быть 2 пробела а не таб, иначе yml фаил не заработает
     contact_us: "Contact Us!"
