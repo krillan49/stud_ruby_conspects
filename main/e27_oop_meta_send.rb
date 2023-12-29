@@ -89,6 +89,19 @@ cities.each_count(:length) {|city| city.length % 3 == 0} # raise ArgsBlockSameti
 
 
 puts
+puts '                              send может напрямую вызвать private методы'
+
+class Aaa
+  private
+  def aaa
+    'hi'
+  end
+end
+a = Aaa.new
+p a.send(:aaa) #=> "hi"
+
+
+puts
 puts '                          Инициализация переменных экземпляра при помощи send'
 
 # Мета-программирование используется для инициализации свойств класса

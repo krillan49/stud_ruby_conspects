@@ -1,15 +1,14 @@
 
-<!-- Генерируем форму при помощи вспомогательной функции form_with -->
-<!-- Точно та же форма будет и в new и в edit -->
+<!-- Генерируем форму при помощи вспомогательной функции form_with (одна та же форма будет и в new и в edit) -->
 <%= form_with model: @question do |f| %>
   <!-- form_with - начиная с новых версий(6?) рекомендуется использовать эту вспомогательную функцию для генерации формы -->
-  <!-- model: @question  - используем экземпляр модели созданный в экшене new, создаст юрл как ниже -->
-  <!-- url: '/question' - альтернативный вариант предыдущему -->
+  <!-- model: @question  - используем экземпляр модели созданный в экшене new или edit, для new создаст URL post '/question', для edit patch '/question/:id' -->
+  <!-- url: '/question' - можно и так харкодить URL вместо model: @question -->
 
   <!-- Формбилдер form_with с параметром model: @question, для представления edit подставит action="/questions/1", айди для которого возьмет в объекте @question -->
-  <!-- Для представления edit будет добавлено скрытое поле <input type="hidden" name="_method" value="patch" autocomplete="off" /> -->
+  <!-- Для edit будет добавлено скрытое поле <input type="hidden" name="_method" value="patch" autocomplete="off" /> -->
 
-  <!-- Для представления edit значения полей будут автоматически подставлены -->
+  <!-- Для представления edit значения полей будут автоматически подставлены из @question -->
   <div>
     <%= f.label :title %>
     <%= f.text_field :title, required: true, minlength: 2, placeholder: 'Title' %>

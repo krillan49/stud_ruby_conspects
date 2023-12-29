@@ -54,7 +54,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
 
       # Вариант references
       t.references :article, null: false, foreign_key: true # Создает столбец article_id являющийся foreign_key к id поля той статьи к которой относится коммент в таблице articles.
-      # Тоже можно добавлять отдельной миграцией если в генераторе не указать article:references ??
+      # Тоже можно добавлять отдельной миграцией если в генераторе не указать article:references
       # можно добавить вручную если данная миграция еще не была запущена
 
       # Вариант belongs_to (алиас к references)
@@ -69,7 +69,6 @@ end
 # /models/comment.rb:
 class Comment < ApplicationRecord
   belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. можно добавлять вручную если в генераторе не указать article:references
-
   # Comment.find(id).article - теперь можно обращаться от любого коммента к статье которой он пренадлежит через метод article
 end
 # > rake db:migrate   # или > rails db:migrate
@@ -178,7 +177,6 @@ class AnswersController < ApplicationController
 
   def create # post '/questions/:question_id/answers'
     @answer = @question.answers.build answer_params # создаем сущность при помощи метода build
-
     if @answer.save
       flash[:success] = "Answer created!"
       redirect_to question_path(@question)
@@ -229,10 +227,115 @@ def show
   @answers = @question.answers.order created_at: :desc
 end
 
-# Настроим владеющую модель чтобы можно было удалять вопрос со всеми зависимыми ответами(сперва удаляет ответы а потом вопрос)
+
+# 6. Настроим владеющую модель чтобы можно было удалять вопрос со всеми зависимыми ответами(сперва удаляет ответы а потом вопрос)
 class Question < ApplicationRecord
-  has_many :answers, dependent: :destroy # dependent: :destroy  - параметр который и позволит нам удалять вопросы у которых созданы принадлежащие им ответы
+  has_many :answers, dependent: :destroy
+  # dependent: :destroy  - параметр который и позволит нам удалять вопросы у которых созданы принадлежащие им ответы
 end
+
+
+puts
+puts '                         User 1 - * Question. User 1 - * Answer. Методы up и down'
+
+# (На примере AskIt) Привяжем вопросы и ответы к пользователям(их авторам) что были созданы кастомно в Reg_Aut_Dec
+
+# 1. Создадим новые миграции чтобы добавить user_id с foreign_key в таблицы questions и answers
+# > rails g migration add_user_id_to_questions user:belongs_to
+# > rails g migration add_user_id_to_answers user:belongs_to
+# user:belongs_to - параметр создающий новое поле user_id с foreign_key к id в таблице users
+# Создались миграции:
+class AddUserIdToQuestions < ActiveRecord::Migration[7.0]
+  def change
+    # add_user_id_to_questions - изза такого правильного названия с именами таблиц, автоматически заполнилось:
+    add_reference :questions, :user, null: false, foreign_key: true, default: User.first.id
+    # Но если прямо так запустить миграцию, то опция null: false вызовет ошибку изза того и миграция не пройдет, что значение поля user_id не может быть пустым, но у уже ранее созданных записей оно пустое, а в прдакшене удалить существующие записи - не очень тема, потому, чтобы миграция прощла нужно будет обойти это при помощи временного значения по умолчанию:
+    # default: User.first.id - постановки в старые записи дефолиного значения, и айди какогото узера (мб спец юзер или админ лучше)
+  end
+end
+class AddUserIdToAnswers < ActiveRecord::Migration[7.0]
+  def change
+    add_reference :answers, :user, null: false, foreign_key: true, default: User.first.id # тоже добавим дефолтного юзера
+  end
+end
+# > rails db:migrate
+# В схему добавились все указанные ниже поля в таблицах(остальные поля тут опустим/не напишем в примере):
+ActiveRecord::Schema[7.0].define(version: 2023_12_29_124632) do
+  create_table "answers", force: :cascade do |t|
+    t.integer "user_id", default: 1, null: false
+    t.index ["user_id"], name: "index_answers_on_user_id"
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.integer "user_id", default: 1, null: false
+    t.index ["user_id"], name: "index_questions_on_user_id"
+  end
+
+  add_foreign_key "answers", "users"
+  add_foreign_key "questions", "users"
+end
+# Теперь удалим временное значения User.first.id из полей user_id при помощи еще одной миграции
+# > rails g migration remove_default_user_id_from_questions_answers
+class RemoveDefaultUserIdFromQuestionsAnswers < ActiveRecord::Migration[6.1]
+  # В миграции заменим метод change на методы up и down:
+
+  def up # этот метод вызывается при применении миграции  > rails db:migrate
+    change_column_default :questions, :user_id, from: User.first.id, to: nil
+    # from: User.first.id, to: nil - не обязательно(но не лишне) писать это при использовании методов up и down
+    change_column_default :answers, :user_id, from: User.first.id, to: nil
+    # Тоесть когда мы применим данную миграцию, мы заменим значения User.first.id в user_id в таблицах на пустое
+  end
+
+  def down # этот метод вызывается при откате миграции  > rails db:rollback
+    change_column_default :questions, :user_id, from: nil, to: User.first.id
+    # from: nil, to: User.first.id - не обязательно(но не лишне) писать это при использовании методов up и down
+    change_column_default :answers, :user_id, from: nil, to: User.first.id
+    # Тоесть когда мы откатим данную миграцию, мы обратно заполним значением User.first.id пустые значения user_id в таблицах
+  end
+
+  # Все тоже самое можно было бы сделать и используя метод change, но тогда писать from: User.first.id, to: nil обязательно иначе будет неоткатываемо
+end
+# > rails db:migrate
+# В схеме изменились поля
+ActiveRecord::Schema[7.0].define(version: 2023_12_29_130823) do
+  create_table "answers", force: :cascade do |t|
+    t.integer "user_id", null: false # значения default: 1 больше нет
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.integer "user_id", null: false # значения default: 1 больше нет
+  end
+end
+# Но мы можем эту миграцию откатить, если передумали и хотим вернуть значение default: User.first.id
+# > rails db:rollback (!!! почемуто с откаченной миграцией выдает ошибку и нужно обязательно снова ее выполнить)
+
+
+# 2. Добавим новые ассоциации в модели
+class User < ApplicationRecord
+  has_many :questions, dependent: :destroy
+  has_many :answers, dependent: :destroy
+end
+class Question < ApplicationRecord
+  belongs_to :user
+end
+class Answer < ApplicationRecord
+  belongs_to :user
+end
+
+
+# 3. Задекорируем ассоциации для user (question.user, answer.user) при помощи спец синтексиса прямо в декораторах вопросав и ответов, тк будем в представлениях применять к юзеру вызванному при помощи методов ассоциаций(взятому из таблицы) метод name_or_email и нам нужно чтобы юзер любого вопроса или ответа декорировался
+class QuestionDecorator < ApplicationDecorator
+  delegate_all
+  decorates_association :user # синтаксис автоматически декорирует ассоциацию юзера, получинную от вопроса
+end
+class AnswerDecorator < ApplicationDecorator
+  delegate_all
+  decorates_association :user # синтаксис автоматически декорирует ассоциацию юзера, получинную от ответа
+end
+
+
+# 4. Вынесем в паршал _question.html.erb основной блок из questions/index.html.erb и добавим в него пользователя вызванного от ассоциации с методом name_or_email
+
 
 
 
