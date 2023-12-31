@@ -1,5 +1,7 @@
 puts '                                            Типы связей(AR)'
 
+# Изучить: http://www.rusrails.ru/active-record-associations#foreign_key
+
 # Существует множество типов связей, но среди них есть 3 основные: one-to-many, one-to-one, many-to-many
 # http://rusrails.ru/active-record-associations
 
@@ -19,10 +21,6 @@ puts '                                            Типы связей(AR)'
 # таблица tags                      |  таблица tags_articles |  таблица articles
 # id                                |  tag_id, article_id    |  id
 # has_and_belongs_to_many :articles |                        |  has_and_belongs_to_many :tags
-
-
-
-# Изучить: http://www.rusrails.ru/active-record-associations#foreign_key
 
 
 puts
@@ -52,7 +50,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
       t.string :author
       t.text :body
 
-      # Вариант references
+      # Вариант references (алиас к belongs_to)
       t.references :article, null: false, foreign_key: true # Создает столбец article_id являющийся foreign_key к id поля той статьи к которой относится коммент в таблице articles.
       # Тоже можно добавлять отдельной миграцией если в генераторе не указать article:references
       # можно добавить вручную если данная миграция еще не была запущена
@@ -60,7 +58,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
       # Вариант belongs_to (алиас к references)
       t.belongs_to :article, null: false, foreign_key: true  # в таблице укажет так если генерировали при помощи belongs_to
 
-      # МБ belongs_to лучше использовать для связи сущностей, а references для таблиц одной сущности при нормализации ??
+      # МБ belongs_to лучше использовать для связи 1 - * (сущности разных моделей), а references для таблиц одной сущности при нормализации (1 - 1) ??
 
       t.timestamps
     end
@@ -68,7 +66,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
 end
 # /models/comment.rb:
 class Comment < ApplicationRecord
-  belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. можно добавлять вручную если в генераторе не указать article:references
+  belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. Можно добавлять вручную если в генераторе не указать article:references
   # Comment.find(id).article - теперь можно обращаться от любого коммента к статье которой он пренадлежит через метод article
 end
 # > rake db:migrate   # или > rails db:migrate
@@ -91,9 +89,8 @@ end
 
 # 2. Допишем вручную в модель уже Article  /models/article.rb ...
 class Article < ApplicationRecord
-  has_many :comments # добавим ассоциацию comments, тоесть статья связывается с комментами(множественное число).
-
-  # Article.find(id).comments - теперь можно обращаться от любой статьи к коллекции(массив) принадлежащих ей комментов через метод comments
+  has_many :comments # добавим ассоциацию comments, тоесть статья связывается с комментами (множественное число).
+  # Article.find(id).comments - теперь можно обращаться от любой статьи к коллекции (массив) принадлежащих ей комментов через метод comments
 end
 # Таким образом мы связали 2 сущности между собой.
 
@@ -128,12 +125,10 @@ q.answers.new   #=> #<Answer:0x000001fa47c4bc90 id: nil, body: nil, question_id:
 # https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
 
 
-# 3. Напишем маршрут. У нас в /config/routes.rb есть строка:
-resources :articles
-# Изменим ее и сделаем вложенный маршрут:
-resources :articles do
-  resources :comments, exсept: %i[new show] # создает карту маршрутов по REST, но вложенный(одни ресурсы в других)
-  # exсept: %i[new show] - (для AskIt) создадим все маршруты кроме указанных в параметре
+# 3. Добавим в маршруты статей через блок маршруты комментариев в /config/routes.rb:
+resources :articles do # Добавим сюда блок с маршрутами комментов, те сделаем вложенный маршрут:
+  resources :comments, exсept: %i[new show] # создает карту маршрутов по REST, но вложенный (одни ресурсы в других)
+  # exсept: %i[new show] - создает все маршруты кроме указанных в параметре-массиве
 end
 # article_comments_path     GET      /articles/:article_id/comments          comments#index
 # new_article_comment_path  GET      /articles/:article_id/comments/new      comments#new
@@ -249,8 +244,8 @@ class AddUserIdToQuestions < ActiveRecord::Migration[7.0]
   def change
     # add_user_id_to_questions - изза такого правильного названия с именами таблиц, автоматически заполнилось:
     add_reference :questions, :user, null: false, foreign_key: true, default: User.first.id
-    # Но если прямо так запустить миграцию, то опция null: false вызовет ошибку изза того и миграция не пройдет, что значение поля user_id не может быть пустым, но у уже ранее созданных записей оно пустое, а в прдакшене удалить существующие записи - не очень тема, потому, чтобы миграция прощла нужно будет обойти это при помощи временного значения по умолчанию:
-    # default: User.first.id - постановки в старые записи дефолиного значения, и айди какогото узера (мб спец юзер или админ лучше)
+    # Но если прямо так запустить миграцию, то опция null: false вызовет ошибку и миграция не пройдет изза того, что значение поля user_id не может быть пустым, но у уже ранее созданных записей оно пустое, а в прдакшене удалить существующие записи - не очень тема, потому, чтобы миграция прошла нужно будет обойти это при помощи временного значения по умолчанию:
+    # default: User.first.id - поставит в старые записи в колонку user_id вместо NULL дефолтное значение с айди этого юзера (мб придумать специального юзера для этого, например с именем "Аноним")
   end
 end
 class AddUserIdToAnswers < ActiveRecord::Migration[7.0]
@@ -334,8 +329,35 @@ class AnswerDecorator < ApplicationDecorator
 end
 
 
-# 4. Вынесем в паршал _question.html.erb основной блок из questions/index.html.erb и добавим в него пользователя вызванного от ассоциации с методом name_or_email
+# 4. Вынесем в паршал _question.html.erb основной блок из questions/index.html.erb и добавим в него пользователя вызванного от ассоциации (с методом name_or_email)
 
+
+puts
+puts '                               Отображение аватаров юзера при помощи Gravatar'
+
+# Покачто упрощенная реализация через Gravatar, без загрузки в БД
+
+# https://docs.gravatar.com/general/images/
+# Gravatar - это сторонний сервис(сайт) глобальных аватаров, те для привязки аватара к имэйлу, чтобы автоматически использовать его на других сайтах
+# Нужно зарегаться на сайте граватара, загрузить туда аватарку и привязать ее к имэйлу, далее при использовании этого имэйла на других сайтах, если они поддерживают Gravatar, будет отображаться данная аватарка
+# Хэшируется имэл пользователя, например так https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50 и потом аватар на сайте применяется через тег картинки <img src="https://gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50" />. Удобно что можно настраивать размер. Если пользователь не использует граватар, то будет аватар по умолчанию
+
+# 1. Создадим метод граватара в декораторе юзера user_decorator.rb
+class UserDecorator < ApplicationDecorator
+  # ...
+  def gravatar(size: 30, css_class: '')
+    email_hash = Digest::MD5.hexdigest email.strip.downcase # генерируем хэш на основе имэйла пользователя(на всякий случай обрезаем пробелы и помещаем в нижний регистр - это требования граватара)
+    h.image_tag "https://www.gravatar.com/avatar/#{email_hash}.jpg?s=#{size}", class: "rounded #{css_class}", alt: name_or_email
+    # h - объект префикса, обозначает что мы хотим использовать хэлпер Рэилс (?? это для граватара или декоратора надо ??)
+    # image_tag - хэлпер для генерации тега <img ...>
+    # email_hash - помещаем сгенерированный выше хэш в адрес изображения
+    # size - опция размера картинки, по умолчанию установлена в атрибутах
+    # css_class - можем так же применить сразу стили, по умолчанию нет
+  end
+end
+
+# 2. Применим в _quesion.html.erb метод gravatar к объекту юзера, а так же в shared/_menu.html.erb рядом с именем текущего юзера
+# Далее можно применить тоже самое на всех страницах, где мы отображам зависимые от юзера сущьности: questions/show.html.erb, answers/_answer.html.erb
 
 
 

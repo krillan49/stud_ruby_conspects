@@ -1,10 +1,18 @@
 <!-- answer - в переменную автоматически присвоит каждый элемент коллекции -->
 <article class="mb-3 card" id="answer-<%= answer.id %>">
+
+  <div> <!-- Юзер которму принадлежит ответ и его аватар через граватар (OneToMany) -->
+    <%= answer.user.gravatar size: 50, css_class: 'd-block' %>
+    <%= answer.user.name_or_email %>
+  </div>
+
   <div class="card-body">
     <section class="card-text">
-      <small><time datetime="<%= answer.formatted_created_at %>">
-        <%= answer.formatted_created_at %>
-      </time></small>
+      <small>
+        <time datetime="<%= answer.formatted_created_at %>">
+          <%= answer.formatted_created_at %>
+        </time>
+      </small>
 
       <div class="mt-2 mb-3">
         <%= sanitize answer.body %>

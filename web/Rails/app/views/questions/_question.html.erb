@@ -1,6 +1,6 @@
 <article class="card my-3">
   <section class="card-header">
-    <%= question.user.gravatar %>
+    <%= question.user.gravatar %> <!-- вызываем метод граватара из декоратора юзера, теперь тут будет аватарка -->
     <%= question.user.name_or_email %> <!-- задекорированный пользователь вызванный от ассоциации с методом декоратора -->
   </section>
 
