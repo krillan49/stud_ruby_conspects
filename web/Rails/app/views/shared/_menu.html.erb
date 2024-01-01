@@ -34,8 +34,8 @@
                 class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'}, current_page: current_page %>
                 <!-- Заменим ссылку на наш варик с хэлпером, если хотим отображать на какой мы странице -->
               <ul class="dropdown-menu">
-                <!-- Передаем в юрл айди текущего пользователя, те редактируем себя -->
                 <li><%= link_to 'Edit profile', edit_user_path(current_user), class: 'dropdown-item' %></li>
+                <!-- edit_user_path(current_user) - Передаем в URL айди текущего пользователя, те редактируем себя (переходим в форму режактирования юзера) -->
                 <li><hr class="dropdown-divider"></li> <!-- разделитель для красоты -->
                 <li><%= link_to 'Log Out', session_path, class: 'dropdown-item', data: {method: :delete} %></li>
               </ul>
