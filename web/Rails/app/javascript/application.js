@@ -12,6 +12,7 @@ import Turbolinks from "turbolinks"
 // для дропдаунов
 import '@popperjs/core'
 import 'bootstrap/js/dist/dropdown' // собственно компонент бутстрапа отвечающий за дропдауны
+import 'bootstrap/js/dist/collapse' // для выпадающих форм для commentable
 
 // Запускаем скрипты
 Rails.start()

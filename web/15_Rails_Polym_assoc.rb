@@ -1,5 +1,7 @@
 puts '                                     Полиморфные ассоциации(полиморфизм)'
 
+# Создание полиморфного коммента(мой способ наугад): https://github.com/krillan49/blog2_rs
+
 # Polymorphism
 
 # Создадим приложение poly_demo(исправим ошибки таймзон, бандл апдэйт итд)
@@ -32,8 +34,8 @@ Image.comments
 class Comment < ApplicationRecord
   belongs_to :commentable, polymorphic: true
   # При связывании с полиморфной ассоциацией надо в belongs_to добавить аргумент(любой) с окончанием able:
-  # commentable - получается: комментируемый, тоесть принадлежит комментируемому(посту, изображению итд)
-  # polymorphic: true - говорит о том что ассоциация полиморфная, те commentable это не какаято сущность, а хэндл(рукоятка, посредник ?) отвечающая за группу сущностей
+  # commentable - получается: комментируемый, тоесть принадлежит комментируемому(посту, изображению итд), как бы виртуальная модель
+  # polymorphic: true - говорит о том что ассоциация полиморфная, те commentable это не какаято сущность, а хэндл(рукоятка, посредник) отвечающая за группу сущностей
   # Хендл, рукоятка, которая существует у других сущностей.
 end
 
@@ -45,7 +47,7 @@ end
 
 # /app/models/image.rb:
 class Image < ApplicationRecord
-  has_many :comments, as: :commentable
+  has_many :comments, as: :commentable, dependent: :destroy # dependent: :destroy - работает так же как и раньше
 end
 
 # Далее, откроем миграцию db/migrate/20190205095251_create_comments.rb и добавим строку:
@@ -101,14 +103,89 @@ image2.comments.create(content: 'Bar') #=> ... [["content", "Bar"], ["commentabl
 
 
 puts
-# Создание полиморфного коммента(мой способ наугад):
-# =====================================
-# https://github.com/krillan49/blog2_rs
-# =====================================
+puts '                              Генерация полиморфнфх ассоциаций. Консерн для модели'
 
-# http://rusrails.ru/active-record-associations     -    статья про типы связей
+# (Для AskIt)
+
+# 1. Сгенерируем модель комментариев с прлиморфическими ассоциациями, указав все необходимые параметры в генераторе
+# > rails g model Comment body:string commentable:references{polymorphic} user:belongs_to
+# Создалась модель:
+class Comment < ApplicationRecord
+  belongs_to :commentable, polymorphic: true
+  belongs_to :user
+  validates :body, presence: true, length: { minimum: 2 } # допишем вручную валидации
+end
+# Создалась миграция:
+class CreateComments < ActiveRecord::Migration[7.0]
+  def change
+    create_table :comments do |t|
+      t.string :body
+      t.references :commentable, polymorphic: true, null: false
+      t.belongs_to :user, null: false, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+# > rails db:migrate
+# В схеме появилось:
+create_table "comments", force: :cascade do |t|
+  t.string "body"
+  t.string "commentable_type", null: false # поле c именем модели('Answer', 'Question') для привязки
+  t.integer "commentable_id", null: false # поле с айди сущности для привязки
+  t.integer "user_id", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+  t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+  t.index ["user_id"], name: "index_comments_on_user_id"
+end
+add_foreign_key "comments", "users"
 
 
+# 2. Создадим новй консерн, только уже в директории моделей, а не контроллеров - models/concerns/commentable.rb. В нем пропишем ассоциации для комментируемых моделей, вместо того чтобы писать их в каждой модели, просто подключим в них консерн
+class Question < ApplicationRecord
+  include Commentable
+  # ...
+end
+class Answer < ApplicationRecord
+  include Commentable
+  # ...
+end
+
+
+# 3. Пропишем маршруты для комментариев
+resources :questions do
+  resources :comments, only: %i[create destroy] # добавим вложенные комменты
+  resources :answers, except: %i[new show] # тут не будем делать еще одно вложение для комментов, тк маршрут получится слишком длинный ...
+end
+# ... вместо этого придется продублировать маршруты ответов и вложить в них комменты
+resources :answers, except: %i[new show] do
+  resources :comments, only: %i[create destroy]
+end
+
+
+# 4. Добавим в application.js модуль бутстрапа collapse для выпадающих форм
+# (?? возможно придется перепройти урок 15 8-50)
+
+
+# 5. Представления:
+# a. questions/show.html.erb - добавим рендер паршала comments/commentable с формой комментариев
+# б. answers/_answer.html.erb - добавим рендер паршала comments/commentable с формой комментариев (заодно добавим новую версию паршала)
+# в. comments/_commentable.html.erb - создадим директорию и паршал с формой комментариев(выпадающей) и списком всех комментариев для конкретной commentable сущности.
+# г. _comment.html.erb - создадим паршал для конкретного комментария
+
+
+# 6. Создадим новый декоратор comment_decorator.rb
+class CommentDecorator < ApplicationDecorator
+  delegate_all
+  decorates_association :user # задекорируем юзера, вызванного от комментария (для gravatar и name_or_email)
+
+  # def for?(commentable)
+  #   commentable = commentable.object if commentable.decorated?
+  #
+  #   commentable == self.commentable
+  # end
+end
 
 
 

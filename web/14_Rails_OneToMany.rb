@@ -1,6 +1,7 @@
 puts '                                            Типы связей(AR)'
 
 # Изучить: http://www.rusrails.ru/active-record-associations#foreign_key
+# http://rusrails.ru/active-record-associations     -    статья про типы связей
 
 # Существует множество типов связей, но среди них есть 3 основные: one-to-many, one-to-one, many-to-many
 # http://rusrails.ru/active-record-associations
@@ -344,7 +345,7 @@ class AnswersController < ApplicationController
   # ... set question и прочее
 
   def create
-    @answer = @question.answers.build answer_create_params # но у вопроса уже есть привязка при создании, потому добавим значение для user_id в params
+    @answer = @question.answers.build answer_create_params # но у ответа уже есть привязка при создании, потому добавим значение для user_id в params
     # ...
   end
 
@@ -364,6 +365,55 @@ class AnswersController < ApplicationController
 
   def answer_update_params
     params.require(:answer).permit(:body)
+  end
+
+  # ...
+end
+
+
+# Дополнительно(не относится к основной теме) вынесем повторяющийся код из экшенов контроллеров вопросов и ответов в отдельный метод нового консерна questions_answers.rb, тк далее он будет еще и 3м контроллере
+# answers_controller.rb
+def create
+  @answer = @question.answers.build answer_create_params # разница тут
+  if @answer.save
+    flash[:success] = t '.success'
+    redirect_to question_path(@question)
+  else
+    # далее наш повторяющийся код для выноса в метод консерна:
+    @question = @question.decorate
+    @pagy, @answers = pagy @question.answers.order created_at: :desc
+    @answers = @answers.decorate
+    render 'questions/show' # разница тут
+  end
+end
+# questions_controller.rb
+def show
+  @question = @question.decorate
+  @answer = @question.answers.build # разница тут
+  @pagy, @answers = pagy @question.answers.order(created_at: :desc)
+  @answers = @answers.decorate
+end
+# Заменим на
+class AnswersController < ApplicationController
+  include QuestionsAnswers # подключаем консерн
+  # ...
+
+  def create
+    @answer = @question.answers.build answer_create_params
+    if @answer.save
+      flash[:success] = t '.success'
+      redirect_to question_path(@question)
+    else
+      load_question_answers(do_render: true) # вызываем метод консерна с параметром true для render 'questions/show'
+    end
+  end
+end
+class QuestionsController < ApplicationController
+  include QuestionsAnswers # подключаем консерн
+  # ...
+
+  def show
+    load_question_answers # вызываем метод консерна
   end
 
   # ...
@@ -416,12 +466,12 @@ class AddGravatarHashToUsers < ActiveRecord::Migration[7.0]
 end
 # > rails db:migrate
 
-# Хэш нам нужно будет генерировать и заносить в БД когда регистрируется новый пользователь, а так же когда пользователь меняем свой имэйл(тк хэшируется имэйл). Для этого нам и пригодятся функции обратного вызова
+# Хэш нам нужно будет генерировать и заносить в БД когда регистрируется новый пользователь, а так же когда пользователь меняет свой имэйл(тк хэшируется имэйл). Для этого нам и пригодятся функции обратного вызова
 # Функции обратного вызова можно прописывать в моделях
 
 # Пропишем колбэк в модели user.rb
 class User < ApplicationRecord
-  # аксессоры, ассоциации, валидации
+  # ... аксессоры, ассоциации, валидации
 
   before_save :set_gravatar_hash, if: :email_changed?
   # before_save - колбэк, который выполняется каждый раз, когда запись сохраняется в БД (как новая так и апдэйт)
@@ -451,7 +501,7 @@ class UserDecorator < ApplicationDecorator
 end
 
 # Но у нас в БД до добавления этого функционала уже могли быть юзеры и нам надо посчитать хэши их имэйлов и добавить в БД в соот колонку этих юзеров.
-# Для этого ыоспользуемся db/seeds.rb, чтобы заполнить БД этими данными.
+# Для этого воспользуемся db/seeds.rb, чтобы заполнить БД этими данными.
 # Предварительно закоментим старые наполнения(код что был ранее, у нас Фэйкер), чтоб они не сработали поторно
 User.find_each do |u| # тоесть для каждого юзера проделаем:
   u.send(:set_gravatar_hash) # применим к юзерам метод модели set_gravatar_hash (через send чтобы обойти private)
