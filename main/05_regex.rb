@@ -309,12 +309,16 @@ $div_by_4 = /([048]|(\d*([02468][048]|[13579][26])))$/
 puts
 puts '                                              scan'
 
+# Поиск слов в строке. Вырезает соотв подстроку
+"milkshakepizzachickenfriescokeburgerpizzasandwichmilkshakepizza".scan(/milkshake/) #=> ["milkshake", "milkshake"]
+"milkshakepizzachickenfriescokeburgerpizzasandwichmilkshakepizza".scan('milkshake') #=> ["milkshake", "milkshake"]
 
-# Считает количество переходов с 'ha' на 'Ha' и наоборот
-'HaHahahahaHaHahaha'.scan(/(ha)+|(Ha)+/).size #=> 4
-'HaHahahahaHaHahaha'.scan(/(ha)+|(Ha)+/) #=> [[nil, "Ha"], ["ha", nil], [nil, "Ha"], ["ha", nil]]
-# Вырезаем слова начинающиеся с # и состоящие из символов \w
-self.scan(/#\w+/)
+# Вырезат совпадения в скобках, при большим числе скобок, увеличивает длинну подмассивов, для каждого условия
+text = "aLways seems  imPossible unti9l"
+text.scan(/[a-z]([A-Z])/)              #=> [["L"], ["P"]]
+text.scan(/[a-z]([A-Z])| ( )/)         #=> [["L", nil], [nil, " "], ["P", nil]]
+text.scan(/[a-z]([A-Z])| ( )|([0-9])/) #=> [["L", nil, nil], [nil, " ", nil], ["P", nil, nil], [nil, nil, "9"]]
+
 # Вернуть все буквы стоящие после символов заданных переменной letter в строке
 str.scan(/(?<=#{letter})[a-z]/i).join
 
@@ -325,10 +329,6 @@ p "2003-07-08 16:49:45,896 ERROR [user1:mainfunction:subfunction] We have a prob
 # возвращает элемент nil в массив если данное подвыражение отсутсвует(если это отсутсвие соотв выражению({0,}))
 p "2003-07-08 16:49:46,896 INFO [user1:mainfunction] We don't have a problem".scan(logparser)
 #=> [["2003-07-08 16:49:46,896", "INFO", "user1", "mainfunction", nil, "We don't have a problem"]]
-
-# поиск слов в строке
-"milkshakepizzachickenfriescokeburgerpizzasandwichmilkshakepizza".scan(/milkshake/) #=> ["milkshake", "milkshake"]
-"milkshakepizzachickenfriescokeburgerpizzasandwichmilkshakepizza".scan('milkshake') #=> ["milkshake", "milkshake"]
 
 
 puts
