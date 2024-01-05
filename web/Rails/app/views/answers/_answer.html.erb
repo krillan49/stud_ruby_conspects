@@ -63,7 +63,7 @@
 
 <!-- Рендерим паршал формы комментариев (Polym_assoc) -->
 <%= render 'comments/commentable', commentable: answer, comment: @comment, html_id: dom_id(answer, 'comment_form') %>
-<!-- html_id: dom_id(answer, 'comment_form') -  -->
+<!-- html_id: dom_id(answer, 'comment_form') - передаем значение якоря для открытия комментов, уникалоьный в каждый ответ, при помощи dom_id, соответсвенно якорь будет состоять из 'comment_form' и значения айди из answer, например #comment_form_answer_20 -->
 
 
 

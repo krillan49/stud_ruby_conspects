@@ -1,20 +1,19 @@
 <!--                                         Стартовый вариант -->
 
-<%= tag.div do %>
-  <%= form_with model: [commentable, @comment || commentable.comments.build)], class: 'pt-3 border-top my-2' do |f| %>
-  <!-- Стрроим URL по 2м моделям commentable и @comment, если коммента еще нет то создаем при помощи build -->
+<!-- Ссылка с якорем для открытия конкретного collapse элемента на странице -->
+<%= link_to t('questions.show.comments'), "##{html_id}", class: 'btn btn-primary', data: {'bs-toggle': 'collapse'} %>
+<!-- html_id - значение якоря будем передавать из questions/show.html.erb и answers/_answer.html.erb в точке рендера -->
+
+<%= tag.div class: "collapse", id: html_id do %>
+  <!-- id: html_id - назначаем в этот div значение id которое передали из questions/show.html.erb и answers/_answer.html.erb в точке рендера, соотв id на теге с классом collapse будет соответсвовать значению якоря на кнопке -->
+
+  <%= form_with model: [commentable, (@comment || commentable.comments.build)], class: 'pt-3 border-top my-2' do |f| %>
+  <!-- Строим URL по 2м моделям commentable и @comment, если коммента еще нет то создаем при помощи build, тоесть запрос будет POST "/questions/:question_id/comments" или "/answers/:answer_id/comments" -->
 
     <%= render 'shared/errors', object: @comment %>
 
-    <div class="mb-3 row">
-      <div class="col-sm-2 col-form-label">
-        <%= f.label :body %>
-      </div>
-
-      <div class="col-sm-10">
-        <%= f.text_area :body, class: 'form-control form-control-sm' %>
-      </div>
-    </div>
+    <%= f.label :body %>
+    <%= f.text_area :body, class: 'form-control form-control-sm' %>
 
     <%= f.submit t('global.button.submit'), class: 'btn btn-sm btn-primary' %>
   <% end %>
@@ -24,13 +23,15 @@
 <% end %>
 
 
-<!--                                             Законченый вариант -->
+
+<!--                                         Законченый вариант () -->
 
 <% is_current_comment = comment&.for?(commentable) %>
 
 <%= link_to t('questions.show.comments'), "##{html_id}", class: 'btn btn-primary', data: {'bs-toggle': 'collapse'} %>
 
 <%= tag.div class: "collapse #{'show' if is_current_comment}", id: html_id do %>
+
   <%= form_with model: [commentable, (is_current_comment ? comment : commentable.comments.build)],
   class: 'pt-3 border-top my-2' do |f| %>
 
