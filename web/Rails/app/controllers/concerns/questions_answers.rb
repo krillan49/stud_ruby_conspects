@@ -4,7 +4,7 @@ module QuestionsAnswers
   included do
     def load_question_answers(do_render: false) # метод который будем вызывать в контроллерах
       @question = @question.decorate
-      @answer ||= @question.answers.build # создаем тольно если еще не опеределена(для questions#show)
+      @answer ||= @question.answers.build # создаем для генерации URL в форме questions#show (тольно если еще не опеределена)
       @pagy, @answers = pagy @question.answers.order(created_at: :desc)
       @answers = @answers.decorate
       render('questions/show') if do_render # рэндерим если значение true (для answers#create)

@@ -9,5 +9,6 @@
 
   <%= link_to t('global.button.delete'), polymorphic_path([comment.commentable, comment]),
     class: 'btn btn-danger btn-sm', data: {method: :delete, confirm: t('global.dialog.you_sure')} %>
+  <!-- polymorphic_path([comment.commentable, comment] - хэлпер Рэилс для URL полиморфических ассоциаций, строит путь исходя из того что переданно в 1м элементе массива, тут comment.commentable тоесть комментируемая сущность, вопрос или ответ, а далее сущность коммента. Те путь будет либо '/questions/:qoestion_id/comments/:id' либо '/answers/:answer_id/comments/:id'  -->
 
 <% end %>

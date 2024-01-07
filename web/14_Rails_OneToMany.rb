@@ -346,6 +346,7 @@ class AnswersController < ApplicationController
 
   def create
     @answer = @question.answers.build answer_create_params # но у ответа уже есть привязка при создании, потому добавим значение для user_id в params
+    # @answer.user = current_user можно тут написать вместо .merge(user: current_user) в методе answer_create_params
     # ...
   end
 
