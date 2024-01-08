@@ -94,11 +94,11 @@ image2.comments.create(content: 'Bar') #=> ... [["content", "Bar"], ["commentabl
 
 
 puts
-puts '                              Генерация полиморфных ассоциаций. concern для модели'
+puts '                         Генерация полиморфных ассоциаций. concern для модели и маршрутов'
 
 # (Для AskIt)
 
-# 1. Сгенерируем модель комментариев с прлиморфическими ассоциациями, указав все необходимые параметры в генераторе
+# 1. Сгенерируем модель комментариев с полиморфическими ассоциациями, указав все необходимые параметры в генераторе
 # > rails g model Comment body:string commentable:references{polymorphic} user:belongs_to
 # Создалась модель:
 class Comment < ApplicationRecord
@@ -111,7 +111,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
   def change
     create_table :comments do |t|
       t.string :body
-      t.references :commentable, polymorphic: true, null: false # ?? тоесть миграции и БД не в курсе какие именно сущности commentable, тоесть можно будет потом добавить новые
+      t.references :commentable, polymorphic: true, null: false # тоесть миграции не в курсе какие именно сущности commentable, тоесть можно будет потом добавить новые
       t.belongs_to :user, null: false, foreign_key: true
 
       t.timestamps
@@ -144,7 +144,7 @@ class Answer < ApplicationRecord
 end
 
 
-# 3. Пропишем маршруты для комментариев
+# 3а. Пропишем маршруты для комментариев
 resources :questions do
   resources :comments, only: %i[create destroy] # добавим вложенные комменты
   resources :answers, except: %i[new show] # тут не будем делать еще одно вложение для комментов, тк маршрут получится слишком длинный и сложный ...
@@ -152,6 +152,21 @@ end
 # ... вместо этого придется сделать дополнительные маршруты ответов и вложить в них комменты
 resources :answers, except: %i[new show] do
   resources :comments, only: %i[create destroy]
+end
+
+# 3б. Пропишем маршруты для комментариев с использованием консерна, чтобы не дублировать маршруты
+Rails.application.routes.draw do
+  concern :commentable do # создаем консерн маршрутов называем его :commentable (? название любое ?)
+    resources :comments, only: %i[create destroy] # помещаем внутрь дублирующиеся маршруты
+  end
+
+  scope '(:locale)', locale: /#{I18n.available_locales.join("|")}/ do
+    resources :questions, concerns: :commentable do # concerns: :commentable - значит маршруты из соотв консерна будут вложены в данный маршрут
+      resources :answers, except: %i[new show]
+    end
+
+    resources :answers, except: %i[new show], concerns: :commentable # тут тоже вкладываем консерн
+  end
 end
 
 
@@ -193,13 +208,13 @@ class CommentsController < ApplicationController
     end
   end
 
-  def destroy
+  # В _comment.html.erb - добавим спец ссылку для удаления полиморфического коммента
+  def destroy # '/questions/:qoestion_id/comments/:id' либо '/answers/:answer_id/comments/:id'
     comment = @commentable.comments.find params[:id] # мщем коммент для конкретного комментируемого
     comment.destroy
     flash[:success] = t '.success'
     redirect_to question_path(@question)
   end
-  # В _comment.html.erb - добавим спец ссылку для удаления полиморфического коммента
 
   private
 
@@ -223,19 +238,19 @@ end
 puts
 puts '                       Решение проблемы с отображением ошибки при не прохождении валидаций'
 
-# Тк переменная @comment, передаваемая через show.html.erb в паршал _commentable.html.erb и соотв в паршал ошибок из него, передается в блок каждого ответа и вопроса, то при ошибки валидации комментария, например к вопросу или к одному из ответов сообщения об ошибке появляется в блоке каждого ответа и вопроса на странице show.html.erb
-form_with model: [commentable, (@comment || commentable.comments.build)] # тоесть @comment тут это просто инстанс коментария и он не содержит информацию о том к какому классу и индексу комментируемой сущности он отностится и соотв мы не знаем когда исполнять или не исполнять код отображения об ошибке в этом конкретном сесте
+# Тк при ошибке валидации переменная @comment с заполненными полями из comments_controller#create, передаваемая через questions/show.html.erb в паршал _commentable.html.erb и соотв в паршал ошибок из него, передается в блок каждого ответа и вопроса, то сообщения об ошибке появляется в блоке каждого ответа и вопроса на странице show.html.erb, а не только в целевом
+form_with model: [commentable, (@comment || commentable.comments.build)] # тоесть @comment тут это просто инстанс коментария и он не содержит информацию о том к какому классу и индексу комментируемой сущности он отностится и соотв мы не знаем где конкретно исполнять или не исполнять код отображения об ошибке
 render 'shared/errors', object: @comment # тоесть этот код исполняется в блоке вопроса и каждого ответа
 
 # Эту проблему можно было бы решить при помощи ассинхронных форм JS но тут решим без этого:
-# Наша определить для какой комментируемой сущьности был оставлен комментарий переданный в @comment и соотв отображать ошибку только в нужном блоке конкретного ответа или вопроса, а не везде, а так же дополнительно раскроем только необходимый коллапс-блок
+# Нужно определить для какой комментируемой сущьности был оставлен комментарий переданный в @comment и соотв отображать ошибку только в нужном блоке конкретного ответа или вопроса, а не везде, а так же дополнительно раскроем только необходимый коллапс-блок
 
 # 1. Пропишем основную логику определения класса комментируемой сущности в методе for? декораторе comment_decorator.rb, но возможно лучше это писать прямо в модели Comment
 class CommentDecorator < ApplicationDecorator
   delegate_all
   decorates_association :user
 
-  def for?(commentable) # commentable - парамертр с комментируемой сущностью, те вопросом или ответом(не знаем с чем)
+  def for?(commentable) # commentable - парамертр с комментируемой сущностью, те вопросом или ответом (не знаем с чем именно)
     commentable = commentable.object if commentable.decorated? # тоесть если комментируемая сущьность была задекорирована то нужно вытащить эту сущность при помощи метода object, тк гем Дрэйпер добавляет к задекорированному объекту свои артибуты
     commentable == self.commentable # сравниваем и возвращаем true или false
     # self.commentable - self указывает на конкретный комментарий от которого вызвали метод for? и вызываем от него commentable которому он принадлежит

@@ -18,7 +18,7 @@
     <%= f.submit t('global.button.submit'), class: 'btn btn-sm btn-primary' %>
   <% end %>
 
-  <!-- Список всех комментариев для данной commentable сущности -->
+  <!-- Список всех комментариев для данной commentable сущности рендерит коллекцию комментариев из commentable.comments.decorate при помощи _comment.html.erb -->
   <%= render commentable.comments.decorate %>
 <% end %>
 
@@ -28,8 +28,8 @@
 
 <!-- Создадим локальную переменную для данного паршала, чтобы не дублировать код -->
 <% is_current_comment = comment&.for?(commentable) %> <!-- возвращает true или false -->
-<!-- commentable - передается в паршал либо из вопрос из questions/show.html.erb либо ответ из _answer.html.erb -->
-<!-- comment - используем тут передаваемую в паршал локальную переменную вместо @comment тк так надежнее, она точно передается -->
+<!-- commentable - передается в паршал либо вопрос из questions/show.html.erb либо ответ из _answer.html.erb -->
+<!-- comment - из comments_controller#create. Используем тут передаваемую в паршал локальную переменную вместо @comment тк так надежнее, она точно передается -->
 
 <%= link_to t('questions.show.comments'), "##{html_id}", class: 'btn btn-primary', data: {'bs-toggle': 'collapse'} %>
 
@@ -39,7 +39,8 @@
   <%= form_with model: [commentable, (is_current_comment ? comment : commentable.comments.build)] do |f| %>
   <!-- В URL используем comment, если это тот блок в который передается ошмбка (тоесть это значит что валидация не прошла) и форма подсветится красным(обводки полей) или билд новой сущьности для остальных блоков -->
 
-    <% if is_current_comment %> <!-- тоесть теперь мы вызываем отображение ошибок только для нужного блока -->
+    <!-- тоесть теперь мы вызываем отображение ошибок только для нужного блока -->
+    <% if is_current_comment %>
       <%= render 'shared/errors', object: comment %>
     <% end %>
 
