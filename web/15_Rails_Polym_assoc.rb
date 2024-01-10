@@ -161,7 +161,7 @@ Rails.application.routes.draw do
   end
 
   scope '(:locale)', locale: /#{I18n.available_locales.join("|")}/ do
-    resources :questions, concerns: :commentable do # concerns: :commentable - значит маршруты из соотв консерна будут вложены в данный маршрут
+    resources :questions, concerns: :commentable do # concerns: :commentable - маршруты из соотв консерна будут вложены в данный
       resources :answers, except: %i[new show]
     end
 

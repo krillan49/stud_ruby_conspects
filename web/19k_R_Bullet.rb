@@ -20,6 +20,7 @@ end
 
 
 # Далее запускаем сервер, переходим по страницами и там где запросы не оптимальны Bullet выдаст подсказки во всплывающем окне, а так же в консоли приложения: в каких контроллерах, представлениях, на каких строках ошибки, к каким моделям относятся и способы их исправления, например:
+
 # user: User
 # GET /en/questions
 # USE eager loading detected
@@ -29,6 +30,7 @@ end
 #   E:/doc/Projects/stud_other/AskIt/app/views/questions/_question.html.erb:3:in `_app_views_questions__question_html_erb___1011012738_28240'
 #   E:/doc/Projects/stud_other/AskIt/app/views/questions/index.html.erb:10:in `_app_views_questions_index_html_erb__205808045_28180'
 #   E:/doc/Projects/stud_other/AskIt/app/controllers/concerns/internationalization.rb:15:in `switch_locale'
+
 # Тоесть тут он предлагает добавить в запрос коллекции вопросов .includes([:user]), соотв откроем нужный questions_controller.rb и добавим в экшен обрабатывающий указанный выше (GET /en/questions)
 def index
   @pagy, @questions = pagy Question.includes(:user).order(created_at: :desc) # добавили includes(:user) - это нужно чтобы не просто загрузить все вопросы, но и для каждого вопроса сразу подгрузить юзеров, которым они принадлежат(тк это используется на странице), тк иначе потом получится, что придеся делать для каждого вопроса отдельный запрос, который вытаскивает для него юзера, чтобы вывести его имя и аватар. Это и есть проблема N+1 и мы ее так решили

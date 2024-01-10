@@ -5,7 +5,7 @@
 <!-- html_id - значение якоря будем передавать из questions/show.html.erb и answers/_answer.html.erb в точке рендера -->
 
 <%= tag.div class: "collapse", id: html_id do %>
-  <!-- id: html_id - назначаем в этот div значение id которое передали из questions/show.html.erb и answers/_answer.html.erb в точке рендера, соотв id на теге с классом collapse будет соответсвовать значению якоря на кнопке -->
+  <!-- id: html_id - назначаем в этот div значение id которое передали из questions/show.html.erb или answers/_answer.html.erb в точке рендера, соотв id на теге с классом collapse будет соответсвовать значению якоря на кнопке -->
 
   <%= form_with model: [commentable, (@comment || commentable.comments.build)], class: 'pt-3 border-top my-2' do |f| %>
   <!-- Строим URL по 2м моделям commentable и @comment, если коммента еще нет то создаем при помощи build, тоесть запрос будет POST "/questions/:question_id/comments" или "/answers/:answer_id/comments" -->
