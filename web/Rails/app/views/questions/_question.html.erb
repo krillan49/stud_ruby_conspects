@@ -8,13 +8,14 @@
     <h4><%= link_to question.title, question_path(question) %></h4>
 
     <section class="card-text">
-      <time datetime="<%= question.formatted_created_at %>">
+      <%= tag.time datetime: question.formatted_created_at do %> <!-- <time datetime="..."> -->
         <small><%= question.formatted_created_at %></small>
-      </time>
+      <% end %> <!-- </time> -->
 
-      <p class="my-2">
-        <%= truncate strip_tags(question.body), length: 150, omission: t('global.text.omission') %>
-      </p>
+      <!-- Рендерим набор тегов для конкретного вопроса (ManyToMany) -->
+      <%= render question.tags %>
+
+      <%= truncate strip_tags(question.body), length: 150, omission: t('global.text.omission') %>
     </section>
 
     <%= link_to t('global.button.show'), question_path(question), class: 'btn btn-primary' %>

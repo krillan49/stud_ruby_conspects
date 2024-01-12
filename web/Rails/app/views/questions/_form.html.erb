@@ -21,6 +21,19 @@
     <%= f.text_area :body, required: true, minlength: 2 %>
   </div>
 
+  <!-- селектор для выбора тегов для данного вопроса (ManyToMany) -->
+  <div>
+    <%= f.label :tags %>
+    <%= f.collection_select :tag_ids, tags, :id, :title, {}, multiple: true %>
+    <!-- collection_select - хэлпер селектора -->
+    <!-- :tag_ids - название поля -->
+    <!-- tags - коллекция всех тегов которую сюда передаем из questions/new.html.erb или questions/edit.html.erb -->
+    <!-- :id - метод который нужно использовать при отображении идентификаторов в разметке  -->
+    <!-- :title - метод который нужно использовать при отображении лэйблов на странице  -->
+    <!-- {} - пустые опции  -->
+    <!-- multiple: true - ставит атрибут multiple в селектор (выбор множества вариантов через контрл) -->
+  </div>
+
   <%= f.submit "Submit question!" %>
 <% end %>
 
