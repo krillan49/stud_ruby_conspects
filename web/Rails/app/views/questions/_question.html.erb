@@ -12,7 +12,7 @@
         <small><%= question.formatted_created_at %></small>
       <% end %> <!-- </time> -->
 
-      <!-- Рендерим набор тегов для конкретного вопроса (ManyToMany) -->
+      <!-- Рендерим набор тегов(_tag.html.erb) для данного конкретного вопроса (ManyToMany) -->
       <%= render question.tags %>
 
       <%= truncate strip_tags(question.body), length: 150, omission: t('global.text.omission') %>

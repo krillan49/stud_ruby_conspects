@@ -86,6 +86,21 @@
 
 <h1 class="mb-4"><%= t('.title') %></h1>
 
+<!-- форма для выбора отображения вопросов по тегам (ManyToMany) -->
+<%= form_with url: questions_path, method: :get do |f| %>
+  <!-- url: questions_path  - тоесть на эту же страницу -->
+  <!-- method: :get - тоесть передаем методом GET (будем отправлять форму в index) -->
+  <%= f.collection_select :tag_ids, (@tags || []), :id, :title, {selected: params[:tag_ids]},
+    multiple: true, required: true, class: 'js-multiple-select', data: {'ajax-url': '/api/tags'} %>
+    <!-- :tag_ids имя селесктора -->
+    <!-- (@tags || []) либо коллекция тегов переданная из index либо -->
+    <!-- :title - заголовки тегов те их имена -->
+    <!-- {selected: params[:tag_ids]} - те когда эта форма будет отправлена и вернется страница то в селекторе уже будут выбраны все те варианты что мы собствено выбрали до отправки формы -->
+    <!-- required: true - валидация запрещает отправку пустой формы -->
+    <!-- data: {'ajax-url': '/api/tags'} - опции ассинхронного поиска -->
+  <%= f.submit t('global.button.submit'), class: 'btn btn-primary' %>
+<% end %>
+
 <%= link_to t('.new'), new_question_path, class: 'btn btn-primary btn-lg mb-3' %>
 
 <%= pagination @pagy %>
