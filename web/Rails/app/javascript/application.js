@@ -14,6 +14,27 @@ import '@popperjs/core'
 import 'bootstrap/js/dist/dropdown' // собственно компонент бутстрапа отвечающий за дропдауны
 import 'bootstrap/js/dist/collapse' // для выпадающих форм для commentable
 
+// подключаем скрипт с кодом для TomSelect (ManyToMany)
+import './scripts/select'
+
 // Запускаем скрипты
 Rails.start()
 Turbolinks.start()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//

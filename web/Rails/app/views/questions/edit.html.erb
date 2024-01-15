@@ -21,6 +21,10 @@
 <%= render 'form', tags: @tags %>
 <!-- tags: @tags - добавляем локальную переменную tags с коллекцией тегов в паршал формы вопросов _form.html.erb для селектора -->
 
+<!-- Для варианта с ajax (ManyToMany) уже не нужны @tags но добавим @question чтобы могли использовать докальную переменную -->
+<%= render 'form', question: @question %>
+
+
 
 
 

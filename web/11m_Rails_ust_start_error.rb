@@ -146,6 +146,11 @@ puts
 
 
 puts
+# удаление чеголибо/some из yarn:
+# > yarn remove some
+
+
+puts
 puts '                                       Запуск бандла. Ошибки Windows'
 
 # Gemfile  -  есть инфа в нем тут
