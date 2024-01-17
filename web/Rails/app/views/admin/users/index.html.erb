@@ -11,6 +11,7 @@
 
 <%= pagination @pagy %>
 
+<!-- Вариант 1: базовый -->
 <table class="table table-striped table-hover">
   <thead>
     <tr>
@@ -23,6 +24,24 @@
   </thead>
   <tbody>
     <%= render @users %> <!-- инфу о каждом юзере рендерим из паршала _user.html.erb -->
+  </tbody>
+</table>
+
+<!-- Вариант 2: с ролью и переводами (UsersRoles) -->
+<% scope = 'activerecord.attributes.user' %> <!-- переменная для того чтобы не дублировать путь к переводу -->
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col"><%= t 'name', scope: scope %></th> <!-- scope: scope - берем переменную и добавляем к ней '.name' -->
+      <th scope="col"><%= t 'email', scope: scope %></th>
+      <th scope="col"><%= t 'role', scope: scope %></th> <!-- название колонки для роли -->
+      <th scope="col"><%= t 'created_at', scope: scope %></th>
+      <th scope="col"></th> <!-- колонка для кнопок удаления и редактирования можно не назвапть никак -->
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @users %>
   </tbody>
 </table>
 

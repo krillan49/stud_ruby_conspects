@@ -1,9 +1,8 @@
 <h2>Latest Posts</h2>
-<br>
 
 <!-- Данные из каждого поста -->
 <% @results.each do |row| %>
-	<h4>Post №<%= row['id'] %></h4> <!-- Выводим номер поста -->
+	<h4>Post №<%= row['id'] %></h4> <!-- Выводим id поста -->
 	<%= row['content'] %> <!-- Выводим сам пост -->
 	<br><br>
 	Added by <b><%= row['author'] %></b> at <%= row['created_date'] %> <!-- Выводим автора и дату поста -->

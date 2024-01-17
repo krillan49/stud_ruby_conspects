@@ -2,9 +2,9 @@ import TomSelect from 'tom-select/dist/js/tom-select.popular' // подключ�
 import Translations from './i18n/select.json'  // подключаем переводы из подпапки
 
 document.addEventListener("turbolinks:load", function() {
-  const i18n = Translations[document.querySelector('body').dataset.lang] // для того чтобы определить для какого языка использовать перевод, инфу берем из аттрибута тега body
+  const i18n = Translations[document.querySelector('body').dataset.lang] // для того чтобы определить для какого языка использовать перевод, инфу берем из аттрибута тега body из лэйаут (<body data-lang="<%= I18n.locale %>"> )
 
-  document.querySelectorAll('.js-multiple-select').forEach((element) => { // те для каждого элемента с классом .js-multiple-select
+  document.querySelectorAll('.js-multiple-select').forEach((element) => { // те для каждого элемента селектора с классом .js-multiple-select
     // Создаем опции:
     let opts = {
       plugins: { // Подключаем в опциях плагины

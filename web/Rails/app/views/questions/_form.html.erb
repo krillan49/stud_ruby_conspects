@@ -25,7 +25,7 @@
   <div>
     <%= f.label :tags %>
     <%= f.collection_select :tag_ids, tags, :id, :title, {}, multiple: true %>
-    <!-- collection_select - хэлпер селектора -->
+    <!-- collection_select - хэлпер селектора, который может принимать коллекцию сущностей и подставлять ее свойства -->
     <!-- :tag_ids - название поля -->
     <!-- tags - коллекция всех тегов которую сюда передаем из questions/new.html.erb или questions/edit.html.erb -->
     <!-- :id - метод(модели) который нужно применять к сущности из коллекции tags для значений элементов(передаются на сервер) селектора  -->
@@ -38,7 +38,7 @@
     <%= f.label :tags %>
     <%= f.collection_select :tag_ids, @question.tags, :id, :title, {}, multiple: true,
       class: 'js-multiple-select', data: {'ajax-url': '/api/tags'} %>
-      <!-- @question.tags вместо tags, чтобы отображались выбранные в questions/edit.html.erb либо получится пустая коллекция в questions/new.html.erb, а теги для поиска будут приходить из сгенерированного json  -->
+      <!-- @question.tags вместо tags, чтобы отображались выбранные теги в questions/edit.html.erb либо получится пустая коллекция в questions/new.html.erb, а теги для поиска будут приходить из сгенерированного json  -->
   </div>
 
   <%= f.submit "Submit question!" %>

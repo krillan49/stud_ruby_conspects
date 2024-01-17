@@ -1,31 +1,26 @@
 <h4>Post details:</h4>
 
-<br>
 <p>  <!-- Выводим данные поста из запрса таблицы постов -->
-	<%= @post['content'] %>
-	<br><br>
+	<%= @post['content'] %><br><br>
 	Added by <b><%= @post['author'] %></b> at <%= @post['created_date'] %>
 </p>
 
 
-<br>
 <h4>Comments:</h4>
-<br>
 
 <!-- Уже написанные комментарии из запроса выбравшего комментарии для конкретного поста -->
 <% @comments.each do |comment| %>
 	<p>
-		<%= comment['content'] %>
-		<br><br>
+		<%= comment['content'] %><br><br>
 		<span style="font-size: 80%; color: #999;">Added at <%= comment['created_date'] %></span>
 	</p>
 	<hr>
 <% end %>
 
+
 <!-- Форма для того чтобы оставить комментарии к посту -->
 <form action="/details/<%= @post['id'] %>" method="POST"><!-- Будем генерировать URL, вставляя id из запроса. Теперь запрос этой формы сможет обработать post '/details/:post_id' -->
-	<textarea name="content"></textarea>
-	<br>
+	<textarea name="content"></textarea><br>
  	<button type="submit">Add comment</button>
 </form>
 
