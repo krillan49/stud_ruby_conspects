@@ -277,3 +277,9 @@ def nil_to_i(par, hh = {})
 end
 p nil_to_i(3) #=> {:a=>3}
 p nil_to_i(5, {a: 2}) #=> {:a=>7}
+
+
+puts
+p 'a'.itself #=> "a"
+# пример применения
+p 3.times.to_a.zip([:to_s,:to_f,:itself]).map{|s, o| s.send(o)} #=> ["0", 1.0, 2]

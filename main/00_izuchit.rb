@@ -1,18 +1,5 @@
 # 0. Методы из доки пройти заново, массивы, строки, хэши
 
-3.times.map{gets.chomp}.zip([:to_i,:to_i,:itself]).map{|s,o|s.send(o)}
-# мап без переменной
-# gets в блоке
-# itself метод вызывающий сам объект ?
-
-
-# странный синтаксис параметров протестить
-class ApplicationService
-  def self.call(...)
-    new(...).call
-  end
-end
-
 # ?? В руби можно сразу отправлять что-то в командную строку на выполнение, если заключить строку в обратные кавычки ``
 
 
@@ -23,8 +10,6 @@ p str1.split('') #=> ["a", "a", "a"]
 p str2.split('') #=> undefined method `split' for nil:NilClass (NoMethodError)
 p str2&.split('') #=> nil
 
-# Это triple equals. case/when так сравнивает например
-(97..122) === 100 #=> true
 
 # and return в конце действия, потом проверить
 render plain: params.to_yaml and return

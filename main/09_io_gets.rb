@@ -82,6 +82,11 @@ require 'io/console' # подключение гема
 password = STDIN.noecho(&:gets).chomp
 
 
+puts '                                              gets в итераторах'
+
+3.times.map{gets.chomp} # вернет массив из 3х вводов
+
+
 
 
 

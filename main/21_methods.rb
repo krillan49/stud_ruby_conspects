@@ -80,6 +80,13 @@ def args_count(*args, **kwargs)
 end
 args_count(1, 2, a: 1, b: 2)
 
+# альтернативный синтаксис неопределенного числа параметров
+def some(...)
+  1.step(...).to_a
+end
+p some(10, 2) #=> [1, 3, 5, 7, 9]
+
+
 # Вызов метода внутри самого себя(зацикленный метод/рекурсия)
 def total(arr)
   return arr.first if arr.size == 1
