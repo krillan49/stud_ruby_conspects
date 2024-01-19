@@ -420,10 +420,13 @@ class QuestionsController < ApplicationController
   def create
     @question = Question.new question_params
     if @question.save
-      flash[:success] = "Question created!"
-      # Задаем ключ и значение для нашего флэш объекта, которые будем использовать в виде
+      flash[:success] = "Question #{@question.title} created!"
+      # Задаем ключ(:success) и значение для нашего флэш объекта, которые будем использовать в виде
+      # #{@question.title} - можем сразу использовать имя созданной сущности в сообщении
       redirect_to questions_path
     else
+      # Если мы хотим заново отрендерить форму, то к флэш сообщению нужно применить метод now
+      flash.now[:warning] = "Incorrect data"
       render :new
     end
   end

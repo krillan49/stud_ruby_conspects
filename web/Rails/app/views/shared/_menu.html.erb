@@ -23,10 +23,10 @@
           <% if user_signed_in? %>
 
             <!-- 1 Обычный вариант с current_user.name -->
-            <li><a class="nav-link px-2 text-white" href="#"><%= current_user.name %></a></li>
+            <li><a href="#"><%= current_user.name %></a></li>
 
             <!-- 2 Вариант с декоратором если name опционально, те его может не быть -->
-            <li><a class="nav-link px-2 text-white" href="#"><%= current_user.name_or_email %></a></li>
+            <li><a href="#"><%= current_user.name_or_email %></a></li>
 
             <!-- 3 Вариант с дропдаун меню из бутстрап (так же со ссылками удаления сессии и редактирования юзера) -->
             <li class="dropdown">
@@ -37,6 +37,7 @@
                 <li><%= link_to 'Edit profile', edit_user_path(current_user), class: 'dropdown-item' %></li>
                 <!-- edit_user_path(current_user) - Передаем в URL айди текущего пользователя, те редактируем себя (переходим в форму режактирования юзера) -->
                 <li><hr class="dropdown-divider"></li> <!-- разделитель для красоты -->
+                <!-- Log Out/разлогин(Удаление сессии) -->
                 <li><%= link_to 'Log Out', session_path, class: 'dropdown-item', data: {method: :delete} %></li>
               </ul>
             </li>
@@ -46,7 +47,6 @@
             <li><%= nav_tab 'Sign Up', new_user_path, class: 'nav-link px-2', current_page: current_page %></li>
             <!-- Log in/вход в систему(Создание сессии) -->
             <li><%= nav_tab 'Log In', new_session_path, class: 'nav-link px-2', current_page: current_page %></li>
-
           <% end %>
         </ul>
 

@@ -5,10 +5,11 @@ module Authentication
 
     private
 
+    # Версия 1
     def current_user
       @current_user ||= User.find_by(id: session[:user_id]).decorate if session[:user_id].present?
     end
-    # модифицируем метод и под куки
+    # Версия 2: модифицируем метод и под куки
     def current_user
       if session[:user_id].present? # сперва прверяем в сессии
         @current_user ||= User.find_by(id: session[:user_id]).decorate
@@ -20,7 +21,7 @@ module Authentication
         end
       end
     end
-    # отрефакторим выделив подметоды по рекомендации рубокопа
+    # Версия 3: отрефакторим выделив подметоды по рекомендации рубокопа
     def current_user
       user = session[:user_id].present? ? user_from_session : user_from_token
       @current_user ||= user&.decorate

@@ -1,65 +1,47 @@
 <%= render 'shared/errors', object: @user %>
 
+<!-- Фрма рендерится либо в users/new.html.erb либо в users/edit.html.erb -->
 <%= form_with model: @user do |f| %>
-  <div class="mb-3 row">
-    <div class="col-sm-2 col-form-label">
-      <%= f.label :email %>
-    </div>
-
-    <div class="col-sm-10">
-      <%= f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg' %>
-      <!-- email_field - генерирует поля для ввода имэйла с базовой провекой на соотв текста имэйлу -->
-    </div>
+  <div>
+    <%= f.label :email %>
+    <%= f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg' %>
+    <!-- email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу -->
   </div>
 
-  <div class="mb-3 row">
-    <div class="col-sm-2 col-form-label">
-      <%= f.label :name %>
-    </div>
-
-    <div class="col-sm-10">
-      <%= f.text_field :name, placeholder: 'Name', class: 'form-control form-control-lg' %>
-    </div>
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name, placeholder: 'Name', class: 'form-control form-control-lg' %>
   </div>
 
-  <div class="mb-3 row">
-    <div class="col-sm-2 col-form-label">
-      <%= f.label :password %>
-    </div>
-    <!-- поле для данных для виртуального атрибута password -->
-    <div class="col-sm-10">
-      <%= f.password_field :password, class: 'form-control form-control-lg' %>
-      <!-- password_field - генерирует поля для ввода пароля со звездочками при заполнении -->
-    </div>
+  <div><!-- поле только для чтения с ролью пользователя (UsersRoles) -->
+    <%= f.label :role %>
+    <%= f.text_field :role, value: t(user.role, scope: 'global.user.roles'),
+      class: 'form-control-plaintext form-control-lg', readonly: true %>
   </div>
 
-  <div class="mb-3 row">
-    <div class="col-sm-2 col-form-label">
-      <%= f.label :password_confirmation %>
-    </div>
-    <!-- поле для данных для виртуального атрибута password_confirmation -->
-    <div class="col-sm-10">
-      <%= f.password_field :password_confirmation, class: 'form-control form-control-lg' %>
-    </div>
+  <div><!-- поле для данных для виртуального атрибута password -->
+    <%= f.label :password %>
+    <%= f.password_field :password, class: 'form-control form-control-lg' %>
+    <!-- password_field - генерирует поля для ввода пароля со звездочками при заполнении -->
+  </div>
+
+  <div><!-- поле для данных для виртуального атрибута password_confirmation -->
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation, class: 'form-control form-control-lg' %>
   </div>
 
   <!-- Добавим поле old_password для проверки старого пароля при редактировании профиля -->
   <% unless @user.new_record? %>
   <!-- unless @user.new_record? - Добавим только для существующих(не новых) пользователей (те работает только в edit)  -->
-    <div class="mb-3 row">
-      <div class="col-sm-2 col-form-label">
-        <%= f.label :old_password %>
-      </div>
-
-      <div class="col-sm-10">
-        <%= f.password_field :old_password, class: 'form-control form-control-lg' %>
-      </div>
+    <div>
+      <%= f.label :old_password %>
+      <%= f.password_field :old_password, class: 'form-control form-control-lg' %>
     </div>
   <% end %>
 
   <!-- Добавим условие чтобы название кнопки соответсвовало либо регистрации либо сохранению редактирования -->
-  <%= f.submit (@user.new_record? ? "Register!" : "Save"), class: 'btn btn-primary btn-lg' %>
-  <!-- new_record? те новый объект существующий только в памяти а не в базе -->
+  <%= f.submit (@user.new_record? ? "Register" : "Save"), class: 'btn btn-primary btn-lg' %>
+  <!-- new_record? - метод проверяет новый ли это объект те существующий только в памяти но не в БД -->
 <% end %>
 
 
