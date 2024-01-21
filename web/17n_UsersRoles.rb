@@ -1,5 +1,7 @@
 puts '                                      Роли для пользователей. Enum'
 
+# (если приложение задеплоить в продакшен – как создать пользователя с правами администратора? - Либо делать скрипт seeds.rb либо руками через консоль БД. Это однократное действие, так что особо страшного нет - назначили первого админа, он потом назначает других Правда возможно имеет смысл сделать валидацию в духе "нельзя удалить последнего админа")
+
 # В лриложении (тут AskIt) сделаем так что пользователи могут иметь одну из нескольких ролей(например модератор, админ итд)
 
 # (в СУБД Посгресс есть свои enum со спец типом данных для БД https://naturaily.com/blog/ruby-on-rails-enum)
@@ -7,7 +9,7 @@ puts '                                      Роли для пользовате
 
 # 1. Добавим при помощи миграции поле для роли в таблицу пользователей
 # > rails g migration add_role_to_users role:integer
-# role:integer - используем тип integer, тк это требование Рэилс, если мы хотим использовать enum, соответсвенно роль будет обозначаться в таблице числом, например 0 - пользователь, 2 - админ итд. А название роли мы будем транслировать из чисел уже в коде приложения Рэилс.
+# role:integer - используем тип integer, тк это требование Рэилс, если мы хотим использовать enum, соответсвенно роль будет обозначаться в таблице числом, например 0 - пользователь, 2 - админ итд.
 class AddRoleToUsers < ActiveRecord::Migration[7.0]
   def change
     add_column :users, :role, :integer, default: 0, null: false
@@ -29,7 +31,7 @@ class User < ApplicationRecord
   # ...
 end
 # Посмотрим в консоли (> rails c):
-u = User.first #=> #<User:0x000001cd7ed4adf8 id: 1, ... , role: "basic">  # тоесть автоматически взял роль из enum
+u = User.first #=> #<User:0x000001cd7ed4adf8 id: 1, ... , role: "basic">  # тоесть автоматически взял роль "basic" из enum
 u.role #=> "basic"  # те метод модели role возвращает роль из enum сопоставленный с числом из БД
 u.basic_role? #=> true  # метод проверяет соотв ли роль. Имя метода собирается из компонентов заданных в enum, а именно названия роли и суффикса если он есть(если нет суффикса было бы просто u.basic?)
 u.admin_role? #=> false
@@ -112,6 +114,7 @@ end
 # 6. В представления нэймспэйса админа admin/users:
 # edit.html.erb - создадим вид для редактирования юзеров админом, рендерит _form.html.erb и передает туда @user как локальную
 # _form.html.erb - создадим паршал с формой(почти такой же как паршал как из обычного users, но с селектором для выбора роли), котороя рендерится в edit.html.erb
+# Дополнительно можно добавить роль(просто отображение) в форму обычных юзеров users/_form.html.erb
 
 
 # 7. Создадим хэлпер user_roles для заполнения селектора в форме admin/users/_form.html.erb
@@ -119,7 +122,103 @@ end
 # Код хелпере там же в app/helpers/users_helper.rb
 
 
-# Дополнительно можно добавить роль(просто отображение) в форму обычных юзеров users/_form.html.erb
+puts
+puts '                                      Авторизация (Pundit)'
+
+# Аутентификация - это процесс когда мы понимаем кто вошел в систему, пользователь предоставляет свои учетные данные(например логин и пароль или смарткарта или специальный токен от соцсети если вход через соцсеть), мы проверяем их, после чего по этим данным устанавливаем кто вошел в приложение
+# Авторизация - это процесс когда мы проверяем может ли данный пользователь выполнять то или иное действие(например создать или удалить вопрос)
+
+# Систему авторизации можно написать свою или воспользоваться готовым решением:
+# https://github.com/varvet/pundit              -  pundit - наиболее простое и понятное решение
+# https://github.com/CanCanCommunity/cancancan  -  решение с некоторым колличеством магии
+# https://github.com/palkan/action_policy       -  pundit на стероидах
+
+
+# В данном случае (AskIt) воспользуемся Pundit, тк это самое простое и минималистичное решение. Оно позволит с помощью обычных классов Руби описывать то что могут делать пользователи в зависимости, например от их роли
+# https://www.rubydoc.info/gems/pundit
+# https://github.com/varvet/pundit
+
+# Установим гем
+# > bundle add pundit
+# либо
+gem 'pundit', '~> 2.3'
+# > bundle i
+
+# Добавим Include Pundit::Authorization application_controller.rb:
+class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+  # ...
+end
+# Но лучше создадим новый консерн authorization.rb (код в нем) и добавим туда, а в application_controller.rb подключим консерн
+class ApplicationController < ActionController::Base
+  include Authorization
+  # ...
+end
+
+# Запустим генератор pundit, который создаст базовый класс(базовую политику). pundit оперирует таким понятием как политика, которая является классом в отдельном фаиле, который описывает что пользователь может делать с определенным ресурсом(вопросами, ответами, юзерами итд)
+# > rails g pundit:install
+# app/policies/application_policy.rb - создалась директория для политик и главная политика (код там)
+
+
+puts
+puts '                                     Pundit. Политика для вопросов'
+
+# Создадим новую политику для вопросов app/policies/question_policy.rb (политика как в названии фаила так и класса именуется в единственном числе) и переопределим(запишем в ней) методы
+class QuestionPolicy < ApplicationPolicy # тк мы наследуем у главной политики то получаем оттуда все содержимое и остается только переопределить те методы что мы хотим изменить
+  def index?
+    true # тоесть просматривать все вопросы могут все посетители
+  end
+
+  def show?
+    true # тоесть просматривать конкретные вопросы могут все гости
+  end
+
+  # def create?
+  #   !user.guest?
+  # end
+  #
+  # def update?
+  #   user.admin_role? || user.moderator_role? || user.author?(record)
+  # end
+  #
+  # def destroy?
+  #   user.admin_role? || user.author?(record)
+  # end
+end
+
+# Модифицируем наш questions_controller.rb, чтобы можно было применить к нему политику question_policy.rb
+class QuestionsController < ApplicationController
+  include QuestionsAnswers
+  before_action :require_authentication, except: %i[show index] # добавим проверку, что пользователь вошел в систему для всех контроллеров кроме просмотра(тк без этого мы не сможем провнрить его права доступа)
+  before_action :set_question!, only: %i[show destroy edit update]
+  before_action :authorize_question! # собственно наш метод проверки доступа для экшенов контроллера через question_policy.rb
+  after_action :verify_authorized # на всякий случай вызовем метод(pundit) дополнительной проверки того что мы в экшене или бефор_экшене сделали авторизацию, те проверили права доступа, если же права доступа проверены не были то вылезет ошибка
+
+  # ...
+
+  private
+
+  # ...
+
+  def authorize_question!
+    authorize(@question || Question)
+    # authorize - метод pundit, он проверяет имеет ли пользователь право на действие с соответсвующими контроллерами относящимися к данной модели
+    # @question || Question - параметр либо конкретный вопрос, если он есть(:set_question!), либо модель, если в какомто экшене нет переменной с вопросом
+  end
+end
+
+# Для примера в question_policy.rb в метод create? посавим false
+class QuestionPolicy < ApplicationPolicy
+  # ...
+
+  def create?
+    false
+  end
+  # Теперь при переходе на get 'questions/new' вылезет ошибка Pundit::NotAuthorizedError in QuestionsController#new, тк мы хотели использовать экшен new
+  # Тоесть метод authorize_question! вызвал authorize(@question || Question), а он посмотрел для экшена new в question_policy.rb метож new? а тот соответсвенно вызвал метод create?, в котором мы прописали false
+end
+# Обработаем данную ошибку, чтобы вместо нее было просто сообщение для пользователя и редирект, для этого в консерне authorization.rb используем обработчик ошибок rescue_from и для спасения ошибки свой метод обработки user_not_authorized
+
 
 
 
