@@ -172,6 +172,8 @@ end
 puts
 puts '                                 Валидация и сообщения об ошибках'
 
+# Валидация производится когда применяется метод save update итд ??
+
 # 1. Валидацию надо добавить в модель /app/models/contact.rb
 class Contact < ApplicationRecord
   # Синтаксис тот же самый что и в Синатре, тк это тот же самый ActiveRecord
