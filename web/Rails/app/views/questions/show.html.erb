@@ -35,6 +35,15 @@
 <%= link_to 'Destroy', question_path(@question), class: 'btn btn-danger', data: {method: :delete, confirm: 'Are you sure?'} %>
 <!-- По умолчанию не сможет удалить если у этого вопроса есть связвнные ответы, чтобы было можно, нужно настроить в модели -->
 
+<!-- Вариант тех же кнопок с переводами и скрытием для пользователей бнз соотв доступа (UsersRoles) -->
+<% if policy(@question).edit? %>
+  <%= link_to t('global.button.edit'), edit_question_path(@question), class: 'btn btn-secondary' %>
+<% end %>
+<% if policy(@question).destroy? %>
+  <%= link_to t('global.button.delete'), question_path(@question), class: 'btn btn-danger',
+    data: {method: :delete, confirm: t('global.dialog.you_sure')} %>
+<% end %>
+
 
 <hr class="my-3">
 

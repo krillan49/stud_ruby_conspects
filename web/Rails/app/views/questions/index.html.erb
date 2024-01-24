@@ -108,6 +108,12 @@
 
 <%= link_to t('.new'), new_question_path, class: 'btn btn-primary btn-lg mb-3' %>
 
+<!-- Вариант той же кнопоки нового вопроса со скрытием для пользователей бнз соотв доступа (UsersRoles) -->
+<% if policy(:question).new? %>
+  <!-- :question - тк сущности вопроса тут еще нет, то передадим просто символ-название политики, в Pundit это тоже сработает -->
+  <%= link_to t('.new'), new_question_path, class: 'btn btn-primary btn-lg mb-3' %>
+<% end %>
+
 <%= pagination @pagy %>
 
 <%= render @questions %> <!-- Вынесем итерацию в паршал _question.html.erb  -->
