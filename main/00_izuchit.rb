@@ -3,18 +3,7 @@
 # ?? В руби можно сразу отправлять что-то в командную строку на выполнение, если заключить строку в обратные кавычки ``
 
 
-# Защита от вызова метода от nil при помощи синтаксиса амперсанта & (либо rescue nil)
-p nil&.some_meth #=> nil
-str1, str2 = 'aaa', nil
-p str1.split('') #=> ["a", "a", "a"]
-p str2.split('') #=> undefined method `split' for nil:NilClass (NoMethodError)
-p str2&.split('') #=> nil
-
-
-# and return в конце действия, потом проверить
-render plain: params.to_yaml and return
-
-self # это метод, возвращающий текущий объект ??
+# https://www.sitepoint.com/understanding-scope-in-ruby/   продолжить с 'Ворота области: важная концепция для понимания области действия'
 
 # класс внутри класса методы в строку с =
 class Lottery
