@@ -47,6 +47,7 @@ puts '                                           Webpacker. Webpack'
 
 # Webpacker отделяет описание всех решений в package.json, вместо того чтобы их хранить в Gemfile
 # Нужно следить чтобы Webpacker был одной версии и в Gemfile и в package.json
+# После обновления вебпакера нужно выпонить и ярн инсталл
 
 
 puts

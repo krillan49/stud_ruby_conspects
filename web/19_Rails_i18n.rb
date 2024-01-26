@@ -7,6 +7,8 @@ puts '                          Перевод, интернационализа
 puts
 puts '                                       i18n(internationalization)'
 
+# Желательно вносить переводы в yml сразу, когда пишем элементы которые будем потом переводить, чтобы потом не забыть
+
 # https://guides.rubyonrails.org/i18n.html
 # http://rusrails.ru/i18n
 

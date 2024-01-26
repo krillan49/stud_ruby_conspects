@@ -1,0 +1,16 @@
+<!-- представление с формой, где можно запросить сброс пароля (mailers) -->
+
+<% provide :page_title, t('.title') %>
+<% currently_at t('menu.log_in') %> <!-- Подсветим что пользователь находится на странице логина (но можно и не подсвечивать) -->
+
+<h1 class="mb-4"><%= t('.title') %></h1>
+
+<%= form_with url: password_reset_path do |f| %>
+
+  <%= f.label :email, t('.form.email') %>
+  <%= f.email_field :email, value: params[:email], class: 'form-control form-control-lg', required: true %>
+  <!-- required: true  - чтобы пользователь не забыл ввести пароль в поле -->
+
+  <%= f.submit t('.form.submit'), class: 'btn btn-primary btn-lg' %>
+  <%= link_to t('.form.back'), new_session_path, class: 'btn btn-secondary' %> <!-- Просто возврат к форме логина, если вспомнил свой пароль например -->
+<% end %>
