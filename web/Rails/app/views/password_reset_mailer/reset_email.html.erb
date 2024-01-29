@@ -1,1 +1,10 @@
-SAMPLE HTML
+<p>Someone has requested password reset for your account.</p>
+
+<!-- Добавим токен в адрес ссылки -->
+
+<%= link_to 'Reset my password',
+    edit_password_reset_url(user: {password_reset_token: @user.password_reset_token, email: @user.email}),
+    target: '_blank' %>
+<!-- edit_password_reset_url - тут именно _url, тк нам нужен полный адрес с доменным именем сайта, тк ссылка будет активирована гдето на почтовом сервисе клиента, для этого в config/environments/development.rb мы и указывали доменное имя в host:, тк он и будет тут задействован при генерации URL -->
+<!-- Получится URL вроде GET 'http://localhost:3000/password_reset/edit?user%5Bemail%5D=ser%40ser.com&user%5Bpassword_reset_token%5D=%242a%2412%24dN7sWvGTA.557iJMy3fQWOatL8ddPP151iN4KRHO6FB50pZrpySgC' -->
+<!-- user: {password_reset_token: @user.password_reset_token, email: @user.email} - передаем в адрес ссылки токен и имэил пользователя, чтобы потом точно понимать что это он отправил запрос -->

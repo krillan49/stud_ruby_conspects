@@ -76,7 +76,31 @@ end
 
 
 puts
-redirect_to(request.referer) # редирект на страницу с которой делали переход на этот контроллер 
+redirect_to(request.referer) # редирект на страницу с которой делали переход на этот контроллер
+
+
+
+puts
+# Настройка временной зоны проиводится в фаиле config/application.rb
+module AskIt
+  class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 7.0
+
+    config.i18n.available_locales = %i[en ru]
+    config.i18n.default_locale = :en
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    # config.time_zone = "Central Time (US & Canada)"               # Вот тут можно ее переопределить
+    # config.eager_load_paths << Rails.root.join("extras")
+
+    # Don't generate system test files.
+    config.generators.system_tests = nil
+  end
+end
 
 
 
