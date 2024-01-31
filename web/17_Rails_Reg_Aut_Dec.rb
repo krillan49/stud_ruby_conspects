@@ -559,6 +559,7 @@ class User < ApplicationRecord
 
   # ...
 end
+# 3б. Тк в модели user.rb слишком много кода, напишем новый консерн модели rememberable.rb (код там) и переместим туда из модели весь функционал по запоминанию пользователя.
 
 
 # 4. В sessions_controller.rb запомним пользователя в зависимости от значения чекбокса :remember_me('0' или '1')
@@ -577,7 +578,7 @@ class SessionsController < ApplicationController
       render :new
     end
   end
-  
+
   # Или отрефакторим по рекомендации рубокопа(вынесем логику входа в систему в подметод)
   def create
     user = User.find_by email: params[:email]

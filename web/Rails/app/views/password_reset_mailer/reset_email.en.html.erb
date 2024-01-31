@@ -4,4 +4,5 @@
   <%= link_to 'Reset my password',
       edit_password_reset_url(user: {password_reset_token: @user.password_reset_token, email: @user.email}, locale: :en),
       target: '_blank' %>
+  <!-- locale: :en - добавим локаль в ссылку -->
 </p>
