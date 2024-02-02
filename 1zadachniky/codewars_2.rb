@@ -90,3 +90,13 @@ p transpile("{a->a}(cde,y,z){x,y,d -> stuff}  ")                # "(a){a;}(cde,y
 # p transpile('f( a v)')                # ''
 # p transpile('i(,{})')                # ''
 # p transpile('{}{}{}')                # ""
+
+
+
+exp = "(a){a}(cde,y,z){x,y,d->stuff}"
+exp = exp.gsub(/\{.+?\}/){|c|
+  p c
+  c.gsub(/\b([a-z_]\w*)\b ?/, '\1;')
+} # "fun((a,b){a b})" => "fun((a,b){a;b;})"
+p exp # "(a){a;}(cde;,y;,z;){x;,y;,d;->stuff;}"
+# "(a){a;}(cde,y,z,(x,y,d){stuff;})"
