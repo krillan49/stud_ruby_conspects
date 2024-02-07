@@ -5,6 +5,24 @@
 
 # https://www.sitepoint.com/understanding-scope-in-ruby/   продолжить с 'Являются ли блоки воротами области действия?'
 
+
+# Метод с ensure
+def some
+  # тут возвращает
+ensure
+  # тут доп действие, после возврата ??
+end
+# метод еще со всяким
+def perform(archive_key, initiator)
+
+rescue StandardError => e
+
+else
+
+end
+
+
+
 # класс внутри класса методы в строку с =
 class Lottery
 
