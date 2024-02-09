@@ -1,13 +1,13 @@
 class UserBulkImportService < ApplicationService
   attr_reader :archive_key, :service # геттеры для ключа архива и ссылки на сервис
 
-  def initialize(archive_key) # принимает ключ архива (раньше принимал сам временный архив)
+  def initialize(archive_key) # принимает ключ архива (user_bulk_service.rb(Admin_Exel_Zip) принимал сам временный архив)
     @archive_key = archive_key
-    @service = ActiveStorage::Blob.service # сохраняем ссылку на сервис ActiveStorage (для обращения к БД ??)
+    @service = ActiveStorage::Blob.service # сохраняем ссылку на сервис ActiveStorage (для обращения к БД или папке хранилища ??)
   end
 
   def call # этот метод меняем тк со старым, при считывании фаилов из архива, они криво закрываются и потом нельзя удалить архив
-    read_zip_entries do |entry| # read_zip_entries - наш новй метод(код ниже), entry - каждый фаил из архива
+    read_zip_entries do |entry| # read_zip_entries - вызываем наш новый метод(код ниже), entry - каждый фаил из архива
       entry.get_input_stream do |f| # get_input_stream - читает содержание фаила, метод гема rubyzip возвращает последовательность бит.
         User.import users_from(f.read), ignore: true # собственно создаем оптимизированный запрос для добавления всех пользователей сразу при помощи гема activerecord-import (Admin_Exel_Zip)
         # f.read - добавляем фаил(или строку??) в режиме чтения
@@ -15,7 +15,7 @@ class UserBulkImportService < ApplicationService
       end
     end
   ensure
-    service.delete archive_key # удаляем по ключу из БД архив с которым мы работали, после того как мы завершили работу, чтобы не хранился больше у нас на жиске
+    service.delete archive_key # удаляем по ключу из БД архив с которым мы работали, после того как мы завершили работу, чтобы не хранился больше у нас на диске
     # service - геттер обращается к таблицам ActiveStorage ??
   end
 
@@ -28,7 +28,7 @@ class UserBulkImportService < ApplicationService
       entry = stream.get_next_entry # берем следующую запись из архива (?? стрима)
       break unless entry # завершаем цикл если записей больше нет
       next unless entry.name.end_with? '.xlsx' # пропускаем(переходим к след итерации) если формат записи не xlsx
-      yield entry # передаем запись в блок в |entry|
+      yield entry # передаем запись в блок, в |entry|
     end
   ensure
     stream.close # закрываем стрим/поток
