@@ -1,7 +1,7 @@
 class UserBulkImportService < ApplicationService
   attr_reader :archive_key, :service # геттеры для ключа архива и ссылки на сервис
 
-  def initialize(archive_key) # принимает ключ архива (user_bulk_service.rb(Admin_Exel_Zip) принимал сам временный архив)
+  def initialize(archive_key) # принимает ключ архива (ранее user_bulk_service.rb(Admin_Exel_Zip) принимал сам временный архив)
     @archive_key = archive_key
     @service = ActiveStorage::Blob.service # сохраняем ссылку на сервис ActiveStorage (для обращения к БД или папке хранилища ??)
   end
@@ -23,7 +23,7 @@ class UserBulkImportService < ApplicationService
 
   def read_zip_entries # метод использующийся в методе call
     return unless block_given? # выходим если блок не передан
-    stream = zip_stream # zip_stream - метод (код ниже), который выполняет стриминг загруженного зип-фаила
+    stream = zip_stream() # zip_stream - метод (код ниже), который выполняет стриминг загруженного зип-фаила
     loop do # цикл который будет брать каждый следующий фаил из зип-архива, тк мы делаем стриминг и сразу не знаем сколько там фаилов. Можно делать цикл не бесконечным а ограничить например 50ю итерациями, чтобы нас не дудосили
       entry = stream.get_next_entry # берем следующую запись из архива (?? стрима)
       break unless entry # завершаем цикл если записей больше нет

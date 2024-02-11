@@ -28,7 +28,7 @@ puts '                                             Sidekiq'
 gem 'sidekiq', '~> 7'
 # > bundle i
 
-# Для работы sidekiq неоходим redis(NO-SQL база данных, которую sidekiq использует для храниения информации о задачах).
+# Для работы sidekiq необходим redis(NO-SQL база данных, которую sidekiq использует для храниения информации о задачах).
 # На *nix-системах просто устанавливаем с redis офф сайта  -  https://redis.io/download/
 # Но на виндоус redis новых версий ольше не поддерживается(?? В доках sidekiq описана замена Dragonfly мб она поддерживается ??).
 
@@ -78,7 +78,7 @@ PasswordResetMailer.with(user: @user).reset_email.deliver_later
 
 
 puts
-puts '                                 Визуальный интерфейс для отслеживания задач'
+puts '                           Визуальный интерфейс для отслеживания задач. Констрейт'
 
 # Настроем маршрут в routes.rb для интерфейса отслеживания задач в нашем приложении, так же ограничим его только для администратора
 # (Весь код далее из routes.rb)
@@ -157,7 +157,7 @@ puts '                                  ActiveStorage. Импорт ZIP в backg
 # Можно использовать облачные(например Амазон) и локальные хранилища.
 # Мы могли бы написать собственный скрипт, который берет этот архив и помещает в другую папку, но проще задействовать функционал - ActiveStorage.
 
-# ActiveStorage - функционал Рэилс, который предоставляет интерфейс, через который можно сохранять фаилы в разные хранилища, как в облачные(тот же Амазон), локальные итд. Он предоставляет общий интерфейс, который мы настраиваем, определяя куда нужно сохранять.
+# ActiveStorage - функционал Рэилс, который предоставляет интерфейс, через который можно сохранять фаилы в разные хранилища, как в облачные(тот же Амазон), так и в локальные. Он предоставляет общий интерфейс, который мы настраиваем, определяя куда нужно сохранять.
 
 
 # Конфигурация для интерфейса ActiveStorage есть по умолчанию в фаиле config/storage.yml (код и описание там)
@@ -207,7 +207,7 @@ module Admin
 end
 
 
-# 2. app/services/user_bulk_import_service.rb - переназовем сервисный объект user_bulk_service.rb(Admin_Exel_Zip) тк он занимается только импортом. (код там). Далее модифицируем его тк будем использовать его в джобе user_bulk_import_job.rb
+# 2. app/services/user_bulk_import_service.rb - переназовем сервисный объект user_bulk_service.rb(Admin_Exel_Zip) тк он занимается только импортом(код там). Далее модифицируем его тк будем использовать его в джобе user_bulk_import_job.rb
 
 
 # 3. В джобе app/jobs/user_bulk_import_job.rb в методе perform вызванным из контроллера, запустим медоды из user_bulk_import_service.rb
@@ -222,7 +222,7 @@ class UserBulkImportJob < ApplicationJob
     Admin::UserMailer.with(user: initiator, error: e).bulk_import_fail.deliver_now
   else
     Admin::UserMailer.with(user: initiator).bulk_import_done.deliver_now
-    # user: initiator - пользователь, которому отправляем
+    # user: initiator - передавем в мэйлер admin/user_mailer.rb пользователя, которому отправляем
     # bulk_import_done - метод мэйлера admin/user_mailer.rb
     # deliver_now - тут именно доставить сейчас а не deliver_later, так мы тут и так уже находимся в бэкграунде
   end
@@ -235,7 +235,7 @@ end
 
 
 # Теперь мы можем загружать архив в приложение(например с несколькими xlsx фаилами, где в каждом по несколько пользователей и какимто левым например txt фаилом, для проверки что будет обработывать только нужный формат)
-# В консоли сайдкика после удачной загрузки можно найти строку, после записи о джлбе:
+# В консоли сайдкика после удачной загрузки можно найти строку, после записи о джобе:
 # Disk Storage (0.8ms) Deleted file from key: zqy8316bfdugbscu29atj4ufbon5
 # Она говорит о том что фаил ActiveStorage после обработкт джоба удален по ключу
 
@@ -262,10 +262,8 @@ module Admin
           @pagy, @users = pagy User.order(created_at: :desc)
         end
 
+        # format.zip { respond_with_zipped_users } - раньше тут вызывался метод respond_with_zipped_users, удаляем это, удаляем сам метод который был тут же в private и переносим функционал из него в user_bulk_export_service.rb
         format.zip do
-          # respond_with_zipped_users - раньше тут вызывался метод respond_with_zipped_users, удаляем его, удаляем сам метод который был тут же в private и переносим функционал из него в user_bulk_export_service.rb
-
-          # Добавляем вместо него весь код ниже
           UserBulkExportJob.perform_later current_user # вызываем джоб экспорта и передаем ему активного пользователя
           flash[:success] = t '.success' # тут можно сообщить что ссылка на скачивание придет на почту
           redirect_to admin_users_path

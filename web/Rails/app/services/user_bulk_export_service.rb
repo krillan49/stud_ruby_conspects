@@ -1,10 +1,10 @@
 class UserBulkExportService < ApplicationService
   def call
-    compressed_filestream = output_stream # для рефакторинга создадим подметод(ниже)
+    compressed_filestream = output_stream() # для рефакторинга создадим подметод(ниже)
     compressed_filestream.rewind # перематываем
 
 
-    # send_data compressed_filestream.read, filename: 'users.zip' - раньше в контроллере в методе respond_with_zipped_users делали так чтобы отправить фаил прямо через браузер
+    # send_data compressed_filestream.read, filename: 'users.zip' - раньше в контроллере в методе respond_with_zipped_users делали так чтобы отправить фаил для загрузки пользователем сразу через браузер
 
     # Вариант 1 с сохранением архива в ActiveStorage после отправки письма, на случай если мы еще раз захотим использовать этот фаил
     ActiveStorage::Blob.create_and_upload! io: compressed_filestream, filename: 'users.zip'
