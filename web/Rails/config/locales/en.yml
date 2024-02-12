@@ -29,6 +29,8 @@
 # To learn more, please read the Rails Internationalization guide
 # available at https://guides.rubyonrails.org/i18n.html.
 
+# !!! Потом перенести полный код из проекта
+
 en: #  указывает на локаль(удалять не нужно)
   # перевод названий локали для t(locale)
   en: 'English'

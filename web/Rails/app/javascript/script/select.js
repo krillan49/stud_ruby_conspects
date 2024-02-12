@@ -1,6 +1,16 @@
 import TomSelect from 'tom-select/dist/js/tom-select.popular' // подключаем tom-select, заодно добавим самые популярные плагины для него (.popular)
 import Translations from './i18n/select.json'  // подключаем переводы из подпапки
 
+
+// Урок 21 - добавлена "выгрузка" ??
+let selects = []
+document.addEventListener("turbolinks:before-cache", function() {
+  selects.forEach((select) => {
+    select.destroy()
+  })
+})
+
+
 document.addEventListener("turbolinks:load", function() {
   const i18n = Translations[document.querySelector('body').dataset.lang] // для того чтобы определить для какого языка использовать перевод, инфу берем из аттрибута тега body из лэйаут (<body data-lang="<%= I18n.locale %>"> )
 
@@ -39,6 +49,10 @@ document.addEventListener("turbolinks:load", function() {
     }
 
     new TomSelect(element, opts) // создаем новый элемент TomSelect с тегом(element) и созданными опциями
+
+    // Вместо строки выше. Урок 21 - добавлена "выгрузка" ??
+    const el = new TomSelect(element, opts)
+    selects.push(el)
   })
 })
 
