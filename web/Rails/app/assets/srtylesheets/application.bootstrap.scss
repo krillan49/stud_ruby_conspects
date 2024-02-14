@@ -1,3 +1,5 @@
+// Вериант с отдельными компонентами и отдельным фаилом для кастомных стилей в фаиле A_application.bootstrap.scss
+
 @import 'bootstrap/scss/bootstrap'; // загружаем все стили из данного фаила(с Гитхаба ??), но лучше загружать только отдельные компоненты а не все как тут
 @import 'bootstrap-icons/font/bootstrap-icons';
 @import 'tom-select/dist/css/tom-select.bootstrap5'; // стили для TomSelect (ManyToMany)
@@ -32,7 +34,7 @@
   width: 16px;
   height: 16px;
   display: inline-block;
-  background: url('../images/flags.png') no-repeat;
+  background: url('flags.png') no-repeat;
   overflow: hidden;
   text-indent: -9999px;
   text-align: left;

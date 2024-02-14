@@ -21,7 +21,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application" %>
+    <%= stylesheet_link_tag "application", media: 'all' %> <!-- media: 'all' - добавлнено вручную -->
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 

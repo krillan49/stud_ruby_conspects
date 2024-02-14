@@ -332,7 +332,7 @@ end
 
 
 puts
-puts '                                       Валидация: метод validates'
+puts '                                       Валидации. Метод validates'
 
 # https://guides.rubyonrails.org/active_record_validations.html  -   Active Record Validations — Ruby on Rails Guides
 
@@ -350,16 +350,17 @@ class Client < ActiveRecord::Base
 
   #                           Некоторые другие популярные методы проверки:
 
-  # 1. length - проверяем по допустимой длинне
+  # length - проверяем по допустимой длинне
   validates :name, length: { minimum: 2 }             # minimum - длинна не менее чем(можно указать одновременно с maximum)
   validates :bio, length: { maximum: 500 }            # maximum - длинна не более чем(можно указать одновременно с minimum)
   validates :password, length: { in: 6..20 }          # in - допустимая длинна находится в интервале
   validates :registration_number, length: { is: 6 }   # is - точное указание длинны
 
-  # 2. inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
+  # inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
   validates :size, inclusion: { in: %w(small medium large), message: "%{value} is not a valid size" }
 
-  # numericality: true - проверка, введены ли числа
+  # numericality - проверка, введены ли в поле числа
+  validates :some, numericality: true
 end
 # если больше ничего не добавлять для валидации в программе, то будет просто не сохранять в БД, если проверка не пройдена, те метод вернул false, но чтобы ошибка както отображалась, нужно это дополнительно проверить.
 
@@ -380,8 +381,7 @@ end
 
 # Валидация и вывод сообщения об ошибке
 get '/visit' do
-  @c = Client.new # создаем пустой объект(все значения равны nil) для того чтобы использовать в values представления.
-
+  @c = Client.new # создаем пустой объект(все значения равны nil) для того чтобы использовать их в values в представлении.
 	erb :hq_barbershop_visit_true
 end
 
@@ -389,11 +389,12 @@ post '/visit' do
 	@c = Client.new params[:client] # делаем переменную глобальной, чтобы отображалась в представлении
 
   if @c.save # валидация проводится по условиям из модели, вносит или не вносит Client.new в базу и возвращает true или false
-		erb "<p>Thank you!</p>" # тут мб лучше редирект
+    redirect to '/visit'
 	else
     # В значения временной сущности добавляются пустые строки в незаполненных столбцах(??)
 
-    @error = @c.errors.full_messages.first #=> из хэша ошибок(errors) вернет массив значений(["Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank", "Name can't be blank", "Phone can't be blank"] ?? почемуто 3 раза ??) и выберет из них первую, тоесть сообщит о первом из незаполненных полей.
+    @error = @c.errors.full_messages.first #=> из хэша ошибок(errors) вернет массив значений(["Name can't be blank", "Phone can't be blank"]) и выберет из них первую, тоесть сообщит о первом из незаполненных полей.
+    # ?? почемуто(изза повершелл) выводит в массиве каждое сообщение по 3 раза
 		erb :hq_barbershop_visit_true
 	end
 end
