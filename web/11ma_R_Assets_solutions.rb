@@ -95,7 +95,7 @@ puts '                                               ESBuild'
 
 # https://esbuild.github.io/
 
-# ESBuild - современное, относительно простое в использовании и быстрое решение
+# ESBuild - современное, относительно простое в использовании и быстрое решение (?? управляет только JS)
 
 # ?? Не использует транспайлинг ?? тк использует ECMAScript6 модули, тк все современные браузеры уже их поддерживают
 
@@ -105,24 +105,112 @@ puts
 # https://www.youtube.com/watch?v=RG5mIXF_LP0   - c 10-21 переход с webpacker на esbuild
 
 
-# 1. (?? у меня так и было по умолчанию, тк не устанавливал webpacker а только webpack или изза того что изначально был Рэилс 7)
-
 # Gemfile:
 # Добавим гемы:
 gem 'sprockets-rails'
 gem 'jsbundling-rails'
 gem 'cssbundling-rails'
-# Удалим гемЖ:
+# Удалим гем:
 
-# Создаем стандартные директории app/assets/ (код тут):
+# (! Инфа про бандлы и компиляцию ассетов)
+# Создаем стандартные директории app/assets/ (код там):
 # app/assets/config/manifest.js   -  манифест, где мы прописываем что все скомпилированные ассеты(жс и ксс) будут помещаться в директорию app/assets/builds/ а изображения в директорию app/assets/images/ (эти директории тоже создаем)
+# app/assets/builds/ - тут будут храниться все наши скомпилированные ассеты (?? компилируются каждый раз при запуске через foreman start -f Procfile.dev, тоесть даже если удалить все фаилы из директории stylesheets и запускать через rails s то все стили и скрипты останутся, тк они все исполняются из скомпилированных js и css фаилов из app/assets/builds/, а сами фаилы в которых мы пишем стили и скрипты используются только как шаблоны для компиляции билда)
 # app/assets/stylesheets/ - создадим директории для таблицы стилей
 
 # Запускаем команду
 # > rails:css:install:bootstrap
 # Создаетст фаил Procfile.dev, установит bootstrap и @popperjs/core если их у нас еще нет, так же добавит в лэйаут строчку <%= stylesheet_link_tag "application" %> те ссылку на app/assets/stylesheets/application.bootstrap.scss
 
-# Перетаскиваем наши стили в app/assets/stylesheets/application.bootstrap.scss
+# Перетаскиваем импорты стилей в app/assets/stylesheets/application.bootstrap.scss (A_application.bootstrap.scss), так же вынесем кастомные стили в _custom.scss и импортируем его в A_application.bootstrap.scss
+
+# package.json - изменяем (удаляем все закоменченое)
+# Для версии с вебпакером как у Круковского, а для моей просто с вебпаком удаляем то что совпадает
+{
+  "name": "ask-it",
+  "private": true,
+  "dependencies": {
+    "@popperjs/core": "^2.9.2",
+    "@rails/actioncable": "^6.0.0",            # этго у меня не было (добавить ??)
+    "@rails/activestorage": "^6.0.0",          # этго у меня не было (добавить ??)
+    "@rails/ujs": "^6.0.0",
+    # "@rails/webpacker": "6.0.0-rc.6",        # удаляем вебпакер
+    "autoprefixer": "^10.3.1",                 # автопрефиксер (можно удалить а можно и оставить)
+    "bootstrap": "^5.1.0",
+    # "css-loader": "^6.2.0",
+    # "css-minimizer-webpack-plugin": "^3.0.2",
+    # "mini-css-extract-plugin": "^2.2.0",
+    "postcss": "^8.4.35",                      # оставляем как стандарт для Рэилс 7 (для префиксов ??)
+    "postcss-cli": "^11.0.0",                  # у Круковского не было
+    # "postcss-flexbugs-fixes": "^5.0.2",      # удаляем все другое постксс
+    # "postcss-import": "^14.0.2",
+    # "postcss-preset-env": "^7.0.1",
+    "sass": "^1.37.5",
+    # "sass-loader": "^12.1.0",
+    "tom-select": "^2.0.0",
+    "turbolinks": "^5.2.0",
+    # "webpack": "5.65.0",                     # вебпак
+    # "webpack-cli": "4.9.1"
+  },
+  "version": "0.1.0",                          # этго у меня не было (чтото устаревшее ??)
+  # "devDependencies": {
+  #   "@webpack-cli/serve": "^1.5.2",
+  #   "webpack-dev-server": "^4.0.0"
+  # },
+  # "babel": {
+  #   "presets": [
+  #     "./node_modules/@rails/webpacker/package/babel/preset.js"
+  #   ]
+  # },
+  "browserslist": [                       # настройка автопрефиксера, добавляет настройку (можно удалить а можно и оставить)
+    "defaults"                            # добавляем префиксы под современные браузеры (остальные в описании browserslist)
+  ],
+  # Для версии без вебпакера изначально с Рэилс 7 (у Круковского этого не было)
+  "scripts": {
+    # "build": "webpack --config webpack.config.js",     # вебпак естественно удаляем
+
+    # С тем что далее это похоже стандартный вариант для бутстрап в Рэилс 7 и нужно так и оставить:
+
+    "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    # build:css - команда при помощи которой мы будем делать билд, она обращается к фаилу application.bootstrap.scss и будет делать для него билд в builds/application.css
+    # --load-path=node_modules - использует node_modules (там фаили для ярно нашего проекта ??)
+    # "build:css:dev": "sass --style compressed ... - можно прописать и так, чтобы сжимало получившийся фаил
+    "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
+    "build:css": "yarn build:css:compile && yarn build:css:prefix",
+    "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"yarn build:css\""
+  }
+}
+# > yarn install       # появится директория node_modules
+# > yarn build:css     # исполняет команду build:css скомпилируем фаилы css командой (тоже что автоматически делается при запуске через фореман ??)
+
+
+# Установим в существующий проект ESBuild отдельной командой:
+# > rails javascript:install:esbuild
+# Добавит в лэйаут ссылку на скрипты, добавит директорию app/javascript с фаилом application.js и добавит записи в Procfile.dev и строку в package.json
+{
+  # ...
+  "dependencies": {
+    # ...
+    "esbuild": "^0.20.0", # добавилось
+    # ...
+  },
+  "scripts": {
+    # ...
+    # Добавилась запись-скрипт, при помощи которого мы будем делать бандл JS
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets" # добавилось
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets" # если устанавливать при создании проекта то была бы такая
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds" # у Круковского было так
+  },
+  # ...
+}
+# В фаиле application.js нужно удалить import '@popperjs/core' , тк дропдаун его загружает автоматически; И мб добавить ?? import * as ActiveStorage from "@rails/activestorage" // у круковского есть(я не делал) связано с такими же package.json ??; ActiveStorage.start() // у круковского есть(я не делал) связано с такими же package.json ??
+# (!!! Проверить по соотношению уроков на эту тему, тогда ли появилось и перенести в соотв тему если надо)
+
+# config/initializers/assets.rb - так же если нет создать это фаил (для сп-рокетс)
+
+# Далее удаляем из проекта все что связано с вебпаком и вебпакером (можно найти через поиск по webpack)
+# Удаляем вебпакер из гемфаила
+
 
 
 

@@ -1,3 +1,12 @@
+//                                    1. Вариант с подключением всего бутстрапа
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons';
+@import 'tom-select/dist/css/tom-select.bootstrap5';
+@import 'custom'; // подключаем наши кастомные стили _custom.scss
+
+
+
+//                   2. Вариант крукрвского (у меня почемуто глючил мб до перехода на вебпакер или нужен ярн инсталл ??)
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/mixins";
@@ -26,7 +35,7 @@
 
 @import 'custom'; // подключаем фаил с кастомными стилями _custom.scss
 
-@import 'tom-select/src/scss/tom-select.bootstrap5';
+@import 'tom-select/src/scss/tom-select.bootstrap5'; // ?? меняем путь на src/scss чтобы вместе компилировалось
 
 
 

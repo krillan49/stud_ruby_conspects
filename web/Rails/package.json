@@ -1,3 +1,4 @@
+// Версия c webpack до перехода на ESBuild
 {
   "name": "app",
   "private": "true",
@@ -14,7 +15,8 @@
     "webpack-cli": "^5.1.4",
 
     "@rails/ujs": "^6.0.0",
-    "turbolinks": "^5.2.0"
+    "turbolinks": "^5.2.0",
+    "tom-select": "^2.3.1"
 
   },
   "scripts": {
