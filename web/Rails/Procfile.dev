@@ -1,4 +1,20 @@
-web: env RUBY_DEBUG_OPEN=true bin/rails server       - была эта(комментить нельзя тут)
-web: ruby bin/rails server                           - стала эта
+web: env RUBY_DEBUG_OPEN=true bin/rails server       # была эта(комментить нельзя тут)
+web: ruby bin/rails server                           # стала эта
 js: yarn build --watch
 css: yarn watch:css
+
+
+
+#                                          Вариант с ESBuild у Круковского (урок 22)
+web: ruby bin/rails server -p 3000
+css: yarn build:css:dev --watch
+js: yarn build --watch
+worker: bundle exec sidekiq -q default
+
+
+
+#                                          Вариант с ESBuild мой
+web: ruby bin/rails server
+js: yarn build --watch
+css: yarn watch:css
+worker: bundle exec sidekiq -q default

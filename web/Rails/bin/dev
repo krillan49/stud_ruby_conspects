@@ -2,10 +2,11 @@
 
 if ! gem list foreman -i --silent; then
   echo "Installing foreman..."
-  gem install foreman
+  gem install foreman # тут устаназливается гем foreman, если его нет
 fi
 
 # Default to port 3000 if not specified
 export PORT="${PORT:-3000}"
 
-exec foreman start -f Procfile.dev "$@" # foreman start -f Procfile.dev  - используется только эта часть
+exec foreman start -f Procfile.dev "$@" # при помощи foreman запускается фаил Procfile.dev (в нем указываютмя инструкции чтобы поднять наш сервер и также запустить компиляцию ассетов)
+# foreman start -f Procfile.dev  - используется только эта часть

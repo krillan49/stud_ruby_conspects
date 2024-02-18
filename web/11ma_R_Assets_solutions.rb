@@ -115,24 +115,25 @@ gem 'cssbundling-rails'
 # (! Инфа про бандлы и компиляцию ассетов)
 # Создаем стандартные директории app/assets/ (код там):
 # app/assets/config/manifest.js   -  манифест, где мы прописываем что все скомпилированные ассеты(жс и ксс) будут помещаться в директорию app/assets/builds/ а изображения в директорию app/assets/images/ (эти директории тоже создаем)
-# app/assets/builds/ - тут будут храниться все наши скомпилированные ассеты (?? компилируются каждый раз при запуске через foreman start -f Procfile.dev, тоесть даже если удалить все фаилы из директории stylesheets и запускать через rails s то все стили и скрипты останутся, тк они все исполняются из скомпилированных js и css фаилов из app/assets/builds/, а сами фаилы в которых мы пишем стили и скрипты используются только как шаблоны для компиляции билда)
+# app/assets/builds/ - тут будут храниться все наши скомпилированные ассеты
+# Ассеты для app/assets/builds/ компилируются заново каждый раз при запуске через foreman start -f Procfile.dev, тоесть даже если удалить все фаилы из директории stylesheets и запускать через rails s то все стили и скрипты останутся, тк они все исполняются из скомпилированных js и css фаилов из app/assets/builds/, а сами фаилы в которых мы пишем стили и скрипты используются только как шаблоны для компиляции билда. Если же удались все ассеты (кроме картино ??) то они просто заново скомпилируются по шаблону
 # app/assets/stylesheets/ - создадим директории для таблицы стилей
 
-# Запускаем команду
+# Запускаем команду(если бутстрап еще не установлен при создании приложения)
 # > rails:css:install:bootstrap
 # Создаетст фаил Procfile.dev, установит bootstrap и @popperjs/core если их у нас еще нет, так же добавит в лэйаут строчку <%= stylesheet_link_tag "application" %> те ссылку на app/assets/stylesheets/application.bootstrap.scss
 
 # Перетаскиваем импорты стилей в app/assets/stylesheets/application.bootstrap.scss (A_application.bootstrap.scss), так же вынесем кастомные стили в _custom.scss и импортируем его в A_application.bootstrap.scss
 
 # package.json - изменяем (удаляем все закоменченое)
-# Для версии с вебпакером как у Круковского, а для моей просто с вебпаком удаляем то что совпадает
+# Для версии с вебпакером как у Круковского, а для моей с просто вебпаком удаляем то что совпадает
 {
   "name": "ask-it",
   "private": true,
   "dependencies": {
     "@popperjs/core": "^2.9.2",
-    "@rails/actioncable": "^6.0.0",            # этго у меня не было (добавить ??)
-    "@rails/activestorage": "^6.0.0",          # этго у меня не было (добавить ??)
+    "@rails/actioncable": "^6.0.0",            # этго у меня не было (добавить или устарело и и так подключено ??)
+    "@rails/activestorage": "^6.0.0",          # этго у меня не было (добавить или устарело и и так подключено ??)
     "@rails/ujs": "^6.0.0",
     # "@rails/webpacker": "6.0.0-rc.6",        # удаляем вебпакер
     "autoprefixer": "^10.3.1",                 # автопрефиксер (можно удалить а можно и оставить)
@@ -140,8 +141,8 @@ gem 'cssbundling-rails'
     # "css-loader": "^6.2.0",
     # "css-minimizer-webpack-plugin": "^3.0.2",
     # "mini-css-extract-plugin": "^2.2.0",
-    "postcss": "^8.4.35",                      # оставляем как стандарт для Рэилс 7 (для префиксов ??)
-    "postcss-cli": "^11.0.0",                  # у Круковского не было
+    "postcss": "^8.4.35",                      # оставляем как стандарт для Рэилс 7 (для префиксов)
+    "postcss-cli": "^11.0.0",                  # у Круковского не было (оставляем как стандарт для Рэилс 7)
     # "postcss-flexbugs-fixes": "^5.0.2",      # удаляем все другое постксс
     # "postcss-import": "^14.0.2",
     # "postcss-preset-env": "^7.0.1",
@@ -171,13 +172,15 @@ gem 'cssbundling-rails'
 
     # С тем что далее это похоже стандартный вариант для бутстрап в Рэилс 7 и нужно так и оставить:
 
-    "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules", # компиляция css ассетов
     # build:css - команда при помощи которой мы будем делать билд, она обращается к фаилу application.bootstrap.scss и будет делать для него билд в builds/application.css
-    # --load-path=node_modules - использует node_modules (там фаили для ярно нашего проекта ??)
+    # --load-path=node_modules - использует node_modules (там фаилы для ярн нашего проекта ??)
     # "build:css:dev": "sass --style compressed ... - можно прописать и так, чтобы сжимало получившийся фаил
     "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
-    "build:css": "yarn build:css:compile && yarn build:css:prefix",
+    # build:css:prefix - для префиксов, тут запускем автопрефиксер, те просто в кучу через && записать его не выйдет
+    "build:css": "yarn build:css:compile && yarn build:css:prefix", # запускаем скрипты для компиляции и префиксов
     "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"yarn build:css\""
+    # --watch - ключ говорит что при изменениях будет заново проделана компиляция, нужно только для девелопмента
   }
 }
 # > yarn install       # появится директория node_modules
@@ -206,11 +209,35 @@ gem 'cssbundling-rails'
 # В фаиле application.js нужно удалить import '@popperjs/core' , тк дропдаун его загружает автоматически; И мб добавить ?? import * as ActiveStorage from "@rails/activestorage" // у круковского есть(я не делал) связано с такими же package.json ??; ActiveStorage.start() // у круковского есть(я не делал) связано с такими же package.json ??
 # (!!! Проверить по соотношению уроков на эту тему, тогда ли появилось и перенести в соотв тему если надо)
 
-# config/initializers/assets.rb - так же если нет создать это фаил (для сп-рокетс)
+# config/initializers/assets.rb - так же если нет(переход с вебпакера) создать это фаил (для сп-рокетс)
 
 # Далее удаляем из проекта все что связано с вебпаком и вебпакером (можно найти через поиск по webpack)
 # Удаляем вебпакер из гемфаила
 
+# > yarn build    - сделает билд "всего этого добра"
+# =>
+# $ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets
+#   app\assets\builds\application.js      340.0kb
+#   app\assets\builds\application.js.map  549.0kb
+# (!! Если произошла ошибка на Винде при выполнении команды, то надо в package.json в пути скрипта "build": "esbuild app/javascript/*.* --bu... заменить *.* на название фаила, получится "build": "esbuild app/javascript/application.js --bun)
+
+# javascript_include_tag - ссылка с хелпером появится в лэйаут, соответсвенно ссылку с хедпером для вебпакера можно удалить
+
+# bin/dev - создался данный фаил(если его не было), он устанавливает гем foreman и при помощи него запускает фаил Procfile.dev (в нем указываютмя инструкции чтобы поднять наш сервер и также запустить компиляцию ассетов)
+# Теперь на никс системах чтобы запустить сервер вместо rails s ввседем команду:
+# > bin/dev
+# На виндоус это не работает потому создаем фаил name.cmd (название любое) и копируем туда строку foreman start -f Procfile.dev из фаила bin/dev и будем выпонять команду:
+# > name.cmd
+
+# Procfile.dev  - в нем располагаются все те инструкции которые мы проделали
+web: ruby bin/rails server      # запуск сервера (ruby в строку добавляем на винде)
+js: yarn build --watch          # запуск билда для js (из скриптов из package.json) (--watch - ключ говорит что при изменениях будет заново проделана компиляция, нужно только для девелопмента)
+css: yarn watch:css             # запуск билда для css (из скриптов из package.json), запускает скрипт watch:css, а он по инструкциям в package.json запускает уже стальные(прописано в строках скриптов(они выполняются в командной строке как бы ??))
+worker: bundle exec sidekiq -q default  # необязательно, для того чтобы сразу же запускался и сайдкик(как бы на одном сервере ??)
+
+# Команда, которая будет использовать все инструменты(скрипты), которые мы настроли в scripts из package.json, эту команду конфигурируют гемы jsbundling-rails и cssbundling-rails
+# > rails assets:precompile
+# (!! Если возникает ошибка при исполнении команды нужно посмотеть в app/assets/config/manifest.js не добавились/продублировались ли там лишние строки например такое дублирование //= link_tree ../builds//= link_tree ../builds соотв удаляем 2ю )
 
 
 
