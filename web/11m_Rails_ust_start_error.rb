@@ -127,13 +127,14 @@ puts '                                           Создание приложе
 
 
 puts
-puts '                                     package.json. Подключить UJS в Рэилс 7'
+puts '                                     package.json. Подключение UJS в Рэилс 7'
 
 # Можно подключить UJS в Рэилс 7, если нужно. Из курса Круковского(делаем последовательно):
-# в фаиле package.json(содержит библиотеки для фронтэнда) добавим строки "@rails/ujs": "^6.0.0" и "turbolinks": "^5.2.0"(2е для более быстрой загрузки страниц при переходе по ссылкам)
+# в фаиле package.json(содержит библиотеки для фронтэнда) добавим строки:
+"@rails/ujs": "^6.0.0"
+"turbolinks": "^5.2.0" # для более быстрой загрузки страниц при переходе по ссылкам
 # > yarn install       - переинсталируем после пред пункта
 # в фаиле app/javascript/application.js     - вносим изменения(они там и описаны)
-
 
 # package.json - отвечает за решения связанные с фронтэндом, также как Gemfile отвечает за решения связанные с бэкэндом
 
@@ -158,11 +159,11 @@ puts '                                       Запуск бандла. Ошиб
 
 # Gemfile  -  есть инфа в нем тут
 
-# (!!! На Виндоус(64), решение для Рэилс 7). По умодлчанию будет выдавать ошибку таймзон(tzinfo-data is not present. Please add gem 'tzinfo-data' to your Gemfile and run bundle install (TZInfo::DataSourceNotFound)), поэтому нужны манипуляции:
+# !!! На Виндоус(64) в Рэилс 7 с Руби версий 3.1(и выше ??), тк эти версии сообщают новую версию платвормы, которая не распознвается в бандлере. По умодлчанию будет выдавать ошибку таймзон(tzinfo-data is not present. Please add gem 'tzinfo-data' to your Gemfile and run bundle install (TZInfo::DataSourceNotFound)), поэтому нужны манипуляции:
 # Изменить/подкрутить Gemfile. Найти в нем строку:
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]   # удаляем тут хэш доп настроек ...
 gem 'tzinfo-data'                                                 # ... сохраняем так
-# > gem uninstall tzinfo-data
+# > gem uninstall tzinfo-data   # мб это необязательно и просто bundle install хватит ??
 
 # > bundle install |или| > bundle update(лучше тк можно не писать gem uninstall tzinfo-data ??)
 
