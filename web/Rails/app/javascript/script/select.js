@@ -59,6 +59,69 @@ document.addEventListener("turbolinks:load", function() {
 
 
 
+//                                           Версия с использованием turbo
+
+import TomSelect from 'tom-select/dist/js/tom-select.popular'
+import Translations from './i18n/select.json'
+
+let selects = []
+
+// document.addEventListener("turbolinks:before-cache", function() {
+document.addEventListener("turbo:before-cache", function() { // меняем turbolinks на turbo
+  selects.forEach((select) => {
+    select.destroy()
+  })
+})
+
+// document.addEventListener("turbolinks:load", function() {
+// document.addEventListener("turbo:load", function() {         // меняем turbolinks на turbo
+const rerender = function() {                                   //  помещаем в переменную rerender(название любое), чтобы исправить ошибку при валидации
+  const i18n = Translations[document.querySelector('body').dataset.lang]
+
+  document.querySelectorAll('.js-multiple-select').forEach((element) => {
+    let opts = {
+      plugins: {
+        'remove_button': {
+          title: i18n['remove_button']
+        },
+        'no_backspace_delete': {},
+        'restore_on_backspace': {}
+      },
+      valueField: 'id',
+      labelField: 'title',
+      searchField: 'title',
+      create: false,
+      load: function(query, callback) {
+        const url = element.dataset.ajaxUrl + '.json?term=' + encodeURIComponent(query)
+
+        fetch(url)
+          .then(response => response.json())
+          .then (json => {
+            callback(json)
+          }).catch(() => {
+            callback()
+          })
+      },
+      render: {
+        no_results: function(_data, _escape){
+          return '<div class="no-results">' + i18n['no_results'] + '</div>';
+        }
+      }
+    }
+
+    const el = new TomSelect(element, opts)
+    selects.push(el)
+  })
+// })
+}
+// чтобы исправить ошибку при валидации добавим лисентеры событий с нашей созданной переменной
+document.addEventListener("turbo:load", rerender)
+document.addEventListener("turbo:render", rerender)
+// turbo:load и turbo:render - события, их опясания а так же других событий есть в доках
+
+
+
+
 
 
 

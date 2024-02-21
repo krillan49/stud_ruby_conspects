@@ -26,7 +26,7 @@ function updateOrdersInput() {
   var orders = сartGetOrders(); //  "product_1=3,product_2=5,product_3=1, ..."
 
   // Используем джэйквери - для этого в лэйоут нужно подключть его, например так <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>  либо бутстрапное
-  $('#orders_input').val(orders); // обращаемся к полю через его айди и вставляем в его значение(атрибут value) "product_1=3,product_2=5,product_3=1, ...". val(orders) - метод установки значений
+  $('#orders_input').val(orders); // обращаемся к полю формы через его айди и вставляем в его значение(value) "product_1=3,product_2=5,product_3=1, ...". val(orders) - метод установки значений
 }
 
 
@@ -45,7 +45,6 @@ function cartGetNumberOfItems() {
 
 
 // Функция для получения(и дальнейшей отправки через форму на сервер) результата о заказах из localStorage вида "product_1=3,product_2=5,product_3=1, ..."
-// Почти такая же по функционалу функция как и cartGetNumberOfItems, за исключением замены cnt на orders
 function сartGetOrders() {
   var orders = '';
   for (var i = 0; i < window.localStorage.length; i++){
