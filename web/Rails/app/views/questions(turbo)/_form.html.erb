@@ -1,0 +1,46 @@
+<%= turbo_frame_tag question do %>
+<!-- question - так как это форма для нового вопроса то тут тоже будет Question.new, соотв тот же самый айдишник что на кнопке и туброфрэйм-ткге в questions(turbo)/index.html.erb -->
+
+  <%= form_with model: question do |f| %>
+    <%= render 'shared/errors', object: question %>
+
+    <div class="mb-3 row">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: 'form-control' %>
+    </div>
+
+    <div class="mb-3 row">
+      <%= f.label :body %>
+      <%= f.text_area :body, class: 'form-control' %>
+    </div>
+
+    <div class="mb-3 row">
+      <%= f.label :tags %>
+      <%= f.collection_select :tag_ids, question.tags, :id, :title, {}, multiple: true,
+        class: 'js-multiple-select', data: {'ajax-url': '/api/tags'} %>
+    </div>
+
+    <%= f.submit t('global.button.submit'), class: 'btn btn-primary' %>
+  <% end %>
+
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- -->
