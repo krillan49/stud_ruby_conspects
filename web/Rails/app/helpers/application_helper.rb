@@ -3,6 +3,10 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  def prepend_flash # хэлпер для динамического отображения флэша
+    turbo_stream.prepend 'flash', partial: 'shared/flash'
+  end
+
   def pagination(obj)
     # rubocop:disable Rails/OutputSafety
     raw(pagy_bootstrap_nav(obj)) if obj.pages > 1
@@ -11,15 +15,8 @@ module ApplicationHelper
 
   def nav_tab(title, url, options = {})
     current_page = options.delete :current_page
-
     css_class = current_page == title ? 'text-secondary' : 'text-white'
-
-    options[:class] = if options[:class]
-                        "#{options[:class]} #{css_class}"
-                      else
-                        css_class
-                      end
-
+    options[:class] = options[:class] ? "#{options[:class]} #{css_class}" : css_class
     link_to title, url, options
   end
 
@@ -29,10 +26,20 @@ module ApplicationHelper
 
   def full_title(page_title = '')
     base_title = 'AskIt'
-    if page_title.present?
-      "#{page_title} | #{base_title}"
-    else
-      base_title
-    end
+    page_title.present? ? "#{page_title} | #{base_title}" : base_title
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 

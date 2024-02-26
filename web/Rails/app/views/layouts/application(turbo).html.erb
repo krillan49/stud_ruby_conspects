@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <title><%= full_title(yield(:page_title)) %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload", media: 'all' %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+  <body data-lang="<%= I18n.locale %>">
+    <%= yield :main_menu %>
+
+    <main class="container mt-3">
+
+      <!-- Обернем флэш-сообщения в блок с айдишником "flash" -->
+      <div id="flash">
+        <%= render 'shared/flash' %> <!-- вынесем блок с отображением флэш-сообщений в отдельный паршал shared/_flash.html.erb -->
+      </div>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->
