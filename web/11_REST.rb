@@ -11,10 +11,9 @@ puts '                                             REST API'
 # Многоуровневость или многослойность системы(распределение, просирование, микросервисы итд итп)
 # stateless - отсутствие состояния
 # Единообразный, унифицированный интерфейс - тоесть для каждой CRUD-операции мы используем семантически правильный HTTP-метод и определенный URL(например для того чтобы выдать инфу о продукте get 'products/id' и о клиенте get 'clients/id'). Так же сюда относится принятый формат взаимодействия(json/xml итд), унифицированные названия для например токенов итд
-# Кэширование, как засчет заголовков HTTP, так и сторонними штуками, например Рэдис(GET и POST запрсы могут кэшироваться, а PUT и DELETE не кэшируются). Например какието редко изменяемые данные(например список валют) при множестве запросов логичнее не каждый раз брать с сервера, а кэшировать и хранить прямо в браузере, либо при помощи сторонних кэшей на сервере(Рэдис). Это увеличивает скорость и снижает нагрузку на сервер
+# Кэширование, как засчет заголовков HTTP, так и сторонними решениями, например Redis(GET и POST запрсы могут кэшироваться, а PUT и DELETE не кэшируются). Например какието редко изменяемые данные(например список валют) при множестве запросов логичнее не каждый раз брать с сервера, а кэшировать и хранить прямо в браузере, либо при помощи сторонних кэшей на сервере(Рэдис). Это увеличивает скорость и снижает нагрузку на сервер
 
-# формат обмена данными с REST API:
-# В принципе может быть любым, но чаще всего это json и иногда xml
+# Формат обмена данными с REST API может быть любым, но чаще всего это json и иногда xml
 
 # REST API версионирование:
 # Если мы меняем API-функционал на обратно-несовместимый, например удаляем метод DELETE для какойто сущности, то необходимо менять версию, чтобы старые пользователи так и работали со старым API, а новые пользователи(или те кто сами хотят перейти) начинают использовать новую версию
@@ -40,30 +39,34 @@ puts '                                       Отличия resource и resource
 # (resource) singular-resources: https://guides.rubyonrails.org/routing.html#singular-resources
 # профиль пользователя с позиции пользователя существует в единственном числе(его профиль)
 # ---------------------------------------------------------------------------------------------------------
-# HTTP Verb     Path                Controller#Action     Что можно сделать с ресурсом:
+# HTTP Verb     Path                Controller#Action     Хэлпер для URL
 # ---------------------------------------------------------------------------------------------------------
-# GET           /profile/new        profiles#new          return an HTML form for creating the profile
-# POST          /profile            profiles#create       create the new profile
-# GET           /profile            profiles#show         display the one and only profile resource
-# GET           /profile/edit       profiles#edit         return an HTML form for editing the profile
-# PATCH/PUT     /profile            profiles#update       update the one and only profile resource
-# DELETE        /profile            profiles#destroy      delete the profile resource
+# GET           /profile/new        profiles#new          new_profile_path
+# POST          /profile            profiles#create
+# GET           /profile            profiles#show         profile_path
+# GET           /profile/edit       profiles#edit         edit_profile_path
+# PATCH/PUT     /profile            profiles#update
+# DELETE        /profile            profiles#destroy
 # ---------------------------------------------------------------------------------------------------------
 # 6 методов.
 # Нет обращения по id
+
+# new_geocoder_path возвращает /geocoder/new
+# edit_geocoder_path возвращает /geocoder/edit
+# geocoder_path возвращает /geocoder
 
 # (resources) crud-verbs-and-actions: https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 # статьи в блоге и с точки зрения пользователя существуют во множественном числе
 # ---------------------------------------------------------------------------------------------------------
 # HTTP Verb     Path                Controller#Action     Что можно сделать с ресурсами:
 # ---------------------------------------------------------------------------------------------------------
-# GET           /articles           articles#index        display a list of all articles
-# GET           /articles/new       articles#new          return an HTML form for creating a new article
-# POST          /articles           articles#create       create a new article
-# GET           /articles/:id       articles#show         display a specific article
-# GET           /articles/:id/edit  articles#edit         return an HTML form for editing a article
-# PATCH/PUT     /articles/:id       articles#update       update a specific article
-# DELETE        /articles/:id       articles#destroy      delete a specific article
+# GET           /articles           articles#index        articles_path
+# GET           /articles/new       articles#new          new_article_path
+# POST          /articles           articles#create       articles_path
+# GET           /articles/:id       articles#show         article_path(:id)
+# GET           /articles/:id/edit  articles#edit         edit_article_path(:id)
+# PATCH/PUT     /articles/:id       articles#update       article_path(:id)
+# DELETE        /articles/:id       articles#destroy      article_path(:id)
 # ---------------------------------------------------------------------------------------------------------
 # Всего 7 методов. Тк есть метод для вывода списка всех ресурсов(статей) articles#index.
 # Есть обращения по id
@@ -73,18 +76,18 @@ puts
 puts '                                        Вложенные маршруты'
 
 # Схема one-to-many: Article 1(resourses) - * Comment(resourses).
-# Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
+# Каждая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей)
 # ---------------------------------------------------------------------------------------------------------
-# Хэлпер для URL       HTTP     Path                                      Controller#Action
+# HTTP     Path                                      Controller#Action   Хэлпер для URL
 # ---------------------------------------------------------------------------------------------------------
-# article_comments     GET      /articles/:article_id/comments            comments#index
-# new_article_comment  GET      /articles/:article_id/comments/new        comments#new
-#                      POST     /articles/:article_id/comments            comments#create
-# article_comment      GET      /articles/:article_id/comments/:id        comments#show
-# edit_article_comment GET      /articles/:article_id/comments/:id/edit   comments#edit
-#                      PATCH    /articles/:article_id/comments/:id        comments#update
-#                      PUT      /articles/:article_id/comments/:id        comments#update
-#                      DELETE   /articles/:article_id/comments/:id        comments#destroy
+# GET      /articles/:article_id/comments            comments#index      article_comments
+# GET      /articles/:article_id/comments/new        comments#new        new_article_comment
+# POST     /articles/:article_id/comments            comments#create
+# GET      /articles/:article_id/comments/:id        comments#show       article_comment
+# GET      /articles/:article_id/comments/:id/edit   comments#edit       edit_article_comment
+# PATCH    /articles/:article_id/comments/:id        comments#update
+# PUT      /articles/:article_id/comments/:id        comments#update
+# DELETE   /articles/:article_id/comments/:id        comments#destroy
 
 
 

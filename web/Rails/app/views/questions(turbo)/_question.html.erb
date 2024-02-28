@@ -9,6 +9,7 @@
 
     <div class="card-body">
       <h4><%= link_to question.title, question_path(question), data: {turbo_frame: '_top'} %></h4>
+      <!-- data: {turbo_frame: '_top'} - добавим чтобы ссылка работала и переходила на другую страницу show.html.erb вместо попытки обновления фрэйма -->
 
       <section class="card-text">
         <%= tag.time datetime: question.formatted_created_at do %>

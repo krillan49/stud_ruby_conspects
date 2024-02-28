@@ -1,0 +1,5 @@
+<%= turbo_stream.prepend "answers", render(@answer, question: @answer.question) %> <!-- динамически добавляет новый ответ -->
+<!-- question: @answer.question - не забываем передать вопрос, тк он используется на show.html.erb -->
+<!-- "answers" - используем айди как на турбофрэйме в show.html.erb, которым обернут весь контент вопросов -->
+
+<%= prepend_flash %>

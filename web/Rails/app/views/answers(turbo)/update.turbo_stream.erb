@@ -1,0 +1,4 @@
+<%= turbo_stream.replace @answer, render(@answer, question: @answer.question) %> <!-- динамически заменяет ответ на новый -->
+<!-- question: @answer.question - не забываем передать вопрос, тк он используется на show.html.erb -->
+
+<%= prepend_flash %>
