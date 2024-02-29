@@ -106,6 +106,10 @@ end
 def met(a) a+1 end
 p met(1) #=> 2
 
+# метод в одну строку 2: с = но без end
+def list = 5
+p list #=> 5
+
 
 puts
 puts '                                           Оператор return'

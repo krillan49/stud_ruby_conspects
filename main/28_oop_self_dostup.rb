@@ -189,6 +189,14 @@ class Animal
   end
 
   protected :stay
+
+  private def met(n) # синтаксис для того чтобы сделать приватным конкретный метод(не затрагивает методы ниже)
+    'gfghfgfh'
+  end
+
+  def some_some
+    'some some'
+  end
 end
 
 class Dog < Animal
@@ -217,6 +225,7 @@ dog = Dog.new
 
 # public methods
 animal1.run #=> "cat is runing"
+p animal1.some_some #=> "some some"
 
 # private methods
 animal1.eat #=> `<main>': private method `eat' called for #<Animal:0x0000019b1af41670 @name="cat"> (NoMethodError)  #Нельзя вызвать этот метод напрямую, тк он private
@@ -225,6 +234,7 @@ animal1.jump #=> "I am eating" "\ncat is jumping" #опосредованный 
 dog.jump #=> "I am eating" "\ndog is jumping" # private methods суперкласса могут вызываться и объктами подкласса
 dog.bark #=> "I am eating" "\nwoof" # private methods суперкласса могут вызываться и методами подкласса
 animal1.eat_of(animal2) #=> private method `eat' called for #<Animal:0x000002403062ba48 @name="monkey"> (NoMethodError)  # Приватный метод не может быть вызван при помощи обращения от объекта(себя или другого)
+animal1.met(2) #=> private method `met' called for
 
 # protected methods
 animal2.stay #=> `<main>': protected method `stay' called for #<Animal:0x000002034d70fb28 @name="monkey"> (NoMethodError)  # Не может быть вызван напрямую.
