@@ -1,0 +1,51 @@
+<!-- is_current_comment - которая раньше использовалась для расхлопывания нужного коммента для которого выводили ошибки, это нам больше не нужно, тк страницу целиком больше перерисовывать не будем -->
+<% comment_builder = commentable.comments.build %> <!-- Соотв и это упростим убрав is_current_comment -->
+<% html_id = dom_id commentable, 'comments' %> <!-- Сгенерим тут html_id, который раньше передавали из _answer.html.erb -->
+<!-- 'comments' - добавим префикс к генерируемому айди тк тут в 2х местах используем commentable для генерации -->
+
+<%= link_to t('questions.show.comments'), "##{html_id}", class: 'btn btn-primary', data: {'bs-toggle': 'collapse'} %>
+
+<%= tag.div class: "collapse", id: html_id do %> <!-- Соотв и это упростим убрав проверку на is_current_comment -->
+
+  <!-- Добавим турбофрэйм для всего что связанно с комментариями(и формы и списка комментов) -->
+  <%= turbo_frame_tag "#{dom_id(commentable)}_#{dom_id(comment_builder)}" do %>
+  <!-- "#{dom_id(commentable)}_#{dom_id(comment_builder)}" - сгенерим сложно чтобы гарантировать уникальность -->
+
+    <% if policy(comment_builder).create? %>
+      <%= form_with model: [commentable, comment_builder], class: 'pt-3 border-top my-2' do |f| %>
+        <%= render 'shared/errors', object: comment %> <!-- Соотв и это упростим убрав проверку на is_current_comment -->
+
+        <div>
+          <%= f.label :body %>
+          <%= f.text_area :body, class: 'form-control form-control-sm' %>
+        </div>
+
+        <%= f.submit t('global.button.submit'), class: 'btn btn-sm btn-primary' %>
+      <% end %>
+    <% end %>
+
+    <!-- Добавим отдельный вложенный турбофрэйм для списка существующих комментов, чтобы добалять сюда динамически новый -->
+    <%= turbo_frame_tag dom_id(commentable, 'comments_list') do %>
+      <!-- 'comments_list' - добавим префикс к генерируемому айди тк тут в 2х местах используем commentable для генерации -->
+      <%= render commentable.comments.includes(:user).decorate %>
+    <% end %>
+
+  <% end %>
+
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->

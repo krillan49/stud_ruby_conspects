@@ -21,6 +21,7 @@
 
       <% if policy(question).edit? %>
         <%= link_to t('global.button.edit'), edit_question_path(question), class: 'btn btn-secondary' %>
+        <!-- ?? Тут не меняем ссылку тк ссылка внутри турбофрэйма автоматически отправляет с запросом форрмат турбофрэйма ?? -->
       <% end %>
 
       <% if policy(question).destroy? %>

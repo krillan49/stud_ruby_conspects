@@ -1,13 +1,25 @@
 require: # подключаем гемы-расширения
   - rubocop-performance
   - rubocop-rails
+  - rubocop-i18n
 
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.1
+
+I18n/RailsI18n:
+  Enabled: true
+I18n/GetText:
+  Enabled: false
 
 Style/Documentation:
   Enabled: false # отключаем проверки документации. Style/Documentation - берем из описания ошибки в выводе Рубокопа
 
 Rails/FilePath:
   EnforcedStyle: arguments # делаем пути ('some', 'some') правильными
+
+Metrics/MethodLength: # изменим максимальное число строк в методе
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 20

@@ -1,0 +1,4 @@
+<%= turbo_stream.append dom_id(@comment.commentable, 'comments_list'), render(@comment) %>
+<!-- dom_id(@comment.commentable, 'comments_list') - тут важно использовать правильный айди 'comments_list', тк на странице _commentable.html.erb мы создаем 2 типа айди при помощи сущности commentable, а нам нужно чтобы коммент попадал во вложенный турбофрэйм тег со списком всех комментов -->
+
+<%= prepend_flash %>

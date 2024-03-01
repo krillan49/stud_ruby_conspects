@@ -1,0 +1,32 @@
+<%= turbo_frame_tag comment do %>
+
+  <%= tag.article class: 'mb-3 card border-0' do %> <!-- id: dom_id(comment) больше не нужен тк теперь есть турбофрэйм-тег -->
+      <div class="col-sm-auto text-sm-center align-self-center">
+        <%= comment.user.gravatar size: 30, css_class: 'd-block' %>
+        <%= comment.user.name_or_email %>
+      </div>
+
+      <p><%= sanitize comment.body %></p>
+
+      <% if policy(comment).destroy? %>
+        <%= link_to t('global.button.delete'), polymorphic_path([comment.commentable, comment]),
+          class: 'btn btn-danger btn-sm', data: {turbo_method: :delete, turbo_confirm: t('global.dialog.you_sure')} %>
+      <% end %>
+  <% end %>
+
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->
