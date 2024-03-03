@@ -14,7 +14,7 @@
 
 <% if policy(:question).new? %>
   <!-- При нажатии данной кнопки мы вставим контент со страницы по адресу new_question_path в тело тега turbo_frame_tag с тем же айди, что тут в data -->
-  <%= link_to t('.new'), new_question_path, class: 'btn btn-primary btn-lg mb-3', data: { turbo_frame: dom_id(Question.new) } %>
+  <%= link_to t('.new'), new_question_path, class: 'btn btn-primary', data: { turbo_frame: dom_id(Question.new) } %>
   <!-- new_question_path - обращаемся к экшену new, чтобы он вернул new.html.erb в котором рендерится паршал _form.html.erb с нужной нам формой -->
   <!-- data: { turbo_frame: dom_id(Question.new) } - в data прописываем какой турбо-фрэйм-тег нужно будет обновить, тоесть куда нужно будет вгрузить форму из _form.html.erb -->
   <!-- dom_id(Question.new) - генерируем значение для data-turbo-frame атрибута (тут "new_question" при помощи Question.new) для того чтобы эта ссылка вставила контент в конкретный turbo_frame_tag с тем же значением в атрибуте id -->

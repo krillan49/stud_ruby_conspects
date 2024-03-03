@@ -70,6 +70,15 @@ input = STDIN.gets.chomp
 
 # Правило буравчика: если ваша программа использует ARGV, вместо gets необходимо использовать STDIN.gets, если не использует — можно оставить gets, но если везде замените на STDIN.gets хуже не будет.
 
+puts
+puts '                                         Стандартный вывод'
+
+$stdout << "Top 50 words:\n"
+top_words.each { $stdout << "#{_1.first} #{_1.last}\n"  }
+
+$stdout << "\nLetters count:\n"
+("A".."Z").each { $stdout << "#{_1} #{chars_count[_1]}\n"}
+
 
 puts
 puts '                                           Гем io/console'
