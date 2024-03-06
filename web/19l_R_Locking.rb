@@ -2,6 +2,8 @@ puts '                                            Locking(AR)'
 
 # Locking - это временная защита записи в таблице БД от одновременного множественного доступа/изменения разными пользователями. Например 2 пользователя могут попытаться отредактировать одну и ту же запись с разницей в несколько секунд, чтобы защититься от этого и сохранить в БД только одно изменение и нужен locking
 
+# ActiveRecord::Locking
+
 # https://api.rubyonrails.org/classes/ActiveRecord/Locking.html
 
 # locking бывает 2х типов: optimistic и pessimistic
@@ -10,27 +12,42 @@ puts '                                            Locking(AR)'
 puts
 puts '                                          Optimistic locking'
 
+# ActiveRecord::Locking::Optimistic
+
 # https://api.rubyonrails.org/classes/ActiveRecord/Locking/Optimistic.html
 
-# Optimistic locking - не запрещает множесвенный доступ на редактирование к одной и той же записи, но сохрангяет в БД изменения только первого по времени пользователя, а следующим выдает ошибку ActiveRecord::StaleObjectError. Например в своей игре 2 пользователя нажимают кнопку, но функционал для ответа на вопрос получает только тот кто 1й нажал.
+# Optimistic locking - не запрещает множесвенный доступ на редактирование к одной и той же записи, но сохрангяет в БД изменения только первого по времени пользователя, а следующим выдает ошибку ActiveRecord::StaleObjectError.
+# Пример: в Cвоей игре 2 пользователя нажимают кнопку, но функционал для ответа на вопрос получает только тот кто 1й нажал.
 
 
-# На примере:
+# На примере приложения https://github.com/krillan49/Locking_Kruk:
 # > rails new Locking -T --css bootstrap
 
 
 # 1. Создадим модель с дополнительным полем lock_version:integer чтобы реализовать Optimistic locking (Работает с любой СУБД)
 # > rails g model Item title lock_version:integer
-# Так для модели Item будет по умолчанию реализован Optimistic locking
 # > rails db:migrate
+# Так для модели Item будет по умолчанию реализован Optimistic locking. schema.rb:
+create_table "items", force: :cascade do |t|
+  t.string "title"
+  t.integer "lock_version"
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+end
 # Так же можно для примера работы создать экземпляр Item в seeds.rb:
 item = Item.create title: 'Version 1'
 puts item.inspect # чтобы при засеивании показало объект в консоли
 # > rails db:seed
 # Объект будет таким: #<Item id: 1, title: "Version 1", lock_version: 0, created_at: "2024-03- ... >
 
-# 2. Создадим контроллер items_controller.rb
-# > rails g controller items show edit update
+# Изначально значение поля lock_version будет равно 0 при обновлении станет 1, при след обновлении 2 итд, тоесть при каждом обновлении записи значение в поле lock_version будет увеличиваться на 1. При этом если контроллер получает на обновление записть значение lock_version, которого не соответсвует актуальному, то запись обновлена не будет и вернет пользователю ошибку ActiveRecord::StaleObjectError. Тоесть у пользователя который 1м обновляет, запись обновляется и значение поля lock_version увеличивается на 1, а у другого пользователя который примерно одновременно зашел на страницу и соотв не перезагружал ее после обновления записи, значение все еще останется на 1 меньше актуального
+
+# 2. Создадим представления
+# items/index.html.erb, items/show.html.erb, items/edit.html.erb
+# items/_form.html.erb - форма с добавлением скрытого поля со значением lock_version
+# У пользователя не получится обновить запись, если он в консоли разработчика поменяет значение версии в скрытом поле, кроме случаев если он введет актуальное значение версии, тоесть угадает сколько раз ее сейчас изменили другие
+
+# 3. Создадим контроллер items_controller.rb
 class ItemsController < ApplicationController
   before_action :set_item!, except: [:index]
 
@@ -48,6 +65,8 @@ class ItemsController < ApplicationController
     else
       render :edit
     end
+  rescue ActiveRecord::StaleObjectError # Обработаем ошибку редиректом(можно например добавить и флэш-сообщение)
+    redirect_to item_path(@item)
   end
 
   private
@@ -61,40 +80,140 @@ class ItemsController < ApplicationController
   end
 end
 
-# 3. Маршруты
+# 4. Маршруты
 Rails.application.routes.draw do
   resources :items, only: [:index, :show, :edit, :update]
   root "items#index"
 end
 
-# 4. Создадим представления
-# items/_form.html.erb - форма с добавлением скрытого поля со значением lock_version
-# items/index.html.erb, items/show.html.erb, items/edit.html.erb
-
-# Изначально значение поля lock_version будет равно 0 при обновлении станет 1, при след  обновлении 2 итд, тоесть у пользователя который 1м обновляет, запись обновляется и значение поля увеличивается на 1, а у другого пользователя который примерно одновременно зашел на страницу и соотв не перезагружал ее после обновления записи, значение все еще останется на 1 меньше актуального и соответсвенно обновить не получится и выдаст ошибку ActiveRecord::StaleObjectError, тк объект уже устарел
-
-# 5. Обработаем эту ошибку в экшене update, можно например просто редиректить с флэш-предупреждением
-def update
-  if @item.update item_params
-    redirect_to item_path(@item)
-  else
-    render :edit
-  end
-rescue ActiveRecord::StaleObjectError
-  redirect_to item_path(@item)
-end
-
-# Так же у пользователя не получится обновить запись, если он в консоли разработчика поменяет значение версии в скрытом поле, кроме случаев если он введео актуальное значение версии, тоесть угадает сколько раз ее сейчас изменили другие
-
 
 puts
 puts '                                          Pessimistic locking'
 
+# ActiveRecord::Locking::Pessimistic
+
 # https://api.rubyonrails.org/classes/ActiveRecord/Locking/Pessimistic.html
 
+# Pessimistic locking - обеспечивает поддержку блокировки на уровне строк с использованием SELECT… FOR UPDATE и других типов блокировки(которые мы можем выбрать) используемыми конкретнеыми СУБД. Тоесть не нужны никакие дополнительные колонки в таблице. Так же есть возможность разрешить множественно обновлять запись поочередно, подождав некоторое время, подходит например для того чтобы изменить какоето значение, предполагающее изменение многими пользователями, например добавить сумму на счет или изменить чтото в статистике в завасимости от действий пользователя.
+
+# Есть различия при работе с разными БД:
+# dev.mysql.com/doc/refman/en/innodb-locking-reads.html                                # MySQL
+# www.postgresql.org/docs/current/interactive/sql-select.html#SQL-FOR-UPDATE-SHARE     # PostgreSQL
+# FOR UPDATE - запрет на обновление(!!! Похоже нет в SQLite 3)
+
+# Можем навесить лок на какуюто запись в БД при помощи метода lock
+Account.lock.find(1) # SELECT * FROM accounts WHERE id=1 FOR UPDATE
+
+# Варианты применения:
+
+# 1. Вызываем метод lock('способ/тип лока конкретной СУБД'), чтобы использовать собственное предложение блокировки, специфичное для разных СУБД, например «LOCK IN SHARE MODE» или «FOR UPDATE NOWAIT»:
+Account.transaction do # Необходимо обрамить все в блок транзакции, в рамках транзакции мы можем навешивать локи на записи и когда ттранзакция отработает, то лок будет автоматически снят
+  shugo = Account.lock("FOR UPDATE NOWAIT").find_by(name: "shugo")
+  # select * from accounts where name = 'shugo' limit 1 for update nowait
+  # тоесть мы закрываем эту запись(find_by(name: "shugo")) от изменения другими пользователями(FOR UPDATE) и эти пользователи не могут ждать своей очереди пока лок будет снят и сразу получают ошибку(NOWAIT). По умолчанию например в PostgreSQL, следующий пользователь ждет своей очереди и потом может обновлять.
+  # лок использованный в транзакции(Account.transaction) будет висеть пока она не завершится и попытки изменить эту же запись в другой транзакции приведут к вызову ошибки
+  yuko = Account.lock("FOR UPDATE NOWAIT").find_by(name: "yuko")
+  shugo.balance -= 100 # изменяем значение некого поля
+  shugo.save!
+  yuko.balance += 100 # изменяем значение некого поля
+  yuko.save!
+end
+
+# 2. Можно использовать ActiveRecord::Base#lock! метод для блокировки одной записи по идентификатору. Это может быть лучше, если не нужно блокировать каждую строку:
+Account.transaction do
+  # select * from accounts where ...
+  accounts = Account.where(...)
+  account1 = accounts.detect { |account| ... }
+  account2 = accounts.detect { |account| ... }
+  # select * from accounts where id=? for update
+  account1.lock! # применяем лок к выбранной записи
+  account2.lock!
+  account1.balance -= 100
+  account1.save!
+  account2.balance += 100
+  account2.save!
+end
+
+# 3. Можно начать транзакцию и получить блокировку сразу, вызвав with_lock блок, который по умолчанию навесит лок на запись:
+account = Account.first
+account.with_lock do # Блок вызывается из транзакции, объект(тут account) уже заблокирован.
+  account.balance -= 100
+  account.save!
+end
 
 
 
+# На примере приложения https://github.com/krillan49/Locking_Kruk:
+
+# 1. Модель и миграция такие же но без дополнительного поля
+# > rails g model Item2 title
+# > rails db:migrate
+item2 = Item2.create title: 'Version 1' # в seeds.rb
+# > rails db:seed
+
+# 2. Представления все такиеже, только в паршале формы нет скрытого поля
+
+# 3a. Временный локинг, на время обработки, следующие пользователи ждут своей очереди:
+# Контроллер такойже но изменим экшен update:
+class Item2sController < ApplicationController
+  before_action :set_item!, except: [:index]
+
+  # ...
+
+  def update
+    result = nil # переменная для условия прохождения валидации
+
+    @item.with_lock do # устанавливает лок для редактируемого объекта при помощи with_lock
+      @item.title = params[:item2][:title] # обновляем значение поля
+      result = @item.save # сохраняем
+      sleep 10 # ждем 10 секунд перед редиректом/рендером, во время которых другой пользователь будет ждать свою очередь
+    end
+
+    if result
+      redirect_to item2_path(@item)
+    else
+      render :edit
+    end
+  end
+
+  # ...
+
+  def item_params
+    params.require(:item2).permit(:title) # естественно никакого доп поля
+  end
+end
+# PostgreSQL - первый пользователь совершит обновление, начинается его транзакция пройдут 10 секунд и тогда изменения отправленные 2м пользователем начнут обрабатываться, тоесть начнется другая транзакция и тоже обновят запись через 10 секунд
+# !!! SQLite 3 - работет не так как задумано просто выдаст 2му пользователю ошибку SQLite3::BusyException: database is locked
+
+# 3б. Локинг полный для следующих пользователей вызывает ошибку, так же как и оптимистик:
+# Контроллер такойже но изменим экшен update:
+class Item2sController < ApplicationController
+  before_action :set_item!, except: [:index, :update] # добавим в исключения update, тк экземпляр @item больше не нужен
+
+  # ...
+
+  def update
+    result = nil # переменная для условия прохождения валидации
+
+    Item2.transaction do # начинаем транзакцию при помощи Item2.transaction
+      @item = Item2.lock('FOR UPDATE NOWAIT').find params[:id] # ищем и блокируем объект c PostgreSQL настройкой NOWAIT, тоесть запретим ожидание следующему пользователю и выховем ему ошибку
+      @item.title = params[:item2][:title]
+      result = @item.save
+      sleep 10
+    end
+
+    if result
+      redirect_to item2_path(@item)
+    else
+      render :edit
+    end
+  end
+
+  # ...
+end
+
+
+# ?? Потом проверить Pessimistic locking с PostgreSQL
 
 
 
