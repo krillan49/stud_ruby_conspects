@@ -251,81 +251,103 @@ p doubles(20, 10000)# 0.6930471955575918
 
 
 # Elevator Action!   https://www.codewars.com/kata/654cdf611d68c91228af27f1/train/ruby
-
+# !!! Еще раз прочитать условия
 class Elevator
   attr_reader :result
 
   def initialize(level, queue)
     @queue = add_index(queue)
     @level = level
-    @dir, @target, @next_floor, @people = '', nil, nil, []
+    @dir, @target, @people = nil, nil, []
     @result = []
   end
 
   def action
+    @counter = 1
+
     until @queue.empty? && @people.empty?
-      start if @people.empty?
+      @counter += 1
+
+      direction_chose
       move
       stopage
     end
   end
 
-  def start
-    next_from = @queue[0][:from]
-    if next_from == @level
-      @result << next_from
-      @dir = @level > @queue[0][:to] ? 'D' : 'U'
-      passgs = @queue.select do |p|
-        p[:from] == next_from && ((@dir == 'D' && p[:to] < @level) || (@dir == 'U' && p[:to] > @level))
-      end.first(5)
-      passgs.each{|p| @queue.delete(p)}
-      @people = passgs.map{|p| p[:to]}
+  def direction_chose
+    if @people.empty? # того что выше не было
+      @main_target = @target = @queue[0][:from]
     else
-      @dir = @level > next_from ? 'D' : 'U'
-      @target = next_from
+      @main_target = nil
+      @target = @people.min_by{|p| (p - @level).abs}
     end
+    @dir = @target <=> @level
   end
 
   def move
-    next_peoples = @queue.select do |p|
-      (@dir == 'U' && p[:from] > @level && p[:to] > p[:from] ) || (@dir == 'D' && p[:from] < @level && p[:to] < p[:from])
-    end.map{|p| p[:from]}.uniq.sort
-    next_people_floor = (@dir == 'D' ? next_peoples.reverse : next_peoples)[0]
-    @next_floor = if @people.empty?
-      targets = [next_people_floor, @target].compact
-      @dir == 'U' ? targets.min : targets.max
-    else
-      targets = [next_people_floor, *@people].compact
-      @dir == 'U' ? targets.min : targets.max
+    if @dir == 1
+      companions = @queue.select{|p| p[:from] > @level && ((p[:from] < @target && p[:to] > p[:from]) || p[:from] == @target)}
+      @level = companions.empty? ? @target : companions.min_by{|p| (p[:from] - @level).abs}[:from]
+      # @level = @queue.select{|p| p[:from] > @level && ((p[:from] < @target && p[:to] > p[:from]) || p[:from] == @target)}
+      #                .min_by{|p| (p[:from] - @level).abs}[:from]
+    elsif @dir == -1
+      companions = @queue.select{|p| p[:from] < @level && ((p[:from] > @target && p[:to] < p[:from]) || p[:from] == @target)}
+      @level = companions.empty? ? @target : companions.min_by{|p| (p[:from] - @level).abs}[:from]
     end
   end
 
   def stopage
-    @level = @next_floor
+    @people = @people.reject{|p| p == @level}
+    return if @people.size == 5 # если лифт полон едем дальше
     @result << @level
-    # @next_floor = nil
-    if @people.empty? && @target
-      # p [@target, @people]
-      passagers = @queue.select{|p| p[:from] == @level}
-      # target_passager = passagers[0]
-      # target_passager = passagers.f
-      # @dir = target_passager[:to] > @level ? 'U' : 'D'
-      passgs = passagers.select{|p| (@dir == 'D' && p[:to] < @level) || (@dir == 'U' && p[:to] > @level)}.first(5)
-      @target = nil
-    else
-      @people.delete(@level)
-      passagers = @queue.select{|p| p[:from] == @level}
-      if @people.empty?
-        return if passagers.empty?
-        target_passager = passagers[0]
-        @dir = target_passager[:to] > @level ? 'U' : 'D'
-        passgs = passagers.select{|p| (@dir == 'D' && p[:to] < @level) || (@dir == 'U' && p[:to] > @level)}.first(5)
-      else
-        passgs = passagers.select{|p| (@dir == 'D' && p[:to] < @level) || (@dir == 'U' && p[:to] > @level)}.first(5-@people.size)
+    passagers = @queue.select{|p| p[:from] == @level}
+    if @main_target && @level == @main_target # если добрались до целевого этажа очередняры то берем его
+      target_passager = passagers.min_by{|p| p[:id]}
+      if target_passager
+        @people << target_passager[:to]
+        @queue.delete(target_passager)
+        passagers.delete(target_passager)
+      end
+    elsif @people.empty? && !@main_target
+      return # ???
+      # if @level == 4 #&& @counter > 2
+      #   p @people
+      #   p @main_target
+      #   p @queue
+      #   p passagers
+      #   p @dir
+      #   raise Error
+      # end
+      passagers = passagers.select{|p| @dir == 1 ? p[:to] > @level : p[:to] < @level}
+      return if passagers.empty?
+      first_passager = passagers.min_by{|p| p[:id]}
+      @people << first_passager[:to]
+      @queue.delete(first_passager)
+      passagers.delete(first_passager)
+    end
+    if @main_target && @people.empty?
+      if @level > @main_target # едем вниз(и берем тех кто едет вниз)
+        passagers = passagers.select{|p| p[:to] < @level}
+      elsif @level < @main_target # едем наверх(и берем тех кто едет наверх)
+        passagers = passagers.select{|p| p[:to] > @level}
+      end
+      passagers = passagers.sort_by{|p| p[:id]}.first(5)
+      passagers.each do |p|
+        @people << p[:to]
+        @queue.delete(p)
+      end
+    elsif !@people.empty? # тк если пустой и некого брать, то идем к след этапу выбора направления
+      if @level > @people.max # едем вниз(и берем тех кто едет вниз)
+        passagers = passagers.select{|p| p[:to] < @level}
+      elsif @level < @people.min # едем наверх(и берем тех кто едет наверх)
+        passagers = passagers.select{|p| p[:to] > @level}
+      end
+      passagers = passagers.sort_by{|p| p[:id]}.first(5 - @people.size)
+      passagers.each do |p|
+        @people << p[:to]
+        @queue.delete(p)
       end
     end
-    passgs.each{|p| @queue.delete(p)}
-    @people += passgs.map{|p| p[:to]}
   end
 
   private
@@ -343,20 +365,15 @@ def order(level, queue)
   el.result
 end
 
-p order(1, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
-# p order(1, [{from:5, to: 1},{from: 4, to: 3}, {from: 2, to: 1}, {from: 2, to: 4}, {from: 5, to: 2}]) # [2,4,5,4,3,2,1]
-# p order(4, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
-# p order(4, [{from: 4, to: 2}, {from: 5, to: 3}]) # [4,2,5,3]
-# p order(1, [{from:5, to: 1},{from: 4, to: 3}, {from: 2, to: 1}]) # [5,4,3,2,1]
 
-# people = [
-#   { from: 3, to: 2 }, # 3rd passenger
-#   { from: 5, to: 6 }, # 4th passenger
-#   { from: 2, to: 1 }, # 5th passenger
-#   { from: 2, to: 5 }, # 1st passenger
-#   { from: 4, to: 3 }, # 2nd passenger
-# ]
-# p order(1, people) # [2, 5, 4, 3, 2, 5, 6, 2, 1]
+people = [
+  { from: 3, to: 2 }, # 3rd passenger
+  { from: 5, to: 6 }, # 4th passenger
+  { from: 2, to: 1 }, # 5th passenger
+  { from: 2, to: 5 }, # 1st passenger
+  { from: 4, to: 3 }, # 2nd passenger
+]
+p order(1, people) # [2, 5, 4, 3, 2, 5, 6, 2, 1]
 
 # queue = [
 #   { from: 3, to: 2 }, # Al
@@ -366,13 +383,6 @@ p order(1, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
 #   { from: 4, to: 3 }, # Ed
 # ]
 # p order(1, queue) # [2, 5, 4, 3, 2, 1]
-# puzzle = [{from: 5, to: 4},  # 1st passenger
-#           {from: 5, to: 3},  # 2nd passenger
-#           {from: 3, to: 4},  # 3rd passenger
-#           {from: 0, to: 2},  # 5th passenger
-#           {from: 3, to: -4}, # 4th passenger
-#           {from: 1, to: 2}]  # 6th passenger
-# p order(5, puzzle) # [5, 4, 3, 4, 3, -4, 0, 1, 2]
 
 # people = [
 #   { from: 3, to: 6 }, # 16th passenger
@@ -393,11 +403,20 @@ p order(1, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
 #   { from: 6, to: 1 }, # 6th  passenger
 # ]
 # p order(1, people) # [2, 6, 4, 3, 2, 1, 2, 5, 6, 3, 6]
-
+# p order(1, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
+# p order(4, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
+# p order(4, [{from: 4, to: 2}, {from: 5, to: 3}]) # [4,2,5,3]
+# p order(1, [{from:5, to: 1},{from: 4, to: 3}, {from: 2, to: 1}]) # [5,4,3,2,1]
+# puzzle = [{from: 5, to: 4},  # 1st passenger
+#           {from: 5, to: 3},  # 2nd passenger
+#           {from: 3, to: 4},  # 3rd passenger
+#           {from: 0, to: 2},  # 5th passenger
+#           {from: 3, to: -4}, # 4th passenger
+#           {from: 1, to: 2}]  # 6th passenger
+# p order(5, puzzle) # [5, 4, 3, 4, 3, -4, 0, 1, 2]
 
 # puzzle4 = [{from: 4, to: 3},{from: 4, to: 3},{from: 4, to: 3},{from: 4, to: 3},{from:5, to: 1},{from: 2, to: 3}, {from: 2, to: 4}, {from: 5, to: 2}]
 # p order(1, puzzle4) # [2, 3, 4, 3, 5, 2, 1]
-
 # puzzle = [
 #   {from: 3900, to: 500},
 #   {from: 4500, to: 500000},
@@ -405,3 +424,11 @@ p order(1, [{from: 5, to: 3}, {from: 4, to: 2}]) # [5,4,3,2]
 #   {from: 4300, to: 500},
 # ]
 # p order(2000, puzzle) # [3900, 1800, 500, -400, 4500, 500000, 4300, 500]
+# people = [
+#   {from: 5, to: 1},
+#   {from: 4, to: 3},
+#   {from: 2, to: 1},
+#   {from: 2, to: 4},
+#   {from: 5, to: 2}
+# ]
+# p order(1, people) # [2,4,5,4,3,2,1]
