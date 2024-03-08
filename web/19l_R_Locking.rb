@@ -193,7 +193,7 @@ class Item2sController < ApplicationController
   # ...
 
   def update
-    result = nil # переменная для условия прохождения валидации
+    result = nil
 
     Item2.transaction do # начинаем транзакцию при помощи Item2.transaction
       @item = Item2.lock('FOR UPDATE NOWAIT').find params[:id] # ищем и блокируем объект c PostgreSQL настройкой NOWAIT, тоесть запретим ожидание следующему пользователю и выховем ему ошибку
