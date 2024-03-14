@@ -1,36 +1,68 @@
-puts '                                         Установка gem’ов'
-
-# https://www.youtube.com/watch?v=knZcY9iFTD0     урок по гемам
+puts '                                        Gem. Std-lib. RubyGems'
 
 # В других языках gem’ы называются библиотеками (library) или пакетами (package).
 
 # Std-lib (стандартные библиотеки) - входят в базовую комплектацию Руби
 # Gems (пользовательские библиотеки) -  те что пишут сами пользователи
 
-# https://rubygems.org/gems     большинство(все?) гемы хранятся тут, отсюда и качаются
-# https://www.ruby-toolbox.com/    все необходимые гемы, лучше всего смотреть информацию тут
+require 'gemname' # загрузка гема в память с вашего диска (установленные gem’ы не загружаются по-умолчанию, для быстродействия)
+# require - требовать
 
-# RubyGems - система работы с библиотеками в Ruby. Она устанавливается вместе с Ruby. Так же автоматически устанавливается несколькр основных библиотек.
+# RubyGems - прграмма для работы с библиотеками в Ruby. Она устанавливается вместе с Ruby. Так же автоматически устанавливается несколькр основных библиотек.
 
 # gem -v        проверить версию RubyGems
 # gem update --system      обновить RubyGems до последней версии
+
+
+puts
+puts '                                           Установка gem’ов'
+
+# https://rubygems.org/gems     большинство(все?) гемы хранятся тут, отсюда и качаются командой gem install, сюда надо хостить и собственные гемы чтобы их могли юзать
+# https://www.ruby-toolbox.com/    база данных о всех необходимые гемы, лучше всего смотреть информацию о гемах тут
+
 
 # Для установки gem’а используется команда gem, которая является частью пакета языка руби (также как и irb и ruby).
 # Гемы устанавливаются в специальные директории Руби выделенные для библиотек
 
 # > gem install gemname  -  скачивание из интернета и установка гема
-require 'gemname' # загрузка гема в память с вашего диска (установленные gem’ы не загружаются по-умолчанию, для быстродействия)
+# > gem list  -  список всех установленных гемов
+
 
 # Пример установки на gem’е Cowsay
 # > gem install cowsay  #(Windows)
 # $ gem install cowsay  #(Linux, Mac)
 # запуск > cowsay "какой-то текст"
 
-# gem list  -  список всех установленных гемов
+
+puts
+puts '                                              Разные Std-lib'
+
+# 1. ipaddr
+require 'ipaddr'
+
+# Проверка корректности айпи ipv4(от 0.0.0.0 до 255.255.255.255)
+IPAddr.new('0.0.0.0').ipv4? #=> true
+IPAddr.new('255.255.255.255').ipv4? #=> true
+IPAddr.new('0.0.0.1000').ipv4? #=> invalid address:  (IPAddr::InvalidAddressError)
+
+
+# 2. digest
+require 'digest'
+
+# Хэширование MD%5(https://ruby-doc.org/stdlib-3.0.0/libdoc/digest/rdoc/Digest/MD5.html)
+Digest::MD5.hexdigest('12345') #=> "827ccb0eea8a706c4c34a16891f84e7b"   # хэширование
+# Взлом MD5 перебором для 5значных пинкодов состоящих только из цифр
+hashmd5 = "827ccb0eea8a706c4c34a16891f84e7b"
+('00000'..'99999').find{|pin| Digest::MD5.hexdigest(pin) == hashmd5} #=> "12345"
+
+# Хэширование SHA2 https://ruby-doc.org/stdlib-2.4.0/libdoc/digest/rdoc/Digest/SHA2.html
+hashsha2 = Digest::SHA2.hexdigest('code') #=> '5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b'
+# Взлом SHA2 перебором
+('a'..'zzzzz').find{|code| Digest::SHA2.hexdigest(code) == hashsha2} #=> "code"
 
 
 puts
-puts '                                             Gemfile и Gemfile.lock'
+puts '                                          Gemfile и Gemfile.lock'
 
 # В Rails(или еще гдето), достаточно поместить gem в специальный список (Gemfile), и все gem’ы из этого списка будут загружены в память автоматически.
 
@@ -72,4 +104,8 @@ end
 
 
 
-# 
+
+
+
+
+#

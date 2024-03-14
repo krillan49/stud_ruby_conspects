@@ -117,6 +117,11 @@ module AskIt
 end
 
 
+puts
+# ?? ( Рэилс )Возвращает true, если этот объект включен в аргумент. Аргументом должен быть любой объект, который отвечает на #include?.
+characters = ["Konata", "Kagami", "Tsukasa"]
+"Konata".in?(characters) # => true
+
 
 
 
