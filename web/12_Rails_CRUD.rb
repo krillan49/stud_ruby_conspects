@@ -16,22 +16,23 @@ puts '                                 new(resourses). Форма form_for. rend
 # 1. Создадим представление app/views/articles/new.html.erb. Без него при обращении к http://localhost:3000/articles/new - выпадет ошибка ArticlesController#new is missing a template for request formats: text/html.(отсутствует шаблон/представление)
 # Создаем форму form_for (устарела ??) в articles/new.html.erb
 
-# 2. Добавим в app/controllers/articles_controller.rb экшен create для обработки данных формы из new.html.erb:
+# 2. app/controllers/articles_controller.rb - добавим в контроллер экшен create для обработки данных формы из new.html.erb:
 class ArticlesController < ApplicationController
   def new # get '/articles/new'
-    # по умолчанию возвращает new.html.erb
+    # по умолчанию рендерит new.html.erb
   end
   def create # post '/articles'
     render plain: params[:article].inspect
-    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL экшена create: post '/articles';
-    # plain: - ключ хеша(обозначает что будет выведен просто текст);
-    # params[:article].inspect - значение хеша.
-    # В итоге выведет #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
+    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL экшена из которого вызывавется, тут это create: post '/articles';
+    # plain: - ключ обозначает что будет выведен просто текст;
+    # params[:article].inspect - значение хеша, тут параметры в виде строки;
+    # В итоге выведет: #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
 
-    # по умолчанию возвращает(рэндерит) create.html.erb(render 'articles/create')
+    # по умолчанию рэндерило бы create.html.erb, тоесть если сами не пропишем render то тут сработает:
+    render 'articles/create' # где articles/create это app/views/articles/create
   end
 end
-# Страницу /articles пользователь не сможет открыть вручную, тк для нее сейчас есть только POST-обработчик, но нет GET(index)
+# На данный момент страницу /articles пользователь не сможет открыть вручную, тк для нее сейчас есть только POST-обработчик(create), но нет GET-обработчика(index)
 
 
 puts
@@ -44,7 +45,7 @@ class ContactsController < ApplicationController
 
   def create # принимает данные введенные пользователем в форму
     @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
-    # Аттрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого используется специальный синтаксис:
+    # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого используется специальный синтаксис:
     @contact = Contact.new(contact_params) # вместо params[:contact] вызываем наш разрешающий метод
     @contact.save
   end
@@ -54,7 +55,7 @@ class ContactsController < ApplicationController
   def contact_params # название метода обычно сущность_params, хотя можно любое
     params.require(:contact).permit(:email, :message)
     # require(:contact) - получаем соответсвующий подхэш в params
-    # permit(:email, :message) - разрешает вносить данные пд этими ключами в БД ??
+    # permit(:email, :message) - разрешает вносить/изменять данные под этими ключами в БД
   end
 end
 # Теперь мы можем добавить запись в БД через форму /contacts/new
@@ -93,9 +94,9 @@ permitted.has_key?(:role) # => false
 # permit – метод, который определяет разрешенные параметры в нашем ресурсе для передачи их значений в контроллер. Мы указываем только то, что хотим получить!
 
 # Тоесть тут мы разрешили только параметры name и age для сущности user. И теперь если хакер захочет админские права(или прислать данные с айди чтоб перебить его) и отправит в запросе чтото вроде:
-# user[name]=Francesco&user[age]=22&user[role]=admin
+'user[name]=Francesco&user[age]=22&user[role]=admin'
 # то механизм разрешений отсечет все лишнее и пропустит только:
-# user[name]=Francesco&user[age]=22
+'user[name]=Francesco&user[age]=22'
 
 # Browser ===> Server ===> Controller ===> ActiveRecord ===> Database
 #                                              ||
@@ -132,14 +133,13 @@ puts '                                params и параметры из стро
 
 # params - хранит и может вернуть данные из URL гет запроса
 
-# http://localhost:3000/?name=kroker&pass=7
-# Данные в URL гет-запроса записываются через слэш и знак врпрса после адреса /?. Параметр и значение параметра пишутся через знак =. Несколько разных параметров разделяются знаком &.
+'http://localhost:3000/?name=kroker&pass=7' # Данные в URL гет-запроса записываются через слэш и знак врпрса после адреса /?. Параметр и значение параметра пишутся через знак =. Несколько разных параметров разделяются знаком &.
 
-# Обработаем параметры из гет запроса с URL http://localhost:3000/?name=kroker&pass=7 в нашем контроллере:
+# Обработаем параметры из get запроса с URL http://localhost:3000/?name=kroker&pass=7 в нашем контроллере:
 class HomeController < ApplicationController
   def index
-    # params сможет получить эти данные по ключу соотв name
-    @name = params[:name] # присваиваем значение "kroker" из параметра name=kroker
+    # params сможет получить эти данные по ключу, тут соответсвенно по ключу name
+    @name = params[:name] # присваиваем в переменную значение "kroker" из параметра name=kroker
   end
 end
 # далее вставим @name в вид home/index.html.erb
@@ -151,7 +151,7 @@ end
 
 
 puts
-# Те можно посылать данные с разных ссылок или при помощи скрипта менять ссылку и отправлять данные в контроллер, например для меню выборки статы. (Работающий пример можно посмотреть в Chess/app/.../home/...)
+# Можно посылать данные с разных ссылок или при помощи скрипта менять ссылку и отправлять данные в контроллер, например для меню выборки статы. (Работающий пример можно посмотреть в Chess/app/.../home/...)
 
 # Добавим экшен и представление stata, в представлении создадим ссылки отправляющие данные что будем использовать
 class HomeController < ApplicationController
@@ -170,13 +170,12 @@ end
 
 
 puts
-puts '                                 Валидация и сообщения об ошибках'
+puts '                                 Валидация(AR) и сообщения об ошибках'
 
 # Валидация производится когда применяется метод save update итд ??
 
 # 1. Валидацию надо добавить в модель /app/models/contact.rb
 class Contact < ApplicationRecord
-  # Синтаксис тот же самый что и в Синатре, тк это тот же самый ActiveRecord
   validates :email, presence: true
   validates :message, presence: true
 end
@@ -215,13 +214,17 @@ end
 
 
 puts
-puts '                                  shared(дирректория для общих паршалов)'
+puts '                                  Паршалы. shared(дирректория для общих паршалов)'
 
 # Добавим в /app/views/contacts/new.html.erb сообщение об ошибках при помощи паршала.
+
+# Частичным представление(partial/паршал) - это такое представление которое рендерится само по себе, но не вставляется в лэйаут, нужны для того чтоб вставлять кусочки разметки на разных страницах
 
 # shared - создадим дирректорию для общих(для видов всех контроллеров) паршалов
 
 # Создадим паршал _errors.html.erb и поместим в него сообщения об ошибках. Рэндерим его в паршал формы или в вид где форма
+
+# нижнее подчеркивание в начале имени указывает на то что данный фаил является не представлением, а частичным представлением(partial/паршал)
 
 
 puts
@@ -235,7 +238,7 @@ class Question < ApplicationRecord
 
   # Создадим метод экземпляра в модели
   def formatted_created_at
-    self.created_at.strftime('%Y-%m-%d %H:%M:%S') # можно и с self и без тк created_at это инстанс метод модели
+    self.created_at.strftime('%Y-%m-%d %H:%M:%S') # можно и без self тк created_at это инстанс метод модели
   end
 end
 
@@ -245,7 +248,7 @@ end
 puts
 puts '                                          index(resourses)'
 
-# index(resourses) - обычно используется для вывода всех сущностей(тут выведем все статьи)
+# index(resourses) - обычно используется для вывода сптска всех сущностей(тут выведем все статьи)
 
 # Внесём изменения в /app/controllers/articles_controller.rb:
 class ArticlesController < ApplicationController
@@ -410,11 +413,11 @@ form_with model: @question, local: false
 puts
 puts '                                         flash/Флэш сообщения'
 
-# Флэш сообщения(удобны для оповещения позьзователя о создании, изменении или удалении сущности) передаются в сессию и появляются только один раз и при перезагрузке страницы их уже не будет
+# Флэш сообщения(удобны для оповещения пользователя о создании, изменении или удалении сущности) передаются в сессию и появляются только один раз и при перезагрузке страницы их уже не будет
 
 # flash - это хранилище похожее на хэш но не являющееся хэшэм
 
-# Удобнее всего отображать флэш сообщения в Лэйаут
+# Удобнее всего отображать флэш сообщения в Лэйаут (код там)
 
 # контроллер
 class QuestionsController < ApplicationController

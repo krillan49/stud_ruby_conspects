@@ -1,9 +1,10 @@
+<!--                                   Эта же форма будет и в new и в edit -->
 
-<!-- Генерируем форму при помощи вспомогательной функции form_with (одна та же форма будет и в new и в edit) -->
+<!-- Генерируем форму при помощи вспомогательной функции form_with -->
 <%= form_with model: @question do |f| %>
   <!-- form_with - начиная с новых версий(6?) рекомендуется использовать эту вспомогательную функцию для генерации формы -->
-  <!-- model: @question  - используем экземпляр модели созданный в экшене new или edit, для new создаст URL post '/question', для edit patch '/question/:id' -->
-  <!-- url: '/question' - можно и так харкодить URL вместо model: @question -->
+  <!-- model: @question  - используем экземпляр модели созданный в экшене new или edit, для new (тоесть новой пустой сущьеости в переменной) создаст URL post '/question', для edit (тоесть существующей сущьности) patch '/question/:id' -->
+  <!-- url: '/question' - можно и так харкодить URL вместо model: @question, но тогда придется создавать 2 формы -->
 
   <!-- Формбилдер form_with с параметром model: @question, для представления edit подставит action="/questions/1", айди для которого возьмет в объекте @question -->
   <!-- Для edit будет добавлено скрытое поле <input type="hidden" name="_method" value="patch" autocomplete="off" /> -->

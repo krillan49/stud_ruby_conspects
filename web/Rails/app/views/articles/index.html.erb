@@ -14,42 +14,42 @@
   <!-- https://guides.rubyonrails.org/routing.html#path-and-url-helpers  - _path методы -->
 
   <!--                              Ссылки на show, edit при помощи синтаксиса Rails -->
-  <%= link_to "Show article", article_path(article) %> <!-- <a href="/articles/2">Show article</a> -->
+  <%= link_to "Show article", article_path(article) %> <!-- это будет: --> <a href="/articles/2">Show article</a>
   <!-- article_path(article) - параметром в хэлпер(именованный маршрут) передается сущность article (объект статьи - экземпляр модели Article), для того чтобы id статьи подставить в :id URLа запроса, в итоге перейдет на /articles/id -->
   <!-- article_path(article.id) - при желании можно писать и так но это лишнее, тк хэлпер вызовет метод .id автоматически -->
-  <%= link_to "Edit article", edit_article_path(article) %> <!-- <a href="/articles/2/edit">Edit article</a> -->
+  <%= link_to "Edit article", edit_article_path(article) %> <!-- это будет: --> <a href="/articles/2/edit">Edit article</a>
   <!-- edit_article_path(article) - в итоге перейдет на /articles/id/edit -->
 
   <!--                             Ссылка/кнопка на удаление статьи -->
-  <%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %>
-  <!-- ?? data: { turbo_method: "post" } ?? для link_to с включенным хотваир -->
-  <!-- button_to - для кнопки удаления вместо ссылки удаления link_to, тк на Rails версии 7 не удаляется по ссылке. Это происходит из-за того, что в Rails 7 отключен UJS. -->
 
   <!-- В Рэилс 6 была такая например ссылка для удаления, в 7й для такого необходимо подключить UJS -->
-  <%= link_to 'Destroy', question_path(question), data: {method: :delete, confirm: 'Are you sure?'} %>
+  <%= link_to "Destroy", article_path(article), class: 'btn btn-danger', data: {method: :delete, confirm: 'Are you sure?'} %>
+  <!-- data: { confirm: 'Действительно удалить?'} - необязательный элемент c окном подтверждения -->
+  <!-- В Рэилс 7 если не отключить хотваир link_to delete-ссылки по умолчанию связаны с js и turbo и отключен UJS. Тоесть ссылка как выше уже не сработает, тк она шлет GET а в turbo нужно чтобы слало метод DELETE, потому вместо удаления просто откроется данный вопрос. -->
+  <!-- Для Рэилс 7 поменяем все data опции, добавив им префикс turbo_ -->
+  <%= link_to "Destroy", article_path(article), data: {turbo_method: :delete, turbo_confirm: 'Действительно удалить?'} %>
+  <!-- Альтернативный вариант использовать хэлпер button_to вместо link_to -->
+  <%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %>
+  <!-- button_to - для кнопки удаления вместо ссылки удаления link_to,  -->
 
     <!-- Ссылка выглядит так(не добавляет форму (?? в Рэилс 7 ??)): -->
       <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a>
-      
+      <!-- data-method="delete" - кастомный атрибут Рэилс
+        data-some_name атрибуты нужны для того чтобы мы могли создать собственные атрибуты(some_name - на выбор). html-валидатор будет знать что это кастомный атрибут, браузер их не обрабатыает
+        Файл turbolinks через скрипт обрабатывает атрибуты data-* встречающиеся в коде html
+        Работа атрибута data-method="delete":
+          1. скрипт сканирует страницу и ищет атрибут data-method="delete"
+          2. если находит - создаёт форму, которая будет отправлять с помощью метода delete на URL /articles/id через POST
+          3. устанавливает свой обработчик, при котором при нажатии на ссылку вызывается сабмит формы. Запрос отправляется с помощью технологии ajax
+      -->
+      <!-- В Rails 7 вместо data-method нужно использовать data-turbo-method="DELETE"  -->
+
     <!-- Кнопка выглядит так(добавляет форму): -->
       <form class="button_to" method="post" action="/articles/2">
         <input type="hidden" name="_method" value="delete" autocomplete="off" />
         <button data-confirm="Действительно удалить?" type="submit">Destroy article</button>
         <input type="hidden" name="authenticity_token" value="Y0qY_ENmVXJ7z4K_OYyKaiOg3gx8jhUYz2I_KbncWglxBV2UvuNZBx5WpukCF8JYVWwtOUkUvsnm8QdzGPLRsg" autocomplete="off" />
       </form>
-
-  <!-- data: { confirm: 'Действительно удалить?'} - необязательный элемент c окном подтверждения(!!! почему-то не работает требует турбо изза хотвайр ??) -->
-
-  <!-- data-method="delete" - кастомный атрибут Рэилс
-    data-some_name атрибуты нужны для того чтобы мы могли создать собственные атрибуты(some_name - на выбор). html-валидатор будет знать что это кастомный атрибут, браузер их не обрабатыает
-    Файл turbolinks через скрипт обрабатывает атрибуты data-* встречающиеся в коде html
-    Работа атрибута data-method="delete":
-      1. скрипт сканирует страницу и ищет атрибут data-method="delete"
-      2. если находит - создаёт форму, которая будет отправлять с помощью метода delete на URL /articles/id через POST
-      3. устанавливает свой обработчик, при котором при нажатии на ссылку вызывается сабмит формы. Запрос отправляется с помощью технологии ajax
-  -->
-
-  <!-- В Rails 7 вместо data-method нужно использовать data-turbo-method="DELETE"   ?? -->
 
 
 

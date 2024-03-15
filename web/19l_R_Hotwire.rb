@@ -65,7 +65,7 @@ data: {method: :delete, confirm: t('global.dialog.you_sure')} "
 # Такая ссылка уже не сработает, тк она шлет метод GET а в turbo нужно чтобы слало метод DELETE, потому вместо удаления просто откроется данный вопрос
 # Поменяем все data опции в link_to delete-ссылках, добавив им прфикс turbo_
 " link_to t('global.button.delete'), question_path(question), class: 'btn btn-danger',
-data: {turbo_method: :delete, turbo_confirm: t('global.dialog.you_sure') "
+data: {turbo_method: :delete, turbo_confirm: t('global.dialog.you_sure')} "
 # Альтернативный вариант использовать хэлпер button_to вместо link_to
 
 # (?? У меня не было, возможно устарело ??) Если при удалении хэлпером link_to в консоли прописывается ошибка =>
