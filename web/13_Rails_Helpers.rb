@@ -1,4 +1,4 @@
-puts '                                  Helpers(хелперы/вспомогательные функции)'
+puts '                                  Helpers(вспомогательные функции)'
 
 # http://rusrails.ru/action-view-overview
 # https://guides.rubyonrails.org/form_helpers.html
@@ -27,8 +27,13 @@ end
 # 4. Код в представлениях трудно тестировать
 
 
+puts
+puts '                          Назначение вспомогательных методов контроллера хэлперами'
+
 # Создание хэлпера из вспомогательной функции контроллера
 class ApplicationController < ActionController::Base
+  # экшены коетроллера
+
   private # ограничим, но можно было бы и вынести эти хэлперы в отдельный concern
 
   def some
@@ -43,20 +48,22 @@ end
 puts
 puts '                                      Встроенные хэлперы тэгов'
 
-# tag - позволяет прописывать тег, его значение и другие параметры
+# tag - позволяет прописывать теги, их значение и другие параметры на Руби
 tag.div v, class: "alert", role: 'alert', id: 'some'
-# .div - в представлении поместится тег div
+# div - метод создаст в представлении тег div
 # v  - значение/содержание тега
 
+
 # form_with - встроенный хэлпер для создания формы в виде
+
 
 # link_to - позволяет вставлять ссылки и задавать им параметры(работает совместно с js-фаилом turbolinks)
 link_to "Sign In", new_user_session_path
 
-# Турбо конфирм
+# Турбо
 link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
 
-# ссылка(тут на путь '#') с блоком внутри тега которой несколько объектов, тут тег div, так же содержит дата-атрибуты для бутстрап
+# ссылка(тут на путь '#') с блоком внутри тега которой содержит несколько объектов и они будут обрамлены тегом ссылки, тут тег div, так же содержит дата-атрибуты для бутстрап
 link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'} do
   tag.div '', class: "flag #{I18n.locale}-flag mt-1"
   t I18n.locale
@@ -116,7 +123,7 @@ truncate strip_tags(question.body), length: 150, omission: '... (continued)'
 # strip_tags(question.body)  -  применяем к результату другого метода
 # omission: '... (continued)'  -  указываем то что будет в конце обрезанной строки(входит в length: 150)
 
-# dom_id - позволяет удобно генерировать якоря для ссылок-якорей на странице(пример и реализация на questions/show.html.erb и в CRUD-фаиле)
+# dom_id - позволяет удобно генерировать id для тегов, например якоря для ссылок-якорей(пример и реализация на questions/show.html.erb и в CRUD-фаиле)
 dom_id(answer)
 
 # debug, тут выведет список параметров, чтобы их отслеживать

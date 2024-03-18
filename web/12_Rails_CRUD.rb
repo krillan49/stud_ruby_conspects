@@ -468,7 +468,7 @@ def update
   if @answer.update answer_params
     flash[:success] = "Answer updated!"
 
-    # Указываем доп параметры в хэлпер URL-а:
+    # Указываем доп параметры(#answer-6) в хэлпер URL-а:
     redirect_to question_path(@question, anchor: "answer-#{@answer.id}") # редиректит на URL /questions/2#answer-6
     # anchor: "answer-#{@answer.id}"  - при помощи данного хэша редирект будет генерировать ссылку с указанным якорем
     # anchor: - ключ параметра-хэша, переводится как якорь, устанавливает значение хэша якорем в ссылку
@@ -480,7 +480,7 @@ end
 
 # 2б(Вариант 2 с хэлпером dom_id). Добавим в answers_controller.rb в экшен update
 class AnswersController < ApplicationController
-  include ActionView::RecordIdentifier # по умолчанию метод dom_id в контроллерах не работает, поэтому нужно его подключить, если хотим его применить и в контроллере, но можно просто наисать в контроллере якорб в ручную как выше, а хэлпер использовать только в видах
+  include ActionView::RecordIdentifier # по умолчанию метод dom_id в контроллерах не работает, поэтому нужно его подключить, если хотим его применить и в контроллере, но можно просто наисать в контроллере якорь в ручную как выше, а хэлпер использовать только в видах
 
   def update
     if @answer.update answer_params
@@ -496,7 +496,7 @@ end
 
 
 puts
-puts '                                Миграция обновления свойства поля'
+puts '                                Миграция обновления свойства поля(AR)'
 
 # AskIt
 

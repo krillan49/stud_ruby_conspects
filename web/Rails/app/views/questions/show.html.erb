@@ -61,14 +61,9 @@
 <%= form_with model: [@question, @answer] do |f| %> <!-- post '/questions/:question_id/answers' -->
 <!-- @answer = @question.answers.build  - прописали в экшене show Questions для создагия URL -->
 
-  <div class="mb-3 row">
-    <div class="col-sm-2 col-form-label">
-      <%= f.label :body %>
-    </div>
-
-    <div class="col-sm-10">
-      <%= f.text_area :body, class: 'form-control' %>
-    </div>
+  <div>
+    <%= f.label :body %>
+    <%= f.text_area :body, class: 'form-control' %>
   </div>
 
   <%= f.submit "Submit answer!", class: 'btn btn-primary' %>
@@ -89,13 +84,11 @@
 <!-- @answers = @question.answers.order created_at: :desc  -  прописали в экшене show контроллера Questions, вместо того чтоб писать @question.answers тут -->
 <!-- Тоже самое прописали и в create контроллере Answers, нужно на случай с непройденной валидацией и рендером этой страницы -->
 
-  <!-- Блок ответа, с 2я вариантами якорей для ссылки якоря -->
-  <article class="mb-3" id="answer-<%= answer.id %>"> <!-- Вариант 1 обычный -->
-  <!-- id="answer-... - добавим id-якорь для ссылки-якоря, в которой значением будет id из БД конкретного ответа -->
-  <%= tag.article class: 'mb-3', id: dom_id(answer) do %> <!-- Вариант 2 при помощи хэлпера dom_id -->
-    <!-- тут будет все что между <article> и </article>-->
-  <% end %>
-  <!-- id: dom_id(answer) - добавим id-якорь для ссылки-якоря, в которой значением будет id из БД конкретного ответа -->
+  <!--                            Блок ответа, с якорем для ссылки якоря -->
+
+  <!-- Вариант 1 обычный -->
+  <article class="mb-3" id="answer-<%= answer.id %>">
+  <!-- id="answer-... - добавим id, что будет якорем для ссылки-якоря, значение будет с id из БД конкретного ответа -->
 
     <!-- formatted_created_at - наш кастомный хэлпер, нужно прописать в модель Answer -->
     <time datetime="<%= answer.formatted_created_at %>">
@@ -110,6 +103,13 @@
     <%= link_to 'Edit', edit_question_answer_path(@question, answer), class: 'btn btn-info btn-sm' %>
 
   </article>
+
+  <!-- Вариант 2 при помощи хэлпера dom_id -->
+  <%= tag.article class: 'mb-3', id: dom_id(answer) do %>
+    <!-- тут все тоже что выше между <article> и </article>-->
+  <% end %>
+  <!-- id: dom_id(answer) - добавим id-якорь для ссылки-якоря, в которой значением будет id из БД конкретного ответа -->
+
 <% end %>
 
 
