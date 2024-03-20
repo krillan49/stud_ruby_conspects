@@ -59,7 +59,7 @@
 <%= render 'shared/errors', object: @answer %>
 
 <%= form_with model: [@question, @answer] do |f| %> <!-- post '/questions/:question_id/answers' -->
-<!-- @answer = @question.answers.build  - прописали в экшене show Questions для создагия URL -->
+<!-- @answer = @question.answers.build  - прописали в экшене show Questions для создания URL -->
 
   <div>
     <%= f.label :body %>

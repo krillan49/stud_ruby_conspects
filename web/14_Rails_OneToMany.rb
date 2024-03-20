@@ -6,9 +6,9 @@ puts '                               one-to-many. На примере Article 1 
 
 
 # Схема one-to-many: Article 1 - * Comment.
-# Кадлая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей), но при этом каждый коммент относится только к одной статье
+# Каждая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей), но при этом каждый коммент относится только к одной статье
 
-# В генераторах есть возможность указывать reference columns - делать ссылки на другие сущности
+# В генераторах есть возможность указывать reference columns - делать ссылки(foreign_key) на другие сущности
 # reference columns создаются при помощи значения генератора belongs_to или reference (псевдонимы)
 
 # 1. Создадим модель Comment со ссылкой на article:
@@ -45,11 +45,9 @@ class Comment < ApplicationRecord
 end
 # > rake db:migrate   # или > rails db:migrate
 
-# schema.rb Посмотрим на таблицы articles и comments
+# schema.rb:
 ActiveRecord::Schema[7.0].define(version: 2023_08_04_075512) do
-  create_table "articles", force: :cascade do |t|
-    # ...
-  end
+  # ...
 
   create_table "comments", force: :cascade do |t|
     # ...
@@ -68,10 +66,9 @@ class Article < ApplicationRecord
 end
 # Таким образом мы связали 2 сущности между собой.
 
-
-# Дополнение1:
 Article.find(1).comments # этот синтаксис аналогичен ...
 Comment.where(article_id: Article.find(1).id) # ... этому(.id  - не обязательно)
+
 
 # Посмотрим в rails console:
 Article.comments           #=> будет ошибка тк у самой модели нет такого свойства comments
@@ -116,7 +113,7 @@ end
 
 
 # 4a. Добавим форму для комментариев на '/articles/id'  articles/show.html.erb (Вывод комментариев там же)
-# 4b. Либо вариант для form_with(там же про путь ссылки на связанную сущность) и проекта AskIt questions/show.html.erb
+# 4b. Либо вариант для form_with(там же про путь ссылки на связанную сущность) и проекта AskIt questions/show.html.erb(Форма для ответа)
 
 
 # 5a. Добавляем контроллер для комментариев
@@ -197,7 +194,7 @@ def show
 end
 
 
-# 6. Настроим владеющую модель чтобы можно было удалять вопрос со всеми зависимыми ответами(сперва удаляет ответы а потом вопрос)
+# 6б. Настроим владеющую модель чтобы можно было удалять вопрос со всеми зависимыми ответами(сперва удаляет ответы а потом вопрос)
 class Question < ApplicationRecord
   has_many :answers, dependent: :destroy
   # dependent: :destroy  - параметр который и позволит нам удалять вопросы у которых созданы принадлежащие им ответы
@@ -281,14 +278,14 @@ end
 
 # 2. Добавим новые ассоциации в модели
 class User < ApplicationRecord
-  has_many :questions, dependent: :destroy
-  has_many :answers, dependent: :destroy
+  has_many :questions, dependent: :destroy # User.find(1).questions
+  has_many :answers, dependent: :destroy   # User.find(1).answers
 end
 class Question < ApplicationRecord
-  belongs_to :user
+  belongs_to :user   # Question.find(1).user
 end
 class Answer < ApplicationRecord
-  belongs_to :user
+  belongs_to :user   # Question.find(1).user
 end
 
 
@@ -306,7 +303,7 @@ end
 # 4. Вынесем в паршал _question.html.erb основной блок из questions/index.html.erb и добавим в него пользователя вызванного от ассоциации (с методом name_or_email)
 
 
-# 5. Обновим код создания вопросов и ответах в их контроллерах, чтобы они создавались с привязкой к текущему юзеру
+# 5. Обновим код создания вопросов и ответов в их контроллерах, чтобы они создавались с привязкой к текущему юзеру:
 # questions_controller.rb
 def create
   @question = current_user.questions.build question_params # изменим c Question.new(question_params)
@@ -318,8 +315,8 @@ class AnswersController < ApplicationController
   # ... set question и прочее
 
   def create
-    @answer = @question.answers.build answer_create_params # но у ответа уже есть привязка при создании, потому добавим значение для user_id в params
-    # @answer.user = current_user можно тут написать вместо .merge(user: current_user) в методе answer_create_params
+    @answer = @question.answers.build answer_create_params # но у ответа уже есть привязка к вопросу при создании, потому добавим значение для user_id в params
+    # @answer.user = current_user можно тут отдельно добавить значение поля user_id вместо .merge(user: current_user) в методе answer_create_params
     # ...
   end
 
@@ -345,7 +342,7 @@ class AnswersController < ApplicationController
 end
 
 
-# Дополнительно(не относится к основной теме) вынесем повторяющийся код из экшенов контроллеров вопросов и ответов в отдельный метод нового консерна questions_answers.rb, тк далее он будет еще и 3м контроллере
+# Дополнительно(не относится к основной теме) вынесем повторяющийся код из экшенов контроллеров вопросов и ответов в отдельный метод нового консерна questions_answers.rb, тк далее он будет еще и в 3м контроллере
 # answers_controller.rb
 def create
   @answer = @question.answers.build answer_create_params # разница тут
@@ -460,7 +457,7 @@ class User < ApplicationRecord
   def set_gravatar_hash
     return if email.blank? # выходим если нет имэйла
     hash = Digest::MD5.hexdigest email.strip.downcase # посчитаем хэш из имэйла так же как в декораторе
-    self.gravatar_hash = hash # присваиваем в метод поля/свойства/имя колонки текущей записи(юзера). Тоесть перед тем как сохранить юзера (новый или апдэйт), к нему добавится это значение
+    self.gravatar_hash = hash # присваиваем в метод поля/свойства/имя колонки текущей записи(юзера). Тоесть перед тем как сохранить юзера (новый или апдэйт), к нему в колонку gravatar_hash добавится это значение
   end
   # ...
 end
