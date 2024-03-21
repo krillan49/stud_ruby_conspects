@@ -1,7 +1,8 @@
 puts '                                             irb'
 
 # irb (interactive ruby) - REPL-программа(read (R)(прочитать), evaluate (E)(выполнить), print (P), (loop - L))
-# irb(в консоли) - интерпритатор Руби сразу в консоли. Завершить работу в irb можно в любой момент нажав ctrl+c
+# > irb      # - интерпритатор Руби сразу в консоли.
+# Завершить работу в irb можно в любой момент нажав ctrl+c
 
 # С:\Projects\MyApp1>irb      (нажимаем enter)
 # irb(main):001:0> 2+2*2
@@ -11,15 +12,13 @@ puts '                                             irb'
 # => nil                      (а интерпритатор возвращает уже nil)
 # irb(main):003:0> exit       (exit команда выхода из irb  интерпритатора Руби)
 
-# http://pry.github.io/  -  альтернатива irb
-
 
 puts
 puts '                                             pry'
 
 # https://github.com/pry/pry     http://pry.github.io/
 
-# pry - “An IRB alternative and runtime developer console”. Другими словами, альтернатива уже известному нам REPL - IRB. В pry реализовано больше возможностей, чем в irb.
+# pry - “An IRB alternative and runtime developer console” те альтернатива уже известному нам REPL - IRB. В pry реализовано больше возможностей, чем в irb.
 
 # Проверка установлен ли pry в вашей системе:
 # > which pry
@@ -46,7 +45,7 @@ puts '                                             pry'
 puts
 # Важный момент в pry — конфигурация. Gem это, грубо говоря, плагин для языка(или экосистемы) руби. Но и для «плагина» pry существует свое множество плагинов:
 
-# «awesome print». Gem содержит в себе библиотеку кода, плагин для pry, плагин для irb.
+# awesome print - Gem который содержит в себе библиотеку кода, плагин для pry, плагин для irb.
 # https://github.com/awesome-print/awesome_print
 # > gem install awesome_print
 
