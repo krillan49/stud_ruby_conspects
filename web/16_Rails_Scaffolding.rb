@@ -2,8 +2,6 @@ puts '                                          Scaffolding'
 
 # Scaffolding - генерация модели, вида и контроллера одной командой
 
-# Новичкам в Rails не стоит использовать генераторы scaffold: теряется понимание сгенерированных компонентов и в репозитории остаются куски ненужного кода.
-
 # scaffold - генератор создает одновременно модель, контроллер, экшены, маршруты, представления, тесты по REST resourses.
 
 # То что все равно придется делать руками:
@@ -24,7 +22,6 @@ puts '                                          Scaffolding'
 
 
 # > rails new toy_app
-#  не забываем про ошибку таймзон на винде
 # > bundle install
 
 
@@ -57,25 +54,23 @@ root "users#index" # get '/' => 'users#index'
 # > bundle exec rake db:migrate
 
 
+# Добавим ассоциации one-to-many между пользователем и микропостом User --1--------*-- Micropost:
 # Добавим Валидацию в модель Micropost:
 class Micropost < ApplicationRecord
+  belongs_to :user
+
   validates :content, length: { maximum: 140 }, presence: true
   validates :user_id, presence: true
 end
 # Добавим Валидацию в модель User:
 class User < ApplicationRecord
+  has_many :microposts
+
   validates :name, presence: true
   validates :email, presence: true
 end
 # По умолчанию будет проверять в контроллере и затем выведет список ошибок в автоматически созданном для этого в представлении коде
 
-
-# Добавим ассоциации one-to-many между пользователем и микропостом.
-# User --1--------*-- Micropost
-# Добавим в модель User:
-has_many :microposts
-# Добавим в модель Micropost:
-belongs_to :user
 
 
 # Откроем rails console:

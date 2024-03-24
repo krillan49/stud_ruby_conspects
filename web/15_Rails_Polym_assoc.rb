@@ -2,17 +2,18 @@ puts '                                     Полиморфные ассоциа
 
 # Создание полиморфного коммента(мой способ наугад): https://github.com/krillan49/blog2_rs
 
-# При написании приложения у нас могут быть сущности, которые содержат одинаковое поведение, одинаковые свойства. Например на главной у нас могут быть публикации: постов, картинок, ссылкок итд. И все эти сущности можно комментировать и пришлось бы создавать для каждой отдельную сущность коммента:
+# При написании приложения у нас могут быть сущности, которые содержат одинаковое поведение, одинаковые свойства. Например у нас могут быть публикации: постов, картинок, ссылкок итд. И все эти сущности можно комментировать и пришлось бы создавать для каждой отдельную сущность коммента:
 # Post   -  PostComment
 # Image  -  ImageComment
 
-# Но сущности комментариев для разных коментируемых сущностей по сути будут одинаковыми, поэтому стоит использовать DRY-принцип, чтобы для всех сущностей была бы одна сущность комментприев
+# Но сущности комментариев для разных коментируемых сущностей по сути будут одинаковыми, поэтому стоит использовать DRY-принцип, чтобы для всех сущностей была бы одна сущность комментариев
 # Post   -  Comment
 # Image  -  Comment
 
 # Тогда мы сможем обращаться к комментам универсально от любой сущности к одному методу коллекции:
-Post.comments
-Image.comments
+Post.find(1).comments
+Image.find(1).comments
+Comment.find(1).commentable
 
 # Одна модель может принадлежать разным сущностям, но при этом оставаться сама собой (полиморфизм). Это удобно тк при изменении комментария(например добалении новых полей), нужно менять только одну модель и таблицу
 
@@ -30,6 +31,7 @@ class Comment < ApplicationRecord
   # При связывании с полиморфной ассоциацией надо в belongs_to добавить аргумент(любой) с окончанием able:
   # commentable - получается комментируемый, тоесть комментарий принадлежит комментируемому(посту, изображению итд), как бы виртуальной модели
   # polymorphic: true - говорит о том что ассоциация полиморфная и соответсвенно commentable это не какаято отдельная сущность, а хэндл/рукоятка(посредник), которая существует у других сущностей, отвечающая за группу всех этих сущностей
+  # Comment.find(1).commentable  - сосдасться хэлпер связи с комментируемыми сущностями
 end
 # /app/models/post.rb:
 class Post < ApplicationRecord
@@ -74,7 +76,7 @@ image2.comments.create(content: 'Bar') #=> ... [["content", "Bar"], ["commentabl
 
 # Посмотрим базу данных /db/development.sqlite3:
 # > sqlite3 development.sqlite3
-# select * from comments; =======================================
+# ======================================= select * from comments; =======================================
 # id  content                     commentable_type  commentable_id  created_at                  updated_at
 # --  --------------------------  ----------------  --------------  --------------------------  --------------------------
 # 1   Baz Buuu Foo                Post              1               2023-08-15 07:53:00.708040  2023-08-15 07:53:00.708040
@@ -82,11 +84,11 @@ image2.comments.create(content: 'Bar') #=> ... [["content", "Bar"], ["commentabl
 # 3   Wow!                        Image             1               2023-08-15 08:08:48.464931  2023-08-15 08:08:48.464931
 # 4   This is comment for image!  Image             1               2023-08-15 08:10:52.998994  2023-08-15 08:10:52.998994
 # 5   Bar                         Image             2               2023-08-15 08:11:36.064177  2023-08-15 08:11:36.064177
-# select * from posts; ==========================================
+# ======================================= select * from posts; ==========================================
 # id  content  created_at                  updated_at
 # --  -------  --------------------------  --------------------------
 # 1   Foo bar  2023-08-15 07:50:00.584876  2023-08-15 07:50:00.584876
-# select * from images; =========================================
+# ======================================= select * from images; =========================================
 # id  url    created_at                  updated_at
 # --  -----  --------------------------  --------------------------
 # 1   1.jpg  2023-08-15 08:06:17.392201  2023-08-15 08:06:17.392201
@@ -122,7 +124,7 @@ end
 # В схеме появилось:
 create_table "comments", force: :cascade do |t|
   t.string "body"
-  t.string "commentable_type", null: false # поле для имени модели('Answer', 'Question') для привязки
+  t.string "commentable_type", null: false # поле для имени модели(например 'Answer' или 'Question') для привязки
   t.integer "commentable_id", null: false # поле с айди сущности для привязки
   t.integer "user_id", null: false
   t.datetime "created_at", null: false
@@ -161,7 +163,8 @@ Rails.application.routes.draw do
   end
 
   scope '(:locale)', locale: /#{I18n.available_locales.join("|")}/ do
-    resources :questions, concerns: :commentable do # concerns: :commentable - маршруты из соотв консерна будут вложены в данный
+    resources :questions, concerns: :commentable do
+      # concerns: :commentable - маршруты из консерна :commentable будут вложены в данный
       resources :answers, except: %i[new show]
     end
 
@@ -171,7 +174,6 @@ end
 
 
 # 4. Добавим в application.js модуль бутстрапа collapse для выпадающих форм
-# (Для AskIt урока 15, работает только через запуск st.cmd)
 
 
 # 5. Представления:
@@ -201,7 +203,7 @@ class CommentsController < ApplicationController
       flash[:success] = t '.success'
       redirect_to question_path(@question) # GET 'questions/:id' questions/show.html.erb
       # так же можно редиректить: (?? переменная @commentable для этих вариантов определяется както проще чем метод ниже ??)
-      redirect_to @commentable # GET 'some/:id' но для этого нам нужны экшены show в контроллерах и виды для всех сущьностей, больше подходит для множества комментируемых сущностей
+      redirect_to @commentable # GET 'some/:id' но для этого нам нужны экшены show в контроллерах и виды для всех комментируемых сущьностей, больше подходит для множества комментируемых сущностей
     else
       @comment = @comment.decorate
       load_question_answers do_render: true # используем метод из консерна questions_answer.rb если не прошла валидация, для того чтоб передать все необходимые коллекции и сущности в questions/show.html.erb
@@ -223,7 +225,7 @@ class CommentsController < ApplicationController
   end
 
   def set_commentable! # с воскл знаком, тк метод опасный, потому что может вызвать ошибку
-    klass = [Question, Answer].detect { |c| params["#{c.name.underscore}_id"] } # ищем константу класса комментируемой сущности, для этго поставляем к константам ввсех возможных комментируемых моделей "#{c.name.underscore}_id" так преобразуем либо в 'question_id' либо в 'answer_id' и проверяем существует ли это (?? поле или значение элемента URL ??) в params
+    klass = [Question, Answer].detect { |c| params["#{c.name.underscore}_id"] } # ищем константу класса комментируемой сущности, для этго подставляем к константам ввсех возможных комментируемых моделей "#{c.name.underscore}_id" так преобразуем либо в 'question_id' либо в 'answer_id' и проверяем существует ли это (?? поле или значение элемента URL ??) в params
     raise ActiveRecord::RecordNotFound if klass.blank? # вызываем ошибку если никакой класс не найден в параметрах
     @commentable = klass.find(params["#{klass.name.underscore}_id"]) # ищем нашу сущность в БД по ее айди, взятое из 'question_id' или 'answer_id' в зависимости от того какая константа в переменной klass
   end

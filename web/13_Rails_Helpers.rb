@@ -70,6 +70,20 @@ link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdo
 end
 
 
+# collection_select - хэлпер селектора
+f.collection_select :tag_ids, tags, :id, :title, {}, multiple: true
+# <!-- collection_select - хэлпер селектора, который может принимать коллекцию сущностей и подставлять ее свойства -->
+# <!-- :tag_ids - название поля -->
+# <!-- tags - коллекция всех тегов которую сюда передаем из questions/new.html.erb или questions/edit.html.erb -->
+# <!-- :id - метод(модели) который нужно применять к сущности из коллекции tags для значений элементов(передаются на сервер) селектора  -->
+# <!-- :title - метод(модели) который нужно применять к сущности из коллекции tags при отображении лэйблов(названий тегов) на странице в пунктах селектора -->
+# <!-- {} - пустые опции  -->
+# <!-- multiple: true - ставит атрибут multiple в селектор (выбор множества вариантов через контрл) -->
+
+
+questions_path(tag_ids: tag) # хэлпер URL содержащий в адресе айдишник данного (nen тега) GET '/questions?tag_ids=1'
+
+
 puts
 puts '                         Встроенные routes хэлперы(для URL). Именнованные маршруты'
 
@@ -88,6 +102,10 @@ url_for(locale: locale) # ??
 # Если название контроллера не в множественном числе(без s на конце), то хэлпер для URL index будет называться не name_path а:
 name_index_path
 # при этом хэлпер для show будет называться стандартно
+
+<%= link_to t('global.button.delete'), polymorphic_path([comment.commentable, comment]),
+  class: 'btn btn-danger btn-sm', data: {method: :delete, confirm: t('global.dialog.you_sure')} %>
+# polymorphic_path([comment.commentable, comment] - хэлпер Рэилс для URL полиморфических ассоциаций, строит путь исходя из того что переданно в 1м элементе массива, тут comment.commentable тоесть комментируемая сущность, вопрос или ответ, а далее сущность коммента. Те путь будет либо '/questions/:qoestion_id/comments/:id' либо '/answers/:answer_id/comments/:id'
 
 
 puts
