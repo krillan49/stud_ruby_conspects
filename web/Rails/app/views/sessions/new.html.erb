@@ -6,14 +6,14 @@
 <!-- Форму в паршал выносить нет смысла тк она используется только тут -->
 
 <%= form_with url: session_path do |f| %>
-<!-- url: session_path  - используем URL так как никакой таблицы модели и соотв объекта у нас нет, соответсвенно и значения атрибутов name будут простыми а не хэшем -->
+<!-- url: session_path  - используем URL так как никакой таблицы, модели и соотв объекта у нас нет, соответсвенно и значения атрибутов name будут простыми а не хэшем -->
 
   <!-- Будем делать аутотентификацию пользователя при помощи имэйла и пароля -->
 
   <div>
     <%= f.label :email %>
     <%= f.email_field :email, value: params[:email], placeholder: 'E-mail', class: 'form-control form-control-lg' %>
-    <!-- value: params[:email]  - значение поле, чтоб не вводить заново, если при входе ввели неправильный пароль -->
+    <!-- value: params[:email]  - значение поля, чтоб не вводить заново, если при входе ввели неправильный пароль -->
     <!-- <input placeholder="E-mail" class="form-control form-control-lg" type="email" name="email" id="email" /> -->
   </div>
 
@@ -28,8 +28,8 @@
     <%= f.check_box :remember_me, class: 'form-check-input', value: '1' %>
     <!-- f.check_box - вспомогательная функция для чекбокса -->
     <!-- value: '1' - задаем значение которое будет передавать чекбокс: '0' - галочка не поставлена, '1' - галочка поставлена. Это можно посмотреть вернув render plain: params.to_yaml в экшене create, там среди прочего будет remember_me: '0' -->
-    <%= f.label :remember_me, 'some', class: 'form-check-label' %>
-    <!-- 'some' - подпись рядом с чекбоксом например запомнить на сколькото дней -->
+    <%= f.label :remember_me, 'some message', class: 'form-check-label' %>
+    <!-- 'some message' - подпись рядом с чекбоксом например запомнить на сколькото дней -->
   </div>
 
   <%= f.submit "Sign In!", class: 'btn btn-primary btn-lg' %>

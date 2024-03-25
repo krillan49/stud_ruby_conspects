@@ -3,7 +3,7 @@
 <h1 class="mb-4"><%= @question.title %></h1>
 <!-- @question прописан и в create контроллере Answers, нужно на случай с непройденной валидацией и рендером этой страницы -->
 
-<!-- formatted_created_at - наш кастомный хэлпер, нужно прописать в модель Question -->
+<!-- formatted_created_at - наш кастомный метод модели/хэлпер, нужно прописать в модель Question -->
 <time datetime="<%= @question.formatted_created_at %>">
   <%= @question.formatted_created_at %>
 </time>
