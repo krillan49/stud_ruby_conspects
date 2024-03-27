@@ -15,7 +15,7 @@ class UserBulkService < ApplicationService
           # ...
         end
 
-        # Вариант 2: оптимизировать при помощи гема activerecord-import, и вополнять все записи одним запростом
+        # Вариант 2: оптимизировать при помощи гема activerecord-import, и выполнять все записи одним запростом
         User.import users_from(entry), ignore: true
         # users_from(entry) - наш кастомный подметод(ниже) создает(распарсит по ячейкам) массив пользователей на основе xlsx фаила из entry
         # import - метод activerecord-import, принимает тут массив из пользователей и записывает их в БД одним запросом

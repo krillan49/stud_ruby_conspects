@@ -3,13 +3,11 @@
 
 <h1 class="mb-4">Admin Users</h1>
 
-<!-- ссылка/кнопка для работы с форматом zip. Загрузит для пользователя(админа) данные(XLSX) в формате архива(zip) -->
-<div class="btn-group mb-3">
-  <%= link_to 'Download zipped XLSX', admin_users_path(format: :zip),
-    class: 'btn btn-secondary', data: {confirm: t('global.dialog.you_sure')} %>
-  <!-- admin_users_path(format: :zip) - добавляем в хэлпер URL параметр format: :zip, это значит что к URL допишется .zip -->
-  <!-- data: {confirm: t('global.dialog.you_sure')} - подтверждение нажатия кнопки -->
-</div>
+<!-- ссылка/кнопка для работы с форматом zip. Выгрузит для пользователя(админа) данные(XLSX) в формате архива(zip) -->
+<%= link_to 'Download zipped XLSX', admin_users_path(format: :zip),
+  class: 'btn btn-secondary', data: {confirm: t('global.dialog.you_sure')} %>
+<!-- admin_users_path(format: :zip) - добавляем в хэлпер URL параметр format: :zip, это значит что к URL допишется .zip -->
+<!-- data: {confirm: t('global.dialog.you_sure')} - подтверждение нажатия кнопки -->
 
 <%= pagination @pagy %>
 

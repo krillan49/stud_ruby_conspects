@@ -81,9 +81,6 @@ f.collection_select :tag_ids, tags, :id, :title, {}, multiple: true
 # <!-- multiple: true - ставит атрибут multiple в селектор (выбор множества вариантов через контрл) -->
 
 
-questions_path(tag_ids: tag) # хэлпер URL содержащий в адресе айдишник данного (nen тега) GET '/questions?tag_ids=1'
-
-
 puts
 puts '                         Встроенные routes хэлперы(для URL). Именнованные маршруты'
 
@@ -102,6 +99,15 @@ url_for(locale: locale) # ??
 # Если название контроллера не в множественном числе(без s на конце), то хэлпер для URL index будет называться не name_path а:
 name_index_path
 # при этом хэлпер для show будет называться стандартно
+
+# хэлпер с заданием формата для контроллера
+admin_users_path(format: :zip)
+
+# хэлпер URL содержащий в адресе айдишник данного (nen тега) GET '/questions?tag_ids=1'
+questions_path(tag_ids: tag)
+
+# редирект на страницу с которой переходили на ошибку или корневую
+redirect_to(request.referer || root_path)
 
 <%= link_to t('global.button.delete'), polymorphic_path([comment.commentable, comment]),
   class: 'btn btn-danger btn-sm', data: {method: :delete, confirm: t('global.dialog.you_sure')} %>
@@ -151,6 +157,11 @@ debug(params)
 simple_format(@foo)
 
 # autolinks - автоматическая подсветка ссылок ??
+
+# send_data - стандартный метод Рэилс, который пересылает фаилы пользователю
+send_data compressed_filestream.read, filename: 'users.zip'
+# compressed_filestream.read - параметр метода send_data - фаил архива который передаем с методом read(читать)
+# filename: 'users.zip' - имя передаваемого фаила архива
 
 
 puts
