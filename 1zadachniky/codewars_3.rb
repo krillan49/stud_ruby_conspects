@@ -477,3 +477,37 @@ p upside_down('8665','98187')#
 # p upside_down('9090908074312','617239057843276275839275848')#2919867187
 
 # p upside_down('1','45898942362076547326957326537845432452352')#209808349609373
+
+
+# Knight's Attack!  https://www.codewars.com/kata/58e6d83e19af2cb8840000b5/train/ruby   (непонятно как найти закрытые позиции)
+require 'set'
+
+def attack(start, dest, obstacles)
+  p [start, dest]
+  p obstacles
+
+  return 0 if start == dest
+  obstacles = obstacles.to_set
+  return nil if obstacles.include?(dest)
+  moves = Set.new
+  no = [[start]]
+  mvs = [[1, -2], [2, -1], [2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2]]
+  count = 0
+  while count < 200 # loop do
+    arr = []
+    return nil if no[count] == []
+    no[count].each do |y, x|
+      mvs.each do |i, j|
+        a = [y+i, x+j]
+        return count + 1 if a == dest
+        if y+i >= 0 && x+j >=0 && !obstacles.include?(a) && !moves.include?(a)
+          arr << a
+          moves << a
+        end
+      end
+    end
+    no << arr
+    count += 1
+  end
+  nil
+end

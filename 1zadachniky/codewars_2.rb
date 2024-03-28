@@ -28,7 +28,7 @@ class Track
     y, x = hh.min_by{|k, v| [k[0], k[1]]}[0]
     # hh.size.times do
       if hh[[y, x]] == '/'
-        if %w[N NE E].include?(dir) # направление до этого
+        if %w[N NE E].include?(dir) # # направление до этого(Куда мы двигались, а не откуда)
           dir = 'NE' # текущее направление
           [ # координаты следующей точки
             %w[+ |].include?(hh[[y-1, x]]) ? [y-1, x] : nil,
@@ -60,36 +60,20 @@ class Track
           ]
         end
       elsif hh[[y, x]] == '|'
-        if %w[].include?(dir)
-          dir = ''
-          [
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil
-          ]
-        elsif %w[].include?(dir)
-          dir = ''
-          [
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil
-          ]
+        if %w[N NE NW].include?(dir)
+          dir = 'N'
+          [ [y-1, x] ]
+        elsif %w[S SE SW].include?(dir)
+          dir = 'S'
+          [ [y+1, x] ]
         end
       elsif hh[[y, x]] == '-'
-        if %w[].include?(dir)
-          dir = ''
-          [
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil
-          ]
-        elsif %w[].include?(dir)
-          dir = ''
-          [
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil,
-            %w[].include?(hh[[y, x]]) ? [y, x] : nil
-          ]
+        if %w[E SE NE].include?(dir)
+          dir = 'E'
+          [ [y, x+1] ]
+        elsif %w[W SW NW].include?(dir)
+          dir = 'W'
+          [ [y, x-1] ]
         end
       elsif hh[[y, x]] == '+'
         if %w[].include?(dir)

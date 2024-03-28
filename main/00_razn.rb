@@ -30,6 +30,11 @@ Gem::Version.new('3.0.10') <=> Gem::Version.new('3.01.1') #=> -1
 [1,2].tap{ |arr| arr << 't'} #=> [1, 2, "t"]
 
 
+p 'a'.itself #=> "a"
+# пример применения
+p 3.times.to_a.zip([:to_s,:to_f,:itself]).map{|s, o| s.send(o)} #=> ["0", 1.0, 2]
+
+
 
 
 
