@@ -481,6 +481,14 @@ end
 # > rails db:seed
 
 
+puts
+puts '                                               Еще колбэки'
+
+# Пример из models/conserns/concerns/recoverable.rb
+before_update :clear_reset_password_token, if: :password_digest_changed? # запустим метод через колбэк
+# before_update - колбэк запускающий метод после прохождения валидаций, но до сохранения в БД (тут нового пароля)
+# if: :password_digest_changed? - колбэк сработает только если пароль был изменен, метод password_digest_changed? создаст автоматически, по названию поля password_digest
+
 
 
 

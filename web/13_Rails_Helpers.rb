@@ -94,8 +94,6 @@ resourses_url   #  'localhost:5000/resourses'     -   тоесть полный 
 
 root_path # для ссылок на главную(get '/' root в маршруте), может содержать параметры, например для локалей
 
-url_for(locale: locale) # ??
-
 # Если название контроллера не в множественном числе(без s на конце), то хэлпер для URL index будет называться не name_path а:
 name_index_path
 # при этом хэлпер для show будет называться стандартно
@@ -112,6 +110,9 @@ redirect_to(request.referer || root_path)
 <%= link_to t('global.button.delete'), polymorphic_path([comment.commentable, comment]),
   class: 'btn btn-danger btn-sm', data: {method: :delete, confirm: t('global.dialog.you_sure')} %>
 # polymorphic_path([comment.commentable, comment] - хэлпер Рэилс для URL полиморфических ассоциаций, строит путь исходя из того что переданно в 1м элементе массива, тут comment.commentable тоесть комментируемая сущность, вопрос или ответ, а далее сущность коммента. Те путь будет либо '/questions/:qoestion_id/comments/:id' либо '/answers/:answer_id/comments/:id'
+
+# url_for - генерирует URL без ссылки, тоесть просто троку адреса
+url_for edit_password_reset_url(user: {password_reset_token: @user.password_reset_token, email: @user.email})
 
 
 puts
