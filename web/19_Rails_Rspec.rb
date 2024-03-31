@@ -1,5 +1,15 @@
 puts '                                          Rspec для Rails'
 
+# !!! Отсюда дополнить
+class Article < ApplicationRecord
+  belongs_to :user, optional: true, required: true # добавим вручную;
+  # optional: true - если это не добавить то при использовании Rails 5.1 и выше создание новой статьи и тесты этого свойства выдадут ошибку "User must exist"
+  # required: true - если не добавить возникнут ошибки с rspec тестирыванием этой ассоциации
+end
+# ---------------------
+
+
+
 # Установка и настройка гемов
 
 # 1. Добавить в Gemfile нашего Rails-приложения:

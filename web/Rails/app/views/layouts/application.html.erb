@@ -28,16 +28,18 @@
     <!-- data-turbo-method="delete" - В Rails 7 вместо data-method нужно использовать data-turbo-method. Иначе для sign_out возникнет ошибка при нажатии на ссылку, тк у маршрута /users/sign_out метод DELETE -->
 
 
-    <!-- Вариант 2: по методам-хэлперам для путей(можно посмотреть пути введя несуществующий URL) -->
+    <!-- Вариант 2: по методам-хэлперам для путей -->
     <%= link_to "Sign In", new_user_session_path %> <!-- GET	 /users/sign_in(.:format)	  devise/sessions#new -->
     <%= link_to "Sign Out", destroy_user_session_path, method: :delete %> <!-- GET	 /users/sign_out(.:format)	devise/sessions#destroy (!!! delete при помощи запроса GET) -->
-    <!-- Из комментов(! но у меня и без этого сработало):
-      link_to 'Sign Out', destroy_user_session_path, data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' }
-    -->
+    <!-- Из комментов(! но у меня и как вышеэ сработало изза того что производил манипуляции в роутес и конфиг ??): -->
+    <%= link_to 'Sign Out', destroy_user_session_path,
+    data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' } %>
 
 
     <!-- Вариант 2-2: выведем почту/имя пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы, при помощи обработчиков хэлперов.
     https://github.com/heartcombo/devise#controller-filters-and-helpers -->
+    <!-- user_signed_in? - хэлпер созданный Devise, возвращает true или false, в зависимости от того авторизован или нет данный пользователь -->
+    <!-- current_user - хэлпер созданный Devise, возвращает объект сущности User текущего пользователя, соотв можно от него вызывать методы сущности(столбцы таблицы) -->
     <% if user_signed_in? %>
       <!-- а. Вариант с почтой -->
       Hello, <%= current_user.email %> | <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
@@ -46,11 +48,10 @@
     <% else %>
       <%= link_to "Sign In", new_user_session_path %>
     <% end %>
-    <!-- user_signed_in? - хэлпер созданный Devise, возвращает true или false, в зависимости от того авторизован или нет данный пользователь -->
-    <!-- current_user - хэлпер созданный Devise, возвращает объект сущности User текущего пользователя, соотв можно от него вызывать методы сущности(столбцы таблицы) -->
 
 
-    <!--                  Devise: Добавим для для флеш-сообщений(чтобы эта технология работала) -->
+
+    <!--                          Devise: Добавим для для отображения флеш-сообщений -->
 
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
