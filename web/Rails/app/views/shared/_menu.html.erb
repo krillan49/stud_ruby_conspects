@@ -74,7 +74,7 @@
           <% end %>
         </ul>
 
-        <!--  Собственно новый раздел(выпадающий список) переключения локалей  -->
+        <!--  Переключение локалей  -->
         <ul class="nav col-12 col-lg-auto mb-2 mb-md-0">
           <li class="dropdown">
             <%= link_to '#', class: 'nav-link px-2 dropdown-toggle text-white',
@@ -82,13 +82,14 @@
               <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %> <!-- интерполяция для названия классов, чтоб сделать разные css-свойства для разных языков и картинки языка -->
               <%= t I18n.locale %> <!-- Название текущей локали -->
             <% end %>
-            <ul class="dropdown-menu"> <!-- собственно дропдаун с выбором локали -->
+            <!--  Выпадающий список переключения локалей  -->
+            <ul class="dropdown-menu">
               <% I18n.available_locales.each do |locale| %>
                 <li>
                   <% if I18n.locale == locale %> <!-- если текущая локаль равна локали этого элемента списка -->
-                    <%= tag.span t(locale), class: 'dropdown-item' %> <!-- отображаем название локали, тут t(locale) это перевод названия локали(en, ru. соотв в yml будет например ru: 'Russian') на нужный язык -->
+                    <%= tag.span t(locale), class: 'dropdown-item' %> <!-- отображаем нефункциональное название локали, тут t(locale) это перевод названия локали(en, ru. соотв в yml будет например ru: 'Russian') на нужный язык -->
                   <% else %> <!-- если текущая локаль не равна локали из переменной -->
-                    <%= link_to t(locale), root_path(locale: locale), class: 'dropdown-item' %> <!-- ссылка переключения локали, добавляет локаль в URL ?? (можно было без дропдаун, списка и цикла по простому сделать лишь 2 ссылки переключения с url_for(locale: :ru) и url_for(locale: :en)) -->
+                    <%= link_to t(locale), root_path(locale: locale), class: 'dropdown-item' %> <!-- ссылка переключения локали, добавляет имя локали в URL в (:locale)  -->
                     <!-- root_path(locale: locale) - перебрасывает на главную -->
                     <!-- url_for(locale: locale) - не перебрасывает на главную, остается на той же странице, но не сохраняет дополнительные значения в гет-запросе после знака ?, а там например стоит пагинация, чтобы это дополнительно улучшить можно использовать вариант отсюда https://stackoverflow.com/questions/35189892/rails5-params-merge-causes-errors-about-being-insecure -->
                     <!-- locale - название локали (тут :en или :ru) -->

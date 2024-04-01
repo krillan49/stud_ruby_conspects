@@ -64,17 +64,19 @@
     <ul class="nav mb-2 mb-md-0">
       <li class="dropdown">
         <%= link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'} do %>
-          <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %> <!-- просто тег для выравнивания, интерполяция для названия классов, видимо разные css-свойства для разных языков -->
+          <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %> <!-- просто тег для бэкграунда картинки текущего языка, интерполяция для названия классов - разные css-свойства для разных языков -->
           <%= t I18n.locale %> <!-- Название текущей локали -->
         <% end %>
 
-        <ul class="dropdown-menu"> <!-- собственно дропдаун с выбором локали -->
+        <!-- Можно было и без дропдаун, списка и цикла сделать лишь 2 ссылки переключения с url_for(locale: :ru) и url_for(locale: :en) если мало языков -->
+        <ul class="dropdown-menu"> <!-- дропдаун с выбором локали -->
           <% I18n.available_locales.each do |locale| %>
             <li>
               <% if I18n.locale == locale %> <!-- если текущая локаль равна локали из списка доступных -->
-                <%= tag.span t(locale), class: 'dropdown-item' %> <!-- отображаем название локали, тут t(locale) это перевод названия локали на нужный язык -->
+                <%= tag.span t(locale), class: 'dropdown-item' %> <!-- отображаем просто название локали -->
+                <!-- t(locale) - это перевод названия локали на нужный язык -->
               <% else %> <!-- если текущая локаль не равна локали из переменной -->
-                <%= link_to t(locale), url_for(locale: locale), class: 'dropdown-item' %> <!-- ссылка переключения локали, добавляет локаль в URL ?? (можно было без дропдаун, списка и цикла по простому сделать лишь 2 ссылки переключения с url_for(locale: :ru) и url_for(locale: :en)) -->
+                <%= link_to t(locale), url_for(locale: locale), class: 'dropdown-item' %> <!-- ссылка переключения локали, добавляет имя локали в URL в (:locale) -->
                 <!-- В уроке было root_path(locale: locale) -->
               <% end %>
             </li>
