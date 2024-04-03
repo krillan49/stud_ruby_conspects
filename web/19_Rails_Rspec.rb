@@ -1,22 +1,11 @@
 puts '                                          Rspec для Rails'
 
-# !!! Отсюда дополнить
-class Article < ApplicationRecord
-  belongs_to :user, optional: true, required: true # добавим вручную;
-  # optional: true - если это не добавить то при использовании Rails 5.1 и выше создание новой статьи и тесты этого свойства выдадут ошибку "User must exist"
-  # required: true - если не добавить возникнут ошибки с rspec тестирыванием этой ассоциации
-end
-# ---------------------
-
-
-
 # Установка и настройка гемов
 
-# 1. Добавить в Gemfile нашего Rails-приложения:
-group :test, :development do # добавим гемы только для 2х типов окружения(test, development)
+# 1. Добавить в Gemfile для окружений test и development нашего Rails-приложения:
+group :test, :development do
   gem 'rspec-rails'
   gem 'shoulda-matchers'     # добавляет матчеры для проверки моделей(работает как для rspec так и для обычных юнит тестов)   http://matchers.shoulda.io/docs/v3.1.3/    https://github.com/thoughtbot/shoulda-matchers
-  gem 'capybara'
 end
 # > bundle install
 
@@ -67,7 +56,7 @@ end
 require 'rails_helper' # подключаем фаил spec/rails_helper.rb
 # Далее синтакс rspec
 describe Contact do
-  it { should validate_presence_of :email } # # validate_presence_of - матчер проверяющий присутсвие email(тестируем валидацию)
+  it { should validate_presence_of :email } # validate_presence_of - матчер проверяющий присутсвие email(тестируем валидацию)
   it { should validate_presence_of :message }
 end
 
@@ -99,7 +88,6 @@ require 'rails_helper'
 describe Article do
   # Проверим длинну
   describe "validations" do
-    # Примеры тестов из ДЗ46(на валидацию макс длинны полей при помощи матчера validate_length_of)
     it { should validate_length_of(:title).is_at_most(140) } # is_at_most(140) - не больше чем 140
     it { should validate_length_of(:text).is_at_most(4000) }
   end
@@ -117,7 +105,7 @@ describe Comment do
     it { should validate_length_of(:body).is_at_most(4000) }
   end
 
-  # Проверим ассоциавции принадлежности при помощи матчера have_many belong_to
+  # Проверим ассоциавции принадлежности при помощи матчера belong_to
   describe "assotiations" do  # сущность Comment должа принадлежать статье
     it { should belong_to :article } # в матчере belong хотя в модели belongs
   end
@@ -147,8 +135,8 @@ end
 # Для исправления в модели нужно добавить:
 class Comment < ApplicationRecord
   belongs_to :user, optional: true, required: true
-  # optional: true  -  от ошибки "User must exist"
-  # required: true  -  от ошибки требующей разрешение
+  # optional: true  - если это не добавить то при использовании Rails 5.1 и выше создание нового коммента и тесты этого свойства выдадут ошибку "User must exist"
+  # required: true  - если не добавить возникнут ошибки с rspec тестирыванием этой ассоциации
 end
 
 
@@ -188,9 +176,9 @@ puts '                                      Factory Bot. Создание фаб
 
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Defining_factories
 
-# Создадим каталог с фабриками - /spec/factories
+# /spec/factories - создадим каталог с фабриками
 
-# создадим файл в котором будем создавать фабрику для article /spec/factories/articles.rb:
+#  /spec/factories/articles.rb  - создадим файл в котором будем создавать фабрику для article:
 FactoryBot.define do # определяем фабрики
   factory :article do # фабрика article. По умолчанию будет брать модель Article и устанавливать в нее свойсва:
     # Зададим свойства и их значения, тк наши тесты будут проверять их валидацию и без них выдадут ошибки валидации
@@ -210,8 +198,8 @@ class Article < ApplicationRecord
   validates :text, presence: true
   has_many :comments
 
-  def subject # добавим метод который будем тестировать (возвращает название статьи ??)(Не забываем что это метод экземпляра)
-    title # модель имеет методы экземпляра для каждого столбца, которые мы и юзаем в видах (мб и тестировать сразу его)
+  def subject # добавим метод экземпляра который будем тестировать (возвращает название статьи через ее метод)
+    title
   end
 end
 
@@ -225,7 +213,7 @@ describe Article do
     it "returns the article title" do
       article = create(:article, title: 'Foo Bar') # создаем объект/сущность Article но не с помощью AR, а при помощи фабрики
       # create - метод factory_bot для создания сущности
-      # :article - имя фабрики ??
+      # :article - имя фабрики
 
       expect(article.subject).to eq 'Foo Bar' # проверяем что метод subject возвращает указанное значение title сущности
     end
@@ -236,7 +224,7 @@ end
 
 
 puts
-# Пример на blog2 (с синтаксисом как выше была ошибка "User must exist" хотя стояло optional: true, ииза того что юзер не создан, тоже самое будет у коммента, для коментэйл итд)
+# Пример на blog2 (с синтаксисом как выше была ошибка "User must exist" хотя стояло optional: true, ииза того что юзер не создан, тоже самое будет у коммента, для commentable итд)
 
 # Модель Post
 class Post < ApplicationRecord
@@ -327,7 +315,7 @@ class Article < ApplicationRecord
   # ... пред код ....
 
   # Создадим метод last_comment и протестируем его:
-  def last_comment # метод возврата последнего комментария(помним что это метод экземпляра а экземпляр это сущность статьи)
+  def last_comment # метод возврата последнего комментария(это метод экземпляра а экземпляр это сущность статьи)
     comments.last # последний комментарий из колекции комментов этой статьи, тк comments, тоже метод экземпляра, возвращающий массив комментариев
   end
 end
@@ -394,7 +382,7 @@ puts
 
 # https://www.rubydoc.info/github/teamcapybara/capybara/master    #Capybara
 # https://github.com/teamcapybara/capybara
-group :test do # уже поставлено ранее
+group :test do
   gem 'capybara'
 end
 
@@ -403,7 +391,7 @@ end
 # Для настройки Capybara согласно документации нужно добавить в файл rails_helper(rspec_helper для старых версий) строчку, хотя работает и без этой строки.
 require 'capybara/rspec'
 
-# Как работает гем Капибара - запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
+# гем Капибара - запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
 
 # Капибара работает с тестовой БД
 
@@ -446,7 +434,7 @@ feature "Contact creation" do
     expect(page).to have_content I18n.t('contacts.contact_us') # всегда нужно указывать полный путь каталогов, если сократить как в предсталениях, например t('.contact_us'), то выдаст ошибку
   end
 end
-# > rake spec   (!!!Для Windows - нужно запускать в классической командной строке, в повершелл будет ошибка)
+# > rake spec
 
 
 puts

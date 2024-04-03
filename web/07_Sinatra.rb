@@ -1,4 +1,4 @@
-puts '                                         Sinatra(Ruby on Sinatra)'
+puts '                                             Sinatra'
 
 # https://github.com/sinatra/sinatra   -   документация sinatra
 
@@ -38,7 +38,7 @@ puts '                                         Обработчик GET-запр
 
 get '/' do # get - метод(оператор/запуск), он принимает 2 аргумента:
   # '/'   -  URL-адрес
-  # do...end   -  Блок кода/лямбда
+  # do...end   -  Блок кода
   return 'Hi'  # Возвращает просто текст на корневую страницу в пустом html фаиле. return не обязателен.
 end
 
