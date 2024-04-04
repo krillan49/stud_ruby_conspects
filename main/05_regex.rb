@@ -300,6 +300,9 @@ puts '                                               split'
 "{{name}} likes {{animal_type}}".split(/[{}]/) #=> ["", "", "name", "", " likes ", "", "animal_type"]
 # Разбивка по буквам соответсвующим
 "ultrarevolutionariees".split(/[^aeiou]/) #=> ["u", "", "", "a", "e", "o", "u", "io", "a", "iee"]
+" AbfCgg di Ejjj fii ".split(/\b/)          #=> [" ", "AbfCgg", " ", "di", " ", "Ejjj", " ", "fii", " "]
+"AbfCgg di Ejjj fii".split(/ab|fi/i)        #=> ["", "fCgg di Ejjj ", "i"]
+"asd fgh g\njku".split(/^\n| /)             #=> ["asd", "fgh", "g\njku"]
 
 
 puts

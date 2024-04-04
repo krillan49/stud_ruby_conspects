@@ -180,70 +180,36 @@ p count(list, 99)# 0
 p count(nil, 1)# 0
 
 
-
-
-
-#-----------------------------------------------------------------------------------------
 # https://www.codewars.com/kata/55cacc3039607536c6000081/train/ruby
+# Добавить(не заменить а именно вставить) сегмент динкет листа в заданном индексе с заджанным значением
 class Node
   attr_accessor :data, :next
-  def initialize(data)
+  def initialize(data, nextN = nil)
     @data = data
-    @next = nil
+    @next = nextN
   end
 end
 
-def push(head, data)
-	node = Node.new(data)
-  node.next = head
-  node
-end
-
-def buildOneTwoThree
-  push(push(Node.new(3), 2), 1)
-end
-
-def length(node)
-	return 0 if node == nil
-  counter = 0
-  until node.next == nil
-    node = node.next
-    counter += 1
+def insert_nth(head, index, data, i=0)
+  if (i == index)
+    Node.new(data, head)
+  else
+    Node.new(head.data, insert_nth(head.next, index, data, i+1)) # до нужного индекса придется переопределять внешние листы
   end
-  counter + 1
 end
 
-def insert_nth(head, index, data)
-  raise Error if length(head) < index
-  return push(head, data) if head == nil or index == 0
-  head.next
-end
 
-#p insert_nth(nil, 0, 12).data# 12, "should be able to insert a node on an empty/nil list.")
-#p insert_nth(nil, 0, 12).next# nil, "value at index 1 should be nil.")
 
-#p insert_nth(buildOneTwoThree(), 0, 23).data# 23, "should be able to insert new node at head of list.")
-#p insert_nth(buildOneTwoThree(), 0, 23).next.data# 1, "value for node at index 1 should be 1.")
-#p insert_nth(buildOneTwoThree(), 0, 23).next.next.data# 2, "value for node at index 2 should be 2.")
-#p insert_nth(buildOneTwoThree(), 0, 23).next.next.next.data# 3, "value for node at index 3 should be 3.")
-#p insert_nth(buildOneTwoThree(), 0, 23).next.next.next.next# nil, "value at index 4 should be nil.")
 
-p insert_nth(buildOneTwoThree(), 1, 23)#.data# 1, "value for node at index 0 should be 1.")
-p insert_nth(buildOneTwoThree(), 1, 23).next.data# 23, "value for node at index 1 should be 23")
-p insert_nth(buildOneTwoThree(), 1, 23).next.next.data# 2, "value for node at index 2 should be 2.")
-p insert_nth(buildOneTwoThree(), 1, 23).next.next.next.data# 3, "value for node at index 3 should be 3.")
-p insert_nth(buildOneTwoThree(), 1, 23).next.next.next.next# nil, "value at index 4 should be nil.")
 
-p insert_nth(buildOneTwoThree(), 2, 23).data# 1, "head should remain unchanged after inserting new node at index 2")
-p insert_nth(buildOneTwoThree(), 2, 23).next.data# 2, "value at index 1 should remain unchanged after inserting new node at index 2")
-p insert_nth(buildOneTwoThree(), 2, 23).next.next.data# 23, "value for node at index 2 should be 23.")
-p insert_nth(buildOneTwoThree(), 2, 23).next.next.next.data# 3, "value for node at index 3 should be 3.")
-p insert_nth(buildOneTwoThree(), 2, 23).next.next.next.next# nil, "value at index 4 should be nil.")
 
-p insert_nth(buildOneTwoThree(), 3, 23).data# 1, "head should remain unchanged after inserting new node at tail")
-p insert_nth(buildOneTwoThree(), 3, 23).next.data# 2, "value at index 1 should remain unchanged after inserting new node at tail")
-p insert_nth(buildOneTwoThree(), 3, 23).next.next.data# 3, "value for node at index 2 should be 3.")
-p insert_nth(buildOneTwoThree(), 3, 23).next.next.next.data# 23, "value for node at index 3 should be 23.")
-p insert_nth(buildOneTwoThree(), 3, 23).next.next.next.next# nil, "value at index 4 should be nil.")
 
-p insert_nth(buildOneTwoThree(), 4, 23)
+
+
+
+
+
+
+
+
+#

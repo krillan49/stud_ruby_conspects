@@ -24,6 +24,12 @@ p str1.split('') #=> ["a", "a", "a"]
 p str2.split('') #=> undefined method `split' for nil:NilClass (NoMethodError)
 p str2&.split('') #=> nil
 
+# запись функций в аргументах
+def bt_rec(w, i=0, im=w.size-1)
+  im
+end
+p bt_rec("trie") #=> {"t" => {"tr" => {"tri" => {"trie" =>  nil}}}}
+
 
 puts
 puts '                                               Методы/Функции'
