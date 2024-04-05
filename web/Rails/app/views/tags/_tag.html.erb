@@ -11,6 +11,6 @@
 <%= link_to questions_path(tag_ids: tag),
   class: 'badge rounded-pill bg-light text-dark d-inline-block px-2 pt-1 pb-2 me-1',
   data: {turbo_frame: '_top'} do %>
-  <!-- data: {turbo_frame: '_top'} - добавим data-атрибут turbo_frame с суффиксом '_top', который передаст турбофрэйму(?), что обновлять будем всю страницу, а не только фрэйм -->
+  <!-- data: {turbo_frame: '_top'} - добавим data-атрибут turbo_frame с суффиксом '_top', который деактивирует турбофрэйм в котором находится эта ссылка(?), чтоб отправлять запрос в формате html и обновлять всю страницу, а не только фрэйм -->
   <small><%= tag.title %></small>
 <% end %>

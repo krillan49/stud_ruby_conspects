@@ -7,10 +7,8 @@
   <!-- так добавится и турбофрэйм теги из _question.html.erb, соотв контроллеры при нажатии кнопок редактирования и удаления будут отвечать на формат турбофрэйма, соотв на эту же страницу будет подгружаться форма -->
 </article>
 
-<!-- Старый варик до пункта 10. "динамическими создание и удаление комментариев" -->
-<%= render 'comments/commentable', commentable: @question, comment: @comment, html_id: 'questionComments' %>
-<!-- Новый варик после пункта 10. "динамическими создание и удаление комментариев" -->
-<%= render 'comments/commentable', commentable: @question, comment: @comment %>
+<!-- 10. динамическое создание и удаление комментариев (удаляем html_id) -->
+<%= render 'comments/commentable', commentable: @question, comment: @comment#, html_id: 'questionComments' %>
 
 <h2 class="my-3"><%= t '.write_answer' %></h2>
 

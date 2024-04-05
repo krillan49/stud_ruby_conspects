@@ -1,4 +1,5 @@
 <!-- is_current_comment - которая раньше использовалась для расхлопывания нужного коммента и для вывода ошибкок только для конкретного коммента, это нам больше не нужно, тк страницу целиком больше перерисовывать не будем -->
+
 <% comment_builder = commentable.comments.build %> <!-- Соотв и это упростим убрав is_current_comment -->
 <% html_id = dom_id commentable, 'comments' %> <!-- Сгенерим тут html_id, который раньше передавали из _answer.html.erb -->
 <!-- 'comments' - добавим префикс к генерируемому айди тк тут в 2х местах используем commentable для генерации -->
@@ -15,12 +16,10 @@
     <% if policy(comment_builder).create? %>
       <%= form_with model: [commentable, comment_builder], class: 'pt-3 border-top my-2' do |f| %>
         <%= render 'shared/errors', object: comment %> <!-- Соотв и это упростим убрав проверку на is_current_comment -->
-
         <div>
           <%= f.label :body %>
           <%= f.text_area :body, class: 'form-control form-control-sm' %>
         </div>
-
         <%= f.submit t('global.button.submit'), class: 'btn btn-sm btn-primary' %>
       <% end %>
     <% end %>

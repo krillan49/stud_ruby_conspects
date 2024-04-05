@@ -1,15 +1,11 @@
-<%= turbo_frame_tag @answer do %> <!-- обернем пашал формы ответов в ткрбофрэйм тег с айди ответа, нового или редактируемого -->
+<%= turbo_frame_tag @answer do %> <!-- обернем пашал формы ответов в турбофрэйм тег с айди ответа, нового или редактируемого -->
 
   <%= form_with model: [@question, @answer] do |f| %>
     <%= render 'shared/errors', object: @answer %>
-    <div class="mb-3 row">
-      <div class="col-sm-2 col-form-label">
-        <%= f.label :body %>
-      </div>
 
-      <div class="col-sm-10">
-        <%= f.text_area :body, class: 'form-control', required: true %>
-      </div>
+    <div class="mb-3 row">
+      <%= f.label :body %>
+      <%= f.text_area :body, class: 'form-control', required: true %>
     </div>
 
     <%= f.submit t('global.button.submit'), class: 'btn btn-primary' %>
