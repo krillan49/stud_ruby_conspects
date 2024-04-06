@@ -555,20 +555,25 @@ def exp_sum(n)
 end
 
 # генерация массивов разбиений числа (ср скорость ?)(https://www.codewars.com/kata/55cf3b567fc0e02b0b00000b/solutions/ruby)
-$part={1=>[[1]], 2=>[[2],[1,1]], 3=>[[3],[2,1],[1,1,1]]}
+$part = {1 => [[1]], 2 => [[2],[1,1]], 3 => [[3],[2,1],[1,1,1]]}
+$prod = {1 => [1], 2 => [1,2], 3 => [1,2,3]}
 def part(n)
-  m=$part.keys.max
-  until m>=n
-    m+=1
-    res=[[m]]
+  m = $part.keys.max
+  until m >= n
+    m += 1
+    res = [[m]]
     (1..m-1).each do |k| # добавляем к каждому наибольшему числу меньшему чем N все варианты разбиений его разницы с N
-      partm=$part[k].select{|a| a[0]<=m-k} # только те в которых все элементы меньше этого числа
-      res+=[m-k].product(partm).map{|a| a.flatten}
+      partm = $part[k].select{|a| a[0] <= m - k} # только те в которых все элементы меньше этого числа
+      r = [m - k].product(partm).map{|a| a.flatten}
+      res += r
     end
-    $part[m]=res
-    $prod[m]=res.map{|a| a.inject(:*)}.uniq.sort
+    $part[m] = res
+    $prod[m] = res.map{|a| a.inject(:*)}.uniq.sort
   end
-  $part[n].size # site тк сам вывод результата оч долгий тк Для n = 50 количество частей равно 204226, для 80 — 15 796 476
+  nprod = $prod[n]
+  size = nprod.size # site тк сам вывод результата оч долгий тк Для n = 50 количество частей равно 204226, для 80 — 15 796 476
+  median = size.odd? ? nprod[size/2] : ((nprod[size/2] + nprod[size/2-1]) / 2.0).round(2)
+  "Range: #{nprod[-1] - nprod[0]} Average: #{'%.2f' % (nprod.sum / size.to_f)} Median: #{'%.2f' % median}"
 end
 
 
