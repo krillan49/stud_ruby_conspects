@@ -27,6 +27,8 @@ class ArticlesController < ApplicationController
     # plain: - ключ обозначает что будет выведен просто текст;
     # params[:article].inspect - значение хеша, тут параметры в виде строки;
     # В итоге выведет: #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
+    # Что выводит просто params
+    # params.inspect #=> #<ActionController::Parameters {"controller"=>"comments", "action"=>"index"} permitted: false>
 
     # по умолчанию рэндерило бы create.html.erb, тоесть если сами не пропишем render то тут сработает:
     render 'articles/create' # где articles/create это app/views/articles/create
