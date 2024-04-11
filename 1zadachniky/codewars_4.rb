@@ -247,3 +247,34 @@ p doubles(1, 10)# 0.5580321939764581
 p doubles(10, 1000)# 0.6921486500921933
 p doubles(10, 10000)# 0.6930471674194457
 p doubles(20, 10000)# 0.6930471955575918
+
+
+
+puts
+# Count Squares In the Chess Board
+# https://www.codewars.com/kata/5bc6f9110ca59325c1000254/train/ruby
+def count(board) # медленно
+  res = {}
+  (0..board.size-2).each do |y|
+    (0..board.size-2).each do |x|
+      k = board.size - 1 - [y, x].max
+      (1..k).each do |n|
+        if board[y..y+n].map{|a| a[x..x+n]}.join.include?('0')
+          break
+        else
+          res[n+1] ? res[n+1] += 1 : res[n+1] = 1
+        end
+      end
+    end
+  end
+  res
+end
+
+chessBoard = [
+  [0,1,1,1,1],
+  [1,1,1,1,1],
+  [1,1,1,1,1],
+  [0,1,1,0,1],
+  [1,1,1,1,1]
+]
+p count(chessBoard) # {3 => 2, 2 => 9}

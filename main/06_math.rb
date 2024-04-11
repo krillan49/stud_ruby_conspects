@@ -224,7 +224,7 @@ Prime.each(10).to_a #=> [2, 3, 5, 7]
 Prime.entries(n)-Prime.entries(m-1) #=> быстрее чем (m..n).select(&:prime?)
 
 # вернуть массив всех простых чисел до определенного значения
-Prime.take_while{|p| p < 30} #+> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+Prime.take_while{|p| p < 30} #=> [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
 
 # Поиск простого числа по условию(ищет минимальное простое начиная от 0)
 Prime.find{|p| p > n}
@@ -249,6 +249,25 @@ end.flatten.select{|e| e < n}
 
 # восстанавливает исходное число из его сомножителей. Это именно метод класса, тк выступает в роли «конструктора» целого числа.
 Integer.from_prime_division([[2,1],[3,1],[7,1]]) #=> 42
+
+# Метод сетки эратосфена для генерации простых числел ( https://www.baeldung.com/cs/prime-number-algorithms )
+def find_primes_eratosthenes(n)
+  arr = Array.new(n, true)
+  s = Math.sqrt(n)
+  (2..s).each do |i|
+    if arr[i]
+      j = i**2
+      while j <= n
+        arr[j] = false
+        j += i
+      end
+    end
+  end
+  res = []
+  arr.each.with_index{|e, i| res.push(i) if e}
+  res
+end
+p find_primes_eratosthenes(2000000)
 
 
 puts
