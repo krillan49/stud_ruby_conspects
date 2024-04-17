@@ -25,6 +25,14 @@ puts '                                                 Vargant'
 
 
 puts
+puts '                                               virtualbox'
+
+# https://www.virtualbox.org/wiki/Downloads
+
+# https://ubuntu.com/download/desktop
+
+
+puts
 puts '                                   Docker(отредактировать из Docker.txt)'
 
 

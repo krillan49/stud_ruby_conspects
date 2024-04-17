@@ -1,5 +1,12 @@
 puts '                                              Содержание'
 
+# R03_Assets_solutions
+#   Инфа про бандлы и компиляцию ассетов
+#   Подключение бутстрап, если он еще не установлен при создании приложения
+#   Ошибка билда yarn build на винде
+#   rails assets:precompile  и возможная ошибка
+#   Propshaft - особенности написания стилей например ссылок на картинку для бэкграунда
+
 # R06_filters_consern
 #   before_action
 #   concern. Обработка ошибок в контроллере
@@ -128,7 +135,7 @@ gem 'rubyzip', '~> 2'
 # R17_Admin_Exel_Zip
 
 
-# caxlsx и caxlsx_rails - эти гемы могут только записывать/создавать новые Excel-фаилы, а читать и парсить не могут
+# caxlsx и caxlsx_rails - эти гемы могут только записывать/создавать новые Excel-фаилы(в том числе с графиками), а читать и парсить не могут
 # https://github.com/caxlsx
 # https://github.com/caxlsx/caxlsx
 # https://github.com/caxlsx/caxlsx_rails
