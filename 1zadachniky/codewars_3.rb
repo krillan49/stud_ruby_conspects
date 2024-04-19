@@ -479,6 +479,8 @@ p upside_down('8665','98187')#
 # p upside_down('1','45898942362076547326957326537845432452352')#209808349609373
 
 
+
+
 # Knight's Attack!  https://www.codewars.com/kata/58e6d83e19af2cb8840000b5/train/ruby   (непонятно как найти закрытые позиции)
 require 'set'
 
