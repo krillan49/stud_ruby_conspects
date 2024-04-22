@@ -11,7 +11,9 @@ puts '                               CRUD. params. Формы. Валидаци�
 
 
 puts
-puts '                                 new(resourses). Форма form_for. render'
+puts '                                   new(resourses). form_for. render'
+
+# https://guides.rubyonrails.org/form_helpers.html
 
 # 1. Создадим представление app/views/articles/new.html.erb. Без него при обращении к http://localhost:3000/articles/new - выпадет ошибка ArticlesController#new is missing a template for request formats: text/html.(отсутствует шаблон/представление)
 # Создаем форму form_for (устарела ??) в articles/new.html.erb
@@ -23,7 +25,7 @@ class ArticlesController < ApplicationController
   end
   def create # post '/articles'
     render plain: params[:article].inspect
-    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL экшена из которого вызывавется, тут это create: post '/articles';
+    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL того экшена из которого вызывавется, тут это create: post '/articles';
     # plain: - ключ обозначает что будет выведен просто текст;
     # params[:article].inspect - значение хеша, тут параметры в виде строки;
     # В итоге выведет: #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
@@ -47,8 +49,10 @@ class ContactsController < ApplicationController
 
   def create # принимает данные введенные пользователем в форму
     @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
+
     # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого используется специальный синтаксис:
     @contact = Contact.new(contact_params) # вместо params[:contact] вызываем наш разрешающий метод
+
     @contact.save
   end
 
@@ -216,7 +220,7 @@ end
 
 
 puts
-puts '                                  Паршалы. shared(дирректория для общих паршалов)'
+puts '                                Паршалы. shared(дирректория для общих паршалов)'
 
 # Добавим в /app/views/contacts/new.html.erb сообщение об ошибках при помощи паршала.
 
@@ -232,7 +236,7 @@ puts '                                  Паршалы. shared(дирректо�
 puts
 puts '                                          index(resourses)'
 
-# index(resourses) - обычно используется для вывода сптска всех сущностей(тут выведем все статьи)
+# index(resourses) - обычно используется для вывода списка всех сущностей(тут выведем все статьи)
 
 # Внесём изменения в /app/controllers/articles_controller.rb:
 class ArticlesController < ApplicationController
@@ -249,7 +253,7 @@ class ArticlesController < ApplicationController
     end
   end
   # Создадим представление /app/views/articles/create.html.erb
-  # Добавим ссылку в create.html.erb на все статьи '/articles'
+  # Добавим в create.html.erb ссылку на все статьи '/articles'
 
   # Добавим экшен index. Список статей будет доступен по адресу /articles
   def index # get '/articles'

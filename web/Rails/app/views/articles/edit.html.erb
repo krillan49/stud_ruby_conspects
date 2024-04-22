@@ -3,7 +3,7 @@
 <!--                                      Форма для редактирования сущности -->
 
 <%= form_for :article, url: article_path(@article), method: :patch do |f| %>
-  <!-- ?? В этой форме почемуто не нужно data: {turbo:false} ??  -->
+  <!-- ?? В этой форме почемуто не нужно data: {turbo: false} ??  -->
 
   <!-- article_path(@article) - при помощи сущности из переменной @article перенаправляет форму на URL /articles/id (в POST метод update), по умолчанию форма отправляласть на /articles те в метод(POST) create -->
 

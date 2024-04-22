@@ -1,5 +1,22 @@
 <h1>Stata page</h1>
 
+<!-- Таблица отсортированных данных -->
+<table>
+  <thead>
+    <tr><th>Имя</th><th>Игры</th><th>Победы</th><th>Поражения</th><th>Ничьи</th></tr>
+  </thead>
+  <tbody>
+    <% @accounts.each do |account| %>
+      <tr>
+        <td><%= account.user.username %></td>
+        <td><%= account.games %></td>
+        <td><%= account.wins %></td>
+        <td><%= account.loses %></td>
+        <td><%= account.draws %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <!-- Меню сортировки -->
 <select onchange="selectors()">
@@ -19,35 +36,17 @@
 <!-- Ссылка для отправки данных в экшен -->
 <a href="/" id="select-link">Применить параметры сортировки</a>
 
-<!-- Таблица отсортированных данных -->
-<table>
-  <thead>
-    <tr><th>Имя</th><th>Игры</th><th>Победы</th><th>Поражения</th><th>Ничьи</th></tr>
-  </thead>
-  <tbody>
-    <% @accounts.each do |account| %>
-      <tr>
-        <td><%= account.user.username %></td>
-        <td><%= account.games %></td>
-        <td><%= account.wins %></td>
-        <td><%= account.loses %></td>
-        <td><%= account.draws %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
 <!-- Функция добавляет параметры выбранные в селекторах в ссылку -->
 <script>
   function selectors() {
-    var res = "/?"
+    let res = "/?";
 
-    var arr = document.getElementsByTagName('select'); // собираем данные из селекторов
-    for (var i = 0; i < arr.length; i++){
+    let arr = document.getElementsByTagName('select'); // собираем данные из селекторов
+    for (let i = 0; i < arr.length; i++){
       res += arr[i].value;
     }
 
-    var link = document.getElementById('select-link'); // помещаем данные в URL ссылки
+    let link = document.getElementById('select-link'); // помещаем данные в URL ссылки
     link.href = res
   }
 </script>
