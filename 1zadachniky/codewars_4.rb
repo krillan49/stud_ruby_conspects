@@ -235,22 +235,6 @@ p balanced_parens(3) # ["()()()","(())()","()(())","(()())","((()))"]
 
 
 puts
-# Magnet particules in boxes
-# https://www.codewars.com/kata/56c04261c3fcf33f2d000534/train/ruby
-N = (1..100000).map{|n| 1 / (n**2 + 2*n + 1).to_f}
-
-def doubles(maxk, maxn)
-  (1..maxk).sum{|k| (1..maxn).sum{|n| N[n-1]**k / k.to_f }}
-end
-
-p doubles(1, 10)# 0.5580321939764581
-p doubles(10, 1000)# 0.6921486500921933
-p doubles(10, 10000)# 0.6930471674194457
-p doubles(20, 10000)# 0.6930471955575918
-
-
-
-puts
 # Count Squares In the Chess Board
 # https://www.codewars.com/kata/5bc6f9110ca59325c1000254/train/ruby
 def count(board) # медленно
