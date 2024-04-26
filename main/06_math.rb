@@ -486,6 +486,21 @@ m = '0' * (bits - m.size) + m
 m.chars.each_slice(8).map(&:join).reverse.join.to_i(2)
 
 
+puts
+puts '                                             eval'
+
+# Решение простых математических выражений представленных строкой
+def calc(expression) # вар 1
+  RubyVM::InstructionSequence.compile("1.0*" + expression).eval
+end
+def calc(expression) # вар 1
+  eval("1.0*" + expression)
+end
+p calc('2 / (2 + 3) * 4.33 - -6')#7.732
+p calc('2 /2+3 * 4.75- -6') # 21.25
+p calc("(1 - 2) + -(-(-(-4)))") # 3.0
+p calc('12* 123') # 1476.0
+
 
 
 

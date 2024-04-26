@@ -20,6 +20,7 @@ puts '                                             Enumerable'
 # Метод each_with_object (Enumerable)
 # Вызывает блок один раз для каждого элемента, передавая как элемент, так и данный объект:
 (1..4).each_with_object([]) {|i, arr| arr.push(i**2) } # => [1, 4, 9, 16]
+p [1, 2, 3].each.with_object(['A']){|n, a| a << n} #=> ["A", 1, 2, 3]
 %w(foo bar).each_with_object({}) { |el, hh| hh[el.to_sym] = el } # => {'foo' => 'FOO', 'bar' => 'BAR'}
 str = %w[a b c d].each.with_object('') do |s, obj|
   obj << s # += не мутирует строку
@@ -137,4 +138,4 @@ p PaperFold.new.take(20)# [1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1,
 
 
 
-# 
+#
