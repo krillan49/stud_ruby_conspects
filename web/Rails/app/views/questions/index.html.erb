@@ -46,7 +46,7 @@
           <small><%= question.formatted_created_at %></small>
         </time>
 
-        <div class="my-2">
+        <div>
           <%= truncate strip_tags(question.body), length: 150, omission: '... (continued)' %>
           <!-- обрезаем длинну вопроса и удаляем теги в тексте хэлперами -->
         </div>
