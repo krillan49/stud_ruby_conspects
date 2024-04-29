@@ -133,6 +133,10 @@ def create
   # permitted: false
 end
 
+puts
+# выведет список параметров в виде при помощи хэлпера debug, чтобы их отслеживать
+debug(params)
+
 
 puts
 puts '                                params и параметры из строки GET-запрса'
