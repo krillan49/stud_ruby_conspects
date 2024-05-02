@@ -340,9 +340,9 @@ puts '                                       Валидации. Метод vali
 
 # https://guides.rubyonrails.org/active_record_validations.html  -   Active Record Validations — Ruby on Rails Guides
 
-# Метод save по умолчанию проводит и валидацию, если всё правильно, то возвращает true иначе false.
+# Метод save по умолчанию проводит и валидацию, если всё соответсвует требованиям валидации, то возвращает true иначе false.
 
-# Хоть валидация и выполняется автоматически, но нужно ее настроить в модели(в Синатре в app.rb) к которой относятся данные при помощи метода validates. Настройки могут позволить проводить валидацию по различным параметрам: длинна строки, значение строки итд.
+# Хоть валидация и выполняется автоматически, но нужно настроить ее требования(тк по умолчанию их нет) в модели, к которой относятся данные при помощи метода validates. Настройки могут позволить проводить валидацию по различным параметрам: длинна строки, значение строки итд.
 
 class Client < ActiveRecord::Base
   validates :name, presence: true  # проверка на то чтобы значение поля name не было пустым
@@ -399,6 +399,7 @@ post '/visit' do
 
     @error = @c.errors.full_messages.first #=> из хэша ошибок(errors) вернет массив значений(["Name can't be blank", "Phone can't be blank"]) и выберет из них первую, тоесть сообщит о первом из незаполненных полей.
     # ?? почемуто(изза повершелл) выводит в массиве каждое сообщение по 3 раза
+
 		erb :hq_barbershop_visit_true
 	end
 end
@@ -420,8 +421,7 @@ class Product < ActiveRecord::Base
 end
 
 # 2. миграция для создания таблицы с пицами
-rake db:create_migration NAME=create_products
-
+# > rake db:create_migration NAME=create_products
 class CreateProducts < ActiveRecord::Migration[7.0]
   def change
     create_table :products do |t|
@@ -438,8 +438,7 @@ class CreateProducts < ActiveRecord::Migration[7.0]
     end
   end
 end
-
-rake db:migrate
+# > rake db:migrate
 
 
 puts
@@ -447,8 +446,8 @@ puts '                              Seed database. Миграция добавл
 
 # Seed database - наполнение базы данных начальными значениями
 
-# 1. Миграция добаления, в отдельном фаиле заполняет уже созданную до того таблицу. Ее названия начинаются с Add
-rake db:create_migration NAME=add_products
+# 1. Миграция добавления, в отдельном фаиле заполняет уже созданную до того таблицу. Ее названия начинаются с Add
+# > rake db:create_migration NAME=add_products
 # добавляется db/migrate/786238472_add_products.rb
 
 # 2. Заполняем фаил миграции - создаем в нем сущности.
@@ -480,7 +479,7 @@ class AddProducts < ActiveRecord::Migration[7.0]
 end
 
 # 3. Запускаем миграцию
-rake db:migrate
+# > rake db:migrate
 # В фаиле schema.rb изменяется только номер version: 2023_06_13_060331
 
 
