@@ -10,7 +10,7 @@
     <section class="card-text">
       <%= tag.time datetime: question.formatted_created_at do %> <!-- <time datetime="..."> -->
         <small><%= question.formatted_created_at %></small>
-      <% end %> <!-- </time> -->
+      <% end %>
 
       <!-- Рендерим набор тегов(_tag.html.erb) для данного конкретного вопроса (ManyToMany) -->
       <%= render question.tags %>

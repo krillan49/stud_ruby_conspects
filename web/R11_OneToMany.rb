@@ -203,9 +203,9 @@ end
 
 
 puts
-puts '                         User 1 - * Question. User 1 - * Answer. Методы up и down'
+puts '                                User 1 - * Some. Методы up и down'
 
-# (На примере AskIt) Привяжем вопросы и ответы к пользователям(их авторам) что были созданы кастомно в Reg_Aut_Dec
+# (На примере AskIt) Привяжем вопросы и ответы к пользователям(их авторам) что были созданы кастомно в CustomAutReg
 
 # 1. Создадим новые миграции чтобы добавить user_id с foreign_key в таблицы questions и answers
 # > rails g migration add_user_id_to_questions user:belongs_to
@@ -226,7 +226,7 @@ class AddUserIdToAnswers < ActiveRecord::Migration[7.0]
   end
 end
 # > rails db:migrate
-# В схему добавились все указанные ниже поля в таблицах(остальные поля тут опустим/не напишем в примере):
+# В схему добавились все указанные ниже поля в таблицах(остальные поля тут опустим):
 ActiveRecord::Schema[7.0].define(version: 2023_12_29_124632) do
   create_table "answers", force: :cascade do |t|
     t.integer "user_id", default: 1, null: false
@@ -290,7 +290,7 @@ class Answer < ApplicationRecord
 end
 
 
-# 3. Задекорируем ассоциации для user (question.user, answer.user) при помощи спец синтексиса прямо в декораторах вопросав и ответов, тк будем в представлениях применять к юзеру вызванному при помощи методов ассоциаций(взятому из таблицы) метод name_or_email и нам нужно чтобы юзер любого вопроса или ответа декорировался
+# 3. Задекорируем ассоциации для user (question.user, answer.user) при помощи спец синтаксиса прямо в декораторах вопросав и ответов, тк будем в представлениях применять к юзеру вызванному при помощи методов ассоциаций(взятому из таблицы) метод name_or_email(question.user.name_or_email, answer.user.name_or_email) и нам нужно чтобы юзер любого вопроса или ответа декорировался
 class QuestionDecorator < ApplicationDecorator
   delegate_all
   decorates_association :user # синтаксис автоматически декорирует ассоциацию юзера, получинную от вопроса
@@ -317,7 +317,7 @@ class AnswersController < ApplicationController
 
   def create
     @answer = @question.answers.build answer_create_params # но у ответа уже есть привязка к вопросу при создании, потому добавим значение для user_id в params
-    # @answer.user = current_user можно тут отдельно добавить значение поля user_id вместо .merge(user: current_user) в методе answer_create_params
+    # @answer.user = current_user можно тут отдельно добавить значение для поля user_id вопроса вместо .merge(user: current_user) в методе answer_create_params
     # ...
   end
 
@@ -353,15 +353,15 @@ def create
   else
     # далее наш повторяющийся код для выноса в метод консерна:
     @question = @question.decorate
-    @pagy, @answers = pagy @question.answers.order created_at: :desc
+    @pagy, @answers = pagy @question.answers.order(created_at: :desc)
     @answers = @answers.decorate
     render 'questions/show' # разница тут
   end
 end
-# questions_controller.rb
+# questions_controller.rb почти тот же повторяющийся код
 def show
   @question = @question.decorate
-  @answer = @question.answers.build # разница тут
+  @answer = @question.answers.build # разница тут (создаем для генерации URL в форме questions#show)
   @pagy, @answers = pagy @question.answers.order(created_at: :desc)
   @answers = @answers.decorate
 end
