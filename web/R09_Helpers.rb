@@ -102,6 +102,11 @@ root_path
 name_index_path
 # при этом хэлпер для show будет называться стандартно
 
+# Ссылки удаления, редактирования для one-to-many
+link_to 'Delete', question_answer_path(@question, answer), data: {method: :delete, confirm: "Are you sure?"}
+# <!-- question_answer_path(@question, answer) - передаем 2 параметра тк для URL нам нужны оба айдишника, важно сохранить порядок чтоб обладающая сущность стояла первой. Получим URL /questions/2/answers/2 -->
+link_to 'Edit', edit_question_answer_path(@question, answer), class: 'btn btn-info btn-sm'
+
 # хэлпер с заданием формата в котором запрос будет обработан контроллером
 admin_users_path(format: :zip)
 
