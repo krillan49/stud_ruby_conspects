@@ -36,6 +36,13 @@ p 3.times.to_a.zip([:to_s,:to_f,:itself]).map{|s, o| s.send(o)} #=> ["0", 1.0, 2
 
 
 
+require 'ipaddr'
+def ip_to_int32(ip)
+  IPAddr.new(ip).to_i
+end
+ip_to_int32("128.114.17.104") #=> 2154959208
+
+
 
 
 
