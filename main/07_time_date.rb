@@ -1,13 +1,13 @@
-puts '                                           Дата и время'
+puts '                                           Класс Time'
 
 # Класс Time представляет дату и время в Ruby. Это тонкий слой поверх системных функций даты и времени, предоставляемых операционной системой. Этот класс может быть неспособен в вашей системе представлять даты до 1970 или после 2038 года.
 
 
 # Получение текущей даты и времени Time.new и Time.now которые являются синонимами
-time1 = Time.new #=> 2022-11-10 13:21:18 +0300
-time2 = Time.now #=> 2022-11-10 13:21:18 +0300
-time1.class      #=> Time
-time1.inspect    #=> 2022-11-10 13:21:18.9216593 +0300
+time1 = Time.new    #=> 2022-11-10 13:21:18 +0300
+time2 = Time.now    #=> 2022-11-10 13:21:18 +0300
+time1.class         #=> Time
+time1.inspect       #=> 2022-11-10 13:21:18.9216593 +0300
 time1.inspect.class #=> String
 
 
@@ -15,7 +15,7 @@ time1.inspect.class #=> String
 time = Time.new
 time.year    #=> 2022  # Year of the date
 time.month   #=> 6     # Month of the date (1 to 12)
-time.day     #=> 16    # Day of the date (1 to 31 )
+time.day     #=> 16    # Day of the month (1 to 31 )
 time.wday    #=> 4     # Day of week(0-6): 0 is Sunday
 time.yday    #=> 167   # 365: Day of year
 time.hour    #=> 22    # 23: 24-hour clock
@@ -24,9 +24,8 @@ time.sec     #=> 10    # 59
 time.usec    #=> 56202 # 999999: microseconds
 time.zone    #=> RTZ 2 (����) # "UTC": timezone name
 
-# получения всех компонентов массива в следующем формате: [sec,min,hour,day,month,year,wday,yday,isdst,zone]
-time = Time.new
-values = time.to_a #=> [55, 21, 22, 16, 6, 2022, 4, 167, false, "RTZ 2 (\xE7\xE8\xEC\xE0)"]
+# получения всех компонентов массива в следующем формате: [sec, min, hour, day, month, year, wday, yday, isdst, zone]
+time.to_a    #=> [55, 21, 22, 16, 6, 2022, 4, 167, false, "RTZ 2 (\xE7\xE8\xEC\xE0)"]
 
 # Возвращает количество секунд с момента начала эпохи
 time = Time.now.to_i #=> 1682870032
@@ -50,7 +49,7 @@ Time.utc(*values) #=> 2022-06-16 22:23:34 UTC
 
 
 puts
-# Вы можете использовать объект Time , чтобы получить всю информацию, связанную с часовыми поясами и переходом на летнее время, следующим образом:
+# Получить всю информацию, связанную с часовыми поясами и переходом на летнее время:
 time = Time.new
 time.zone       #=> "UTC": return the timezone
 time.utc_offset #=> 0: UTC is 0 seconds offset from UTC
@@ -74,7 +73,13 @@ diff = future - past   #=> 20.0                                               # 
 
 
 puts
-puts '                                          Форматирование даты и времени'
+require 'time' # Для метода parse нужно подключить
+t = Time.parse("06:30:00") #=> 2022-08-15 06:30:00 +0300
+t.min #=> 30
+
+
+puts
+puts '                                      Форматирование даты и времени'
 
 # Существуют различные способы форматирования даты и времени. Например:
 time = Time.new  #=> 2022-06-16 22:29:54.325225 +0300
@@ -84,7 +89,7 @@ time.localtime   #=> 2022-06-16 22:29:54 +0300
 
 
 time.strftime("%Y-%m-%d %H:%M:%S") #=> 2022-06-16 22:29:54
-# Директивы форматирования времени. Эти директивы в следующей таблице используются с методом Time.strftime .
+# Директивы форматирования времени(используются с методом Time.strftime)
 "%а" # Сокращенное название дня недели (Вс).
 "%А" # Полное название дня недели (воскресенье).
 "%b" # Сокращенное название месяца (Jan).
@@ -107,16 +112,6 @@ time.strftime("%Y-%m-%d %H:%M:%S") #=> 2022-06-16 22:29:54
 "%Y" # Год с веком.
 "%Z" # Название часового пояса.
 "%%" # Буквальный символ %.
-
-
-puts
-# date -> time && time -> date
-(date.to_time + 10**9).to_date
-
-puts
-require 'time'
-t = Time.parse("06:30:00") #=> 2022-08-15 06:30:00 +0300
-t.min #=> 30
 
 
 puts
@@ -144,7 +139,7 @@ Date.valid_date?(2001, 2, 3)        #=> true
 Date.valid_date?(2001, 2, 29)       #=> false
 Date.valid_date?(2001, 2, -1)       #=> true
 
-# Отрицательные значения как индексы с конца
+# Отрицательные значения как индексы с конца например тут дней месяца
 Date.new(2001, 2, -1) # #<Date: 2001-02-28 ((2451969j,0s,0n),+0s,2299161j)>
 Date.new(2001, 2, -2) # #<Date: 2001-02-27 ((2451968j,0s,0n),+0s,2299161j)>
 # число дней в данном месяце данного года
@@ -163,13 +158,22 @@ Date.new(2022,11,4) - Date.new(2022,2,24) #=> (253/1)  дни  to_i=253
 Date.parse('2001-02-03')  #=> #<Date: 2001-02-03 ((2451944j,0s,0n),+0s,2299161j)>
 Date._parse('2001-02-03') #=> {:year=>2001, :mon=>2, :mday=>3}
 
-# пример
-require 'date'
-def dayOfTheWeek(date)
-  days = %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday]
-	y = date.split("/")[2].to_i
-  m = date.split("/")[1].to_i
-  d = date.split("/")[0].to_i
-  days[Date.new(y, m, d).wday]
-end
-p dayOfTheWeek("02/06/1940") #=> "Sunday"
+
+puts
+puts '                                               Разное'
+
+# date -> time && time -> date
+(date.to_time + 10**9).to_date
+
+
+
+
+
+
+
+
+
+
+
+
+#
