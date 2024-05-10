@@ -122,6 +122,11 @@ end
 print nameS #=> ["Bob!", "Kevin!", "Alex!", "George!"]
 
 
+for i in (1..7).reverse_each do
+  # ...
+end
+
+
 
 
 

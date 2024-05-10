@@ -54,11 +54,16 @@ puts '                                         Другие числовые т�
 
 
 puts
-puts '                                     TrueClass, FalseClass, NilClass'
+puts '                              TrueClass, FalseClass. Логический тип данных'
 
 # В Руби нет единого типа данных Boolean. Есть тип TrueClass и есть FalseClass. Принимают только true или же false. (1 байт)
 bool = false
 p bool #=> false
+
+p 5 > 3 #=> true
+
+res = 5 == 3
+p res #=> false
 
 # switch false-true
 a = false
@@ -73,6 +78,9 @@ num = 5
 fizz = (num % 3 == 0)
 p fizz #=> false
 
+
+puts
+puts '                                             NilClass'
 
 # Тип данных Nil - пустое значение переменной
 ni = nil
