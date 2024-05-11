@@ -33,6 +33,7 @@ puts '                                              Содержание'
 #   concern для модели и маршрутов
 #   модуль бутстрапа collapse для выпадающих форм
 #   decorates_association
+#   commentable.object  - извлечение сущьности из задекорированного объекта
 
 # R13_ManyToMany
 #   Метод класса модели с синтаксисом scope :all_by_tags, ->(tags) do .. end
