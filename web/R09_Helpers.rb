@@ -85,6 +85,13 @@ f.collection_select :tag_ids, objcts, :id, :title, {}, multiple: true
 # multiple: true - ставит атрибут multiple в селектор (выбор множества вариантов через контрл)
 
 
+# <!-- Тег(сущьность) из коллекци тегов(рендерятся в _question.html.erb) принадлежащих вопросу обернутый в ссылку для выбора всех вопросов имеющих этот тег -->
+link_to questions_path(tag_ids: tag), class: 'badge rounded-pill bg-light text-dark d-inline-block px-2 pt-1 pb-2 me-1' do
+  tag.title
+end
+# questions_path(tag_ids: tag) - хэлпер URL содержащий в адресе айдишник данного тега GET '/questions?tag_ids=1'
+
+
 puts
 puts '                         Встроенные routes хэлперы(для URL) - именнованные маршруты'
 
