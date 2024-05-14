@@ -36,8 +36,8 @@ puts '                                              Содержание'
 #   commentable.object  - извлечение сущьности из задекорированного объекта
 
 # R13_ManyToMany
-#   Метод класса модели с синтаксисом scope :all_by_tags, ->(tags) do .. end
 #   TomSelect, ajax и поиск
+#   Форма с GET-запросом (экшен index) на ту же страницу
 #   парсинг json(serialize) blueprinter, рендер json
 
 # R14_Scaffolding

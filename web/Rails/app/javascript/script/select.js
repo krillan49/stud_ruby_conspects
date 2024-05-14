@@ -14,12 +14,12 @@ document.addEventListener("turbolinks:before-cache", function() {
 document.addEventListener("turbolinks:load", function() {
   const i18n = Translations[document.querySelector('body').dataset.lang] // для того чтобы определить для какого языка использовать перевод, инфу берем из аттрибута тега body из лэйаут (<body data-lang="<%= I18n.locale %>"> )
 
-  document.querySelectorAll('.js-multiple-select').forEach((element) => { // те для каждого элемента селектора с классом .js-multiple-select
-    // Создаем опции:
+  document.querySelectorAll('.js-multiple-select').forEach((element) => {
+    // те для каждого элемента селектора с классом .js-multiple-select создаем опции:
     let opts = {
       plugins: { // Подключаем в опциях плагины
         'remove_button': {
-          title: i18n['remove_button'] // переод для плагина
+          title: i18n['remove_button'] // перевод для плагина
         }, // 'remove_button' - плагин позволяет удалять элементы(у нас теги при нажатии на крестик ??)
         'no_backspace_delete': {}, // для удобства работы с backspace
         'restore_on_backspace': {} // для удобства работы с backspace
@@ -37,7 +37,7 @@ document.addEventListener("turbolinks:load", function() {
 
         fetch(url)
           .then(response => response.json()) // получаем ответ от сервера
-          .then (json => { callback(json) })
+          .then(json => { callback(json) })
           .catch(() => { callback() })
       },
       // Переопределяем атрибут TomSelect-а render, чтобы добавить переводы в случае отсутсвия резов выбора ??
