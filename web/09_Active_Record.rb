@@ -503,9 +503,12 @@ end
 
 # Выделим "product_1=4,product_2=7,product_3=4," разбивку в метод(хэлпер):
 # Это не эффективный способ, лучше использовать json (позволяет поддерживать формат данных любой сложности).
-def parse_orders_input(orders_input)
-  #"product_1=4,product_2=7,product_3=4," => [["1", "4"], ["2", "7"], ["3", "4"]]
-  orders_input.split(',').map{|prod| prod.split('=')}.map{|a| [a[0][-1], a[1]]}
+def parse_orders_input(orders_input) #"product_1=4,product_2=7,product_3=4,"
+  orders_input.split(',')
+              .map{|prod| prod.split(/[_=]/)}
+              .map{|a| [a[1], a[2]]} # => [["1", "4"], ["2", "7"], ["3", "4"]]
+              .map{|k, v| [Product.find(k.to_i), v.to_i]} #=> [[obj1, 4], ...]
+              .to_h #=> {obj1 => 4, ...} тоесть хэш где ключ сущность, а значение число заказов на нее
 end
 
 # Тот случай когда только пост-обработчик. Тк для приема списка заказов пользователь только нажимает кнопку на главной странице, а данные берутся из локалсторэдж.
@@ -514,12 +517,9 @@ post '/cart' do
 
 	@order_code = params[:orders] # "product_1=4,product_2=7,product_3=4,"
 
-  # Если пустой локалсторедж
-  return erb "Cart is empty" if @order_code.size == 0
+  return erb "Cart is empty" if @order_code.size == 0 # Если пустой локалсторедж
 
-	order_list = parse_orders_input(params[:orders])
-	# => {obj1 => 4, ...} тоесть хэш где ключ сущность а значение число заказов на нее
-	@order_list = order_list.map{|k, v| [Product.find(k.to_i), v.to_i]}.to_h
+	@order_list = parse_orders_input(params[:orders]) # парсим строку заказов в хэлпере
 
 	erb :pizzashop_cart
 end

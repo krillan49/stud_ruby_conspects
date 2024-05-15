@@ -5,8 +5,8 @@ function addToCart(id) {
   window.localStorage.setItem('product_' + id, x); // устанавливаем новое значение хэша(число товаров с этим айди в корзине)
 
   // (см функции ниже) Обновляем значения в полях после нажатия кнопки и соотв изменения значений в локалсторедж
-  updateOrdersInput(); // вызываем метод для обновления значения "product_1=3,product_2=5,product_3=1, ..." в скрытом поле
   updateOrdersButton(); // вызываем метод для обновления отображения счетчика всех товаров в значении кнопки
+  updateOrdersInput();  // вызываем метод для обновления значения "product_1=3,product_2=5,product_3=1, ..." в скрытом поле
 }
 
 
@@ -15,7 +15,7 @@ function addToCart(id) {
 // б. обратиться к кнопке в имя которой мы хотим поместить общее число заказов чтобы информацию о заказах было видно клиенту.
 function updateOrdersButton() {
   var text = 'Корзина (' + cartGetNumberOfItems() + ' шт.)'; // Используем функцию с общим числом заказов
-  $('#orders_button').val(text);
+  $('#orders_button').val(text); // Используем джэйквери - для этого в лэйоут нужно подключть его
 }
 
 
@@ -24,8 +24,6 @@ function updateOrdersButton() {
 // б. обратиться к полю в которое мы хотим поместить "product_1=3,product_2=5,product_3=1, ..." чтобы потом отправить этот результат на сервер.
 function updateOrdersInput() {
   var orders = сartGetOrders(); //  "product_1=3,product_2=5,product_3=1, ..."
-
-  // Используем джэйквери - для этого в лэйоут нужно подключть его, например так <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>  либо бутстрапное
   $('#orders_input').val(orders); // обращаемся к полю формы через его айди и вставляем в его значение(value) "product_1=3,product_2=5,product_3=1, ...". val(orders) - метод установки значений
 }
 
@@ -33,7 +31,7 @@ function updateOrdersInput() {
 // Счетчик для общего количества товаров в корзине:
 function cartGetNumberOfItems() {
   var cnt = 0;
-  for (var i = 0; i < window.localStorage.length; i++) { // от 0 до длинны локалсторедж
+  for (var i = 0; i < window.localStorage.length; i++) {
     var key = window.localStorage.key(i); // получаем ключ по идексам ключей локалсторедж
     if(key.indexOf('product_') == 0) { // проверяем начинается ли ключ с 'product_'
       var value = window.localStorage.getItem(key); // теперь по полученному выше ключу получаем значение из локалсорэдж
