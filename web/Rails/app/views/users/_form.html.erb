@@ -13,19 +13,19 @@
     <%= f.text_field :name, placeholder: 'Name', class: 'form-control form-control-lg' %>
   </div>
 
-  <div><!-- поле только для чтения с ролью пользователя (UsersRoles) -->
+  <div> <!-- поле только для чтения с ролью пользователя (UsersRoles) -->
     <%= f.label :role %>
     <%= f.text_field :role, value: t(user.role, scope: 'global.user.roles'),
       class: 'form-control-plaintext form-control-lg', readonly: true %>
   </div>
 
-  <div><!-- поле для данных для виртуального атрибута password -->
+  <div> <!-- поле для данных для виртуального атрибута password -->
     <%= f.label :password %>
     <%= f.password_field :password, class: 'form-control form-control-lg' %>
     <!-- password_field - генерирует поля для ввода пароля со звездочками при заполнении -->
   </div>
 
-  <div><!-- поле для данных для виртуального атрибута password_confirmation -->
+  <div> <!-- поле для данных для виртуального атрибута password_confirmation -->
     <%= f.label :password_confirmation %>
     <%= f.password_field :password_confirmation, class: 'form-control form-control-lg' %>
   </div>

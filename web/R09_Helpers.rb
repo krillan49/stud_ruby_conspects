@@ -75,6 +75,10 @@ end
 # form_with - встроенный хэлпер для создания формы в виде
 
 
+f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg'
+# email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу
+
+
 # collection_select - хэлпер селектора, который может принимать коллекцию сущностей и подставлять ее свойства
 f.collection_select :tag_ids, objcts, :id, :title, {}, multiple: true
 # :tag_ids - значение атрибута name поля

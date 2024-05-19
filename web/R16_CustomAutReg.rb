@@ -12,7 +12,7 @@ gem "bcrypt", "~> 3.1.7" # В Gemfile он есть по умолчанию пр
 # В Рэилс уже есть встроенный метод(для модели) от bcrypt гема - has_secure_password
 # https://api.rubyonrails.org/classes/ActiveModel/SecurePassword/ClassMethods.html
 has_secure_password(attribute = :password, validations: true) # опции метода по умолчанию ??
-# password - встроенный виртуальный атрибут, на его основе необходимо назвать наш атрибут для таблицы с хэшированным паролем XXX_digest и виртуальные атрибуты XXX_confirmation, XXX_challenge.
+# password (тут) - встроенный виртуальный атрибут, на его основе необходимо назвать наш атрибут для таблицы с хэшированным паролем XXX_digest и виртуальные атрибуты XXX_confirmation, XXX_challenge.
 # validations: true  - по умолчанию проводит валидации своих атрибутов ??
 
 # Виртуальные атрибуты это те, которые можно вызывать на экземпляре модели, тоесть существуют в модели, но которые не существуют в БД, тоесть ни пароль ни подтверждение пароля не попадут в БД и нужны только для того, чтобы пользователь мог ввести пароль в форму для того чтобы мы его обработали, но в БД попадет только password_digest - хэшированный пароль.
@@ -48,7 +48,7 @@ end
 u = User.new #=> #<User:0x0000015823feddb0 id: nil, email: nil, name: nil, password_digest: nil, created_at: nil, updated_at: nil>
 
 # Метод has_secure_password добавит 2 виртуальных атрибута password и password_confirmation:
-u.password #=> nil                # пароль
+u.password              #=> nil   # пароль
 u.password_confirmation #=> nil   # подтверждение пароля
 
 # Зарегистрируемся:
@@ -62,7 +62,7 @@ u.save #=> true # далее видно что в БД создался password
 # 1|testtest.com|aaa|$2a$12$RdiNXOPOIqzs6dd9mRS.c.AlGKBjWBcalMeKR90g93.0TKd4qCJku|2023-11-15 11:45:31.167301|2023-11-15 11:45:31.167301
 
 # authenticate - метод для того чтобы проверить(пустить или нет) юзера в систему, он принимает пароль(строку), хэширует его, сравнивает со значением хэшированного пароля в поле password_digest и возврвщает true(объект пользователя) или false
-u.authenticate "notright" #=> false
+u.authenticate "some" #=> false
 u.authenticate "test" #=> #<User:0x0000015823feddb0 id: 1, email: "testtest.com", name: "aaa", password_digest: "[FILTERED]", created_at: Wed, 15 Nov 2023 11:45:31.167301000 UTC +00:00, updated_at: Wed, 15 Nov 2023 11:45:31.167301000 UTC +00:00>
 
 
@@ -86,7 +86,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new user_params # ? has_secure_password используется тут ?
     if @user.save
-      session[:user_id] = @user.id # используем механизм сессий для того чтобы пустить пользователя в систему(те поставить признак говорящий о том что пользователь зарегистрирован и вошел в систему). Сессия действует только ограниченное время, например пользователь закроет браузер и сессия закончится, те запись из хэша удалится. Сессия не может как куки запоминать пользователя и пускать его например на след день.
+      session[:user_id] = @user.id # используем механизм сессий для того чтобы пустить пользователя в систему(те поставить признак говорящий о том что пользователь зарегистрирован и вошел в систему). Сессия действует только ограниченное время, например пользователь закроет браузер и сессия закончится, те запись из хэша удалится. Сессия не может как куки запоминать пользователя и пускать его например на следующий день.
       flash[:success] = "Welcome to the app, #{@user.name}!"
       redirect_to root_path
     else
@@ -106,8 +106,8 @@ puts
 puts '                                 Хэлперы и декораторы для User'
 
 # 1-a. Создадим хэлперы при помощи спец синтаксиса прямо в главном контроллере application_controller.rb:
-# current_user  - возвращает текущего пользователя
-# user_signed_in?  - при помощи session[:user_id] проверяет что пользователь залогинен а не гость
+# current_user    - возвращает текущего пользователя
+# user_signed_in? - при помощи session[:user_id] проверяет что пользователь залогинен или незалогтненый гость
 class ApplicationController < ActionController::Base
 
   private
@@ -135,7 +135,7 @@ end
 # app/decorators/user_decorator.rb
 class UserDecorator < ApplicationDecorator
   delegate_all
-  # Создадим метод, который будет выполнять метод name если имя есть у объекта иначе вернет распарсеный email
+  # Создадим метод, который будет выполнять метод name если имя есть у объекта, иначе вернет распарсеный email
   def name_or_email
     return name if name.present? # если имя есть то просто его выведем
     email.split('@')[0] # если имени нет, то сделаем его из имэила, взяв строку до символа @
@@ -152,7 +152,7 @@ puts
 puts '                   Log in и Log out(вход и выход из системы/создание и удаление сессии)'
 
 # Для этого создадим отдельные маршруты и контроллер для сессий(создания и удаления, тоесть входа и выхода из системы).
-# можно было бы создать доп маршруты и экшены для контроллера пользователя, но это не лучшее решение
+# Можно было бы создать доп маршруты и экшены для контроллера пользователя, но это не лучшее решение
 
 # 1. Создадим новый ресурс с маршрутами для создания(входа в систему) и удаления(выхода из системы) сессии
 Rails.application.routes.draw do
@@ -173,15 +173,15 @@ class SessionsController < ApplicationController
 
   def create
     # Ничего в БД помещать не будем, а просто проверим пароль и впустим пользователя или нет
-    user = User.find_by email: params[:email] # ищем пользователя по его имэйлу (используем параметры по отдельным полям)
-    if user&.authenticate(params[:password]) # используем метод authenticate для того чтобы проверить пользователя, захешировав введенный пароль и сравнив его с хэшированным паролем из БД. (& - добавим амперсант, чтобы вызов метода не выдал ошибку, тк user может вернуть nil)
+    user = User.find_by email: params[:email] # ищем пользователя по его имэйлу
+    if user&.authenticate(params[:password]) # используем метод authenticate для того чтобы проверить пользователя, захешировав введенный пароль и сравнив его с хэшированным паролем из БД. (& - добавим амперсант, тк user может вернуть nil)
 
       # Вар 1: создаем для юзера сессию если все ок
       session[:user_id] = user.id
       # Вар 2: лучше вынести это в консерн authentication.rb в отдельный метод (тк далее эта логика может стать сложнее)
       sign_in(user) # тоже применим и в контроллере юзеров
 
-      flash[:success] = "Welcome back, #{current_user.name_or_email}!" # тк current_user задекорирован ранее
+      flash[:success] = "Welcome back, #{current_user.name_or_email}!" # current_user задекорирован ранее, потому нет смысла декорировать и user
       redirect_to root_path
     else
       flash.now[:warning] = "Incorrect email and/or password!" # не будем сообщать что именно введено неправильно, чтобы не упрощать жизнь злоумышленникам
@@ -201,7 +201,7 @@ class SessionsController < ApplicationController
     redirect_to root_path
   end
 
-  # Разрешать параметры нам тут не нужно, в БД данные в этом контроллере заноситься не будут
+  # Разрешать параметры нам тут не нужно, тк в БД данные в этом контроллере заноситься не будут
 end
 
 
