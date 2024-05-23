@@ -1,3 +1,11 @@
+puts '                                          Опции валидаций'
+
+validates :password, confirmation: true, allow_blank: true, length: {minimum: 8, maximum: 70}
+# confirmation: true - значит что значение поле :password должно совпадать со значением в поле :password_confirmation
+# allow_blank: true - можно оставить поле пустым
+
+
+puts
 puts '                             Метод в модели для работы с сущностью в предсталении'
 
 # Метод экземпляра созданный в классе модели, соотв может быть использован объектами этой модели, тоесть сущьностями
@@ -46,6 +54,30 @@ class Question < ApplicationRecord
       questions = questions.includes(:question_tags, :tags)
     end
     questions.order(created_at: :desc) # возвращаем к константе модели с сортировкой
+  end
+end
+
+
+puts
+puts '                             Виртуальный атрибут в модели. Кастомные валидации'
+
+# Виртуальный атрибут это тот что существует только в модели, но не существует поля в таблице для него. Нужен например если нужно проверить какието дополнительные данные переданные через форму, которые в отличие от остальных не нужно заносить в БД
+
+class User < ApplicationRecord
+  attr_accessor :old_password # добавим новый виртуальный атрибут в модель, тк будем вводить в него данные в форме
+
+  # ?? Отличия validate от validates - validate для проверки кастомного метода ??
+
+  validate :correct_old_password, on: :update, if: -> { password.present? }
+  # :correct_old_password - наш кастомный метод валидации
+  # on: :update - валидация будет происходить только при обновлении записи, тоесть если сущность проверяеттся из экшена update
+  # if: -> { password.present? } - условие с лямбдой, без которого валидация проводиться не будет
+
+  private
+
+  def correct_old_password
+    return if old_password == 'qwerty123456' # если соответсвует ничего не делаем
+    errors.add :old_password, 'is incorrect' # вызываем ошибку валидации с сообщением если значение в поле неправильное
   end
 end
 
