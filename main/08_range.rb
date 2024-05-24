@@ -87,6 +87,14 @@ puts '                                         Метод inject/reduce'
 ('a'..'d').inject(['x'], :push)      #=> ["x", "a", "b", "c", "d"]
 
 
+# Вариант когда надо и with_index и with_object
+arr.each_with_index.inject({}) do |hh, (e, i)|
+  hh[e] = i
+  # какието действия
+  hh # теперь при каждой итерации hh берется из предыдущей итерации
+end
+
+
 
 
 
