@@ -16,20 +16,20 @@ module Authentication
       elsif cookies.encrypted[:user_id].present? # если нет в сессии то проверяем в куки
         user = User.find_by(id: cookies.encrypted[:user_id]) # получаем юзера по айди взятому из куки
         if user&.remember_token_authenticated?(cookies.encrypted[:remember_token]) # используем метод проверки из модели и сравниваем токен из куки с хэшированным токеном этого пользователя из БД
-          sign_in(user) # если все сходится можно и сразу установить сессиию, чтобы ускорить послед проверки
+          sign_in(user) # если все сходится можно и сразу установить сессиию, чтобы ускорить последующие проверки
           @current_user ||= user&.decorate # и если все сходится назначаем текущего пользователя
         end
       end
     end
     # Версия 3: отрефакторим выделив подметоды по рекомендации рубокопа
     def current_user
-      user = session[:user_id].present? ? user_from_session : user_from_token
+      user = session[:user_id].present? ? user_from_session : user_from_token # тоесть если существует сессия, то проверяем юзера по сессии(метод ниже) иначе по куки(второй метод ниже)
       @current_user ||= user&.decorate
     end
-    def user_from_session
+    def user_from_session # проверяем юзера по сессии
       User.find_by(id: session[:user_id])
     end
-    def user_from_token
+    def user_from_token # проверяем юзера по куки
       user = User.find_by(id: cookies.encrypted[:user_id])
       token = cookies.encrypted[:remember_token]
       return unless user&.remember_token_authenticated?(token)
