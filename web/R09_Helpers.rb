@@ -71,12 +71,22 @@ link_to '#', class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdo
 end
 # '#' - URL для ссылки тут 1м параметром, тк за тело ссылки отвечает блок
 
+# ссылка/кнопка для работы с форматом zip. Выгрузит для пользователя(админа) данные(XLSX) в формате архива(zip)
+link_to 'Download zipped XLSX', admin_users_path(format: :zip),
+  class: 'btn btn-secondary', data: {confirm: t('global.dialog.you_sure')}
+# admin_users_path(format: :zip) - добавляем в хэлпер URL параметр format: :zip, это значит что к URL допишется .zip
+# data: {confirm: t('global.dialog.you_sure')} - подтверждение нажатия кнопки
+
 
 # form_with - встроенный хэлпер для создания формы в виде
 
 
 f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg'
 # email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу
+
+
+f.file_field :archive, class: 'form-control'
+# file_field - хэлпер генерирует поле для загрузки фаила
 
 
 # collection_select - хэлпер селектора, который может принимать коллекцию сущностей и подставлять ее свойства

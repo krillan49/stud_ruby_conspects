@@ -15,11 +15,7 @@
 <table class="table table-striped table-hover">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
-      <th scope="col">Created at</th>
-      <th scope="col">Updated at</th>
+      <th>#</th><th>Name</th><th>Email</th><th>Created at</th><th>Updated at</th>
     </tr>
   </thead>
   <tbody>
@@ -34,12 +30,12 @@
 <table class="table table-striped table-hover">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col"><%= t 'name', scope: scope %></th> <!-- scope: scope - берем переменную и добавляем к ней '.name' -->
-      <th scope="col"><%= t 'email', scope: scope %></th>
-      <th scope="col"><%= t 'role', scope: scope %></th> <!-- название колонки для роли -->
-      <th scope="col"><%= t 'created_at', scope: scope %></th>
-      <th scope="col"></th> <!-- колонка для кнопок удаления и редактирования можно не назвапть никак -->
+      <th>#</th>
+      <th><%= t 'name', scope: scope %></th> <!-- scope: scope - берем переменную и добавляем к ней '.name' -->
+      <th><%= t 'email', scope: scope %></th>
+      <th><%= t 'role', scope: scope %></th> <!-- название колонки для роли -->
+      <th><%= t 'created_at', scope: scope %></th>
+      <th></th> <!-- колонка для кнопок удаления и редактирования можно не назвапть никак -->
     </tr>
   </thead>
   <tbody>
