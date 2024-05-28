@@ -1,6 +1,6 @@
 module Admin
   module UsersHelper
-    # для наполнение селектора в admin/users/_form.html.erb ролями
+    # для наполнения селектора в admin/users/_form.html.erb ролями
     def user_roles
       User.roles.keys.map do |role|
         # User.roles - обращвемся к модели и получаем от enum хэш ролей { basic: 0, moderator: 1, admin: 2 }
