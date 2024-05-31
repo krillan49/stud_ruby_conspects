@@ -2,6 +2,12 @@ puts '                                          Готовые решения'
 
 puts "\e[H\e[2J" # Хитрый способ очистить экран
 
+
+# Для переключения переключателя булевой переменной
+@hero_tern = true
+@hero_tern = !@hero_tern
+
+
 # код грея  https://translated.turbopages.org/proxy_u/en-ru.ru.a92bc5bb-637a4195-d42522da-74722d776562/https/www.tutorialspoint.com/conversion-of-gray-code-to-binary
 
 # https://mathworld.wolfram.com/TowerofHanoi.html  (Tower of Hanoi)
