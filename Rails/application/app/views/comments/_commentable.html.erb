@@ -60,6 +60,7 @@
 <!--                               Вариант сокрытием формы (UsersRoles) -->
 
 <% is_current_comment = comment&.for?(commentable) %>
+
 <!-- Создадим локальную переменную и для билдера URL в форме и заодно для проверки доступа, тк вернет сущность коммента -->
 <% comment_builder = is_current_comment ? comment : commentable.comments.build %>
 
@@ -67,7 +68,7 @@
 
 <%= tag.div class: "collapse #{'show' if is_current_comment}", id: html_id do %>
 
-  <!-- Скрываем форму для пользователей бнз соотв доступа -->
+  <!-- Скрываем форму для пользователей без соотв доступа -->
   <% if policy(comment_builder).create? %>
 
     <%= form_with model: [commentable, comment_builder], class: 'pt-3 border-top my-2' do |f| %>

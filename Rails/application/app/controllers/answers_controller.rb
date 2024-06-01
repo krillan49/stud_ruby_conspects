@@ -83,3 +83,18 @@ class AnswersController < ApplicationController
     authorize(@answer || Answer)
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 

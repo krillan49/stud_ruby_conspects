@@ -10,7 +10,7 @@ module Authorization
 
     def user_not_authorized # обработка ошибки отсутствия прав на экшен
       flash[:danger] = t 'global.flash.not_authorized'
-      redirect_to(request.referer || root_path) # редирект на страницу с которой переходили на ошибку или корневую
+      redirect_to(request.referer || root_path) # редирект на страницу с которой переходили на ошибку или на корневую
     end
   end
 end
