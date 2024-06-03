@@ -3,4 +3,4 @@ Someone has requested password reset for your account. Please visit this URL to 
 <%# Добавим токен в просто адресс, тк формат текста не поддерживает функционал ссылки %>
 
 <%= url_for edit_password_reset_url(user: {password_reset_token: @user.password_reset_token, email: @user.email}) %>
-<%# url_for - генерирует URL без ссылки, тоесть просто троку адреса %>
+<%# url_for - генерирует URL без ссылки, тоесть просто строку адреса %>

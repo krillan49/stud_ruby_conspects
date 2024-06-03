@@ -11,7 +11,7 @@ module Recoverable
       # update (или тоже самое self.update) - тоесть метод обновления юзера(метод экземпляра модели обновляющий запись в БД ??)
       # password_reset_token: - тоесть обновляем значение поля токена сброса пароля
       # digest(SecureRandom.urlsafe_base64) - используем метод написанный ранее в модели user.rb, чтобы сгенерировать хэш-токен
-      # password_reset_token_sent_at: Time.current - тоесть обносляем время создания токена на текущее время в текущей временной зоне (временная зона настраивается в config/application.rb)
+      # password_reset_token_sent_at: Time.current - тоесть обновляем время создания токена на текущее время в текущей временной зоне (временная зона настраивается в config/application.rb)
     end
 
     def clear_reset_password_token # очистим поля токена сброса пароля и метки времени, после смены пароля

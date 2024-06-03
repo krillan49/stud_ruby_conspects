@@ -12,5 +12,6 @@
   <!-- required: true  - чтобы пользователь не забыл ввести имэил в поле -->
 
   <%= f.submit t('.form.submit'), class: 'btn btn-primary btn-lg' %>
+  
   <%= link_to t('.form.back'), new_session_path, class: 'btn btn-secondary' %> <!-- Просто возврат к форме логина, если вспомнил свой пароль например -->
 <% end %>
