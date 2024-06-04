@@ -5,6 +5,8 @@ puts '                                              YAML'
 # Расширения для фаилов YAML - .yml или .yaml
 # Например тут будет фаил - 41_yaml.yml (описание синтаксиса там)
 
+# https://1cloud.ru/help/docker/manual_yaml           Краткий мануал по YAML
+
 
 puts
 puts '                                      Считывание YAML в Руби'
@@ -16,7 +18,7 @@ data = YAML.safe_load_file('41_yaml.yml', symbolize_names: true)
 # 41_yaml.yml - имя(?относительный маршрут?) YAML фаила
 # symbolize_names: true   - преобразует ключи в хэше в символы (по умолчанию ключи будут строками)
 
-p data #=> { :key1=>"Value 1", :key2=>"Value 2", :hello=>"bye", :key3=>["K3value 1", "K3value 2", "K3value 3"] }
+p data #=> {:key1=>"Value 1", :key2=>"Value 2", :hello=>"bye", :some=>{:some1=>"some", :some2=>"some2"}, :key3=>["K3value 1", "K3value 2", "K3value 3"]}
 # Соотв далее можем пользоваться обычным хэшем с данными
 p data[:key3] #=> ["K3value 1", "K3value 2", "K3value 3"]
 
