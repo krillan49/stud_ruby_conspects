@@ -17,6 +17,13 @@
   </head>
 
   <body>
+    <!--                          Devise: Добавим для для отображения флеш-сообщений -->
+
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
+
+
+
     <!--                             Devise: Добавим ссылки входа и выхода -->
 
     <!-- Логичнее всего добавлять в шапку -->
@@ -29,11 +36,11 @@
 
 
     <!-- Вариант 2: по методам-хэлперам для путей -->
-    <%= link_to "Sign In", new_user_session_path %> <!-- GET	 /users/sign_in(.:format)	  devise/sessions#new -->
-    <%= link_to "Sign Out", destroy_user_session_path, method: :delete %> <!-- GET	 /users/sign_out(.:format)	devise/sessions#destroy (!!! delete при помощи запроса GET) -->
-    <!-- Из комментов(! но у меня и как вышеэ сработало изза того что производил манипуляции в роутес и конфиг ??): -->
+    <%= link_to "Sign In", new_user_session_path %> <!-- GET /users/sign_in(.:format)  devise/sessions#new -->
+    <%= link_to "Sign Out", destroy_user_session_path, method: :delete %> <!-- GET /users/sign_out(.:format) devise/sessions#destroy (!!! delete при помощи запроса GET) -->
+    <!-- Из комментов(! но у меня и как выше сработало изза того что производил манипуляции в роутес и конфиг ??): -->
     <%= link_to 'Sign Out', destroy_user_session_path,
-    data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' } %>
+    data: { 'turbo-method': :delete, 'turbo-confirm': 'Выйти? Вы уверены?' } %> <!-- turbo_method: -->
 
 
     <!-- Вариант 2-2: выведем почту/имя пользователя если авторизированы, и уберём Sign Out ссылку, когда мы не авторизованы, при помощи обработчиков хэлперов.
@@ -48,14 +55,6 @@
     <% else %>
       <%= link_to "Sign In", new_user_session_path %>
     <% end %>
-
-
-
-    <!--                          Devise: Добавим для для отображения флеш-сообщений -->
-
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
-
 
 
 
