@@ -1,34 +1,3 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   "true": "foo"
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
 # !!! Потом перенести полный код из проекта
 
 en: #  указывает на локаль(удалять не нужно)
@@ -51,6 +20,171 @@ en: #  указывает на локаль(удалять не нужно)
       new_comment: Add your comment:
     edit:
       header: Edit article
+
+# Копия полного фаила из AskIt
+---  # хз зачем
+en:
+  activerecord:
+    attributes:
+      comment:
+        body: Body
+      answer:
+        body: Body
+        question: Question
+      question:
+        body: Body
+        title: Title
+        tags: Tags
+        tag_ids: Tags
+      user:
+        created_at: Created at
+        email: Email
+        name: Name
+        old_password: Old password
+        password: Password
+        password_confirmation: Password confirmation
+        updated_at: Updated at
+        role: Role
+    models:
+      question: Question
+  admin:
+    user_mailer:
+      bulk_import_done:
+        subject: User import done | AskIt
+      bulk_import_fail:
+        subject: User import failed | AskIt
+      bulk_export_done:
+        subject: User export done | AskIt
+    users:
+      edit:
+        title: Edit user
+      destroy:
+        success: User deleted!
+      update:
+        success: User updated!
+      create:
+        success: You'll get an email once this operation is done
+      index:
+        success: You'll get an email once this operation is done
+        download_zipped: Download zipped XLSX
+        title: Admin Users
+        upload_form:
+          archive: Select archive
+          submit: Upload!
+        upload_zipped: Upload users from XLSX
+  comments:
+    create:
+      success: Comment created!
+    destroy:
+      success: Comment deleted!
+  answers:
+    create:
+      success: Answer created!
+    destroy:
+      success: Answer deleted!
+    edit:
+      title: Edit answer
+    update:
+      success: Answer updated!
+  en: English
+  global:
+    errors:
+      invalid_format: has invalid format
+    user:
+      roles:
+        basic: Basic
+        moderator: Moderator
+        admin: Admin
+    button:
+      delete: Delete
+      edit: Edit
+      show: Show
+      submit: Submit
+    dialog:
+      you_sure: Are you sure?
+    flash:
+      already_signed_in: You are already signed in!
+      not_signed_in: You are not signed in!
+      not_authorized: You are not authorized to perform this action!
+    text:
+      omission: "... (continued)"
+  menu:
+    edit_profile: Profile
+    home: Home
+    log_in: Log In
+    log_out: Log out
+    questions: Questions
+    sign_up: Sign Up
+    users: Users
+  pages:
+    index:
+      title: Welcome to AskIt!
+  questions:
+    create:
+      success: Question created!
+    destroy:
+      success: Question deleted!
+    edit:
+      title: Edit question
+    index:
+      new: New question
+      title: Questions
+      search_by_tags: Search by tags
+    new:
+      title: New question
+    show:
+      answers: Answers
+      write_answer: Write your answer
+      comments: Comments
+    update:
+      success: Question updated!
+  ru: Russian
+  password_reset_mailer:
+    reset_email:
+      subject: 'Password reset | AskIt'
+  password_resets:
+    fail: Could not reset your password...
+    edit:
+      title: Enter new password
+      form:
+        submit: Reset my password!
+    update:
+      success: Your password was reset!
+    create:
+      success: Password reset instructions were sent to your email address.
+    new:
+      title: Reset password
+      form:
+        email: Email
+        submit: Send reset instructions
+        back: Back to sign in
+  sessions:
+    create:
+      invalid_creds: Incorrect email and/or password!
+      success: Welcome back, %{name}!
+    destroy:
+      success: See you later!
+    new:
+      form:
+        email: Email
+        password: Password
+        remember_me: Remember me
+        submit: Sign in!
+        forgot_password: I forgot my password
+      title: Log In
+  users:
+    create:
+      success: Welcome to the app, %{name}!
+    edit:
+      title: Edit profile
+    global:
+      forms:
+        register: Register
+        save: Save
+    new:
+      title: Registration
+    update:
+      success: Your profile was successfully updated!
 
 
 

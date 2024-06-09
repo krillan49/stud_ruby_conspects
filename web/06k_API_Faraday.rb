@@ -19,6 +19,10 @@ gem 'faraday', '~> 2.9'
 # > gem install faraday
 
 
+puts
+puts '                                GET запрос, при помощи Faraday на API'
+
+# Пошлем GET запрос на Twitter API
 
 require 'faraday' # подключаем гем Faraday
 require 'json'
@@ -49,6 +53,70 @@ puts response.body #=> строка
 
 raw_tweets = JSON.parse(response.body) # Преобразуем строку в хэш при помощи библиотеки JSON
 # Теперь мы можем легко оперировать данными из ответа на наш запрос
+
+
+puts
+puts '                                POST запрос, при помощи Faraday на API'
+
+# Пошлем POST-запрос на API https://api.funtranslations.com/, чтобы получить смешной перевод в стиле Мастера Йоды
+require 'faraday'
+
+# Создаем экземпляр Фарадей с передачей базового ЮРЛ
+conn = Faraday.new url: 'https://api.funtranslations.com'
+# 'https://api.funtranslations.com' - базовый ЮРЛ для запросов на api.funtranslations, к нему будем пристыковывать доп подадрес для конкретного перевода и параметры
+
+# Посылаем пост-запрос при помощи метода post
+res = conn.post('/translate/yoda.json', "text=Master Obiwan has lost a planet.")
+# '/translate/yoda.json' - тоесть доп часть адреса к переводам Йоды на api.funtranslations.com
+# "text=Master Obiwan has lost a planet." - параметры с текстом для перевода, которые будут пристыкованы к ЮРЛ, тут заданы в стиле форматирования url_encoded
+
+puts res.body #=>
+# {
+#     "success": {
+#         "total": 1
+#     },
+#     "contents": {
+#         "translated": "Lost a planet,  master obiwan has.",
+#         "text": "Master Obiwan has lost a planet.",
+#         "translation": "yoda"
+#     }
+# }
+
+
+puts
+# Тот же запрос но в более подробной и сложной форме
+require 'faraday'
+
+# опции с указанием дополнительной информацией о запросе. Эти типы информации передаются например когда мы делаем запрос в ручную через браузер (их можно посмотреть в консоли разработчика: Network -> Тыкаем на строку какого либо запроса -> Headers -> Request Headers)
+options = {
+  headers: { # добавим заголовки запроса
+    accept: 'application/json', # тот формат в котором мы хотим получить ответ от сервера (тут джэйсон)
+    'Content-Type' => 'application/x-www-form-urlencoded', # формат в котором будем данные отправлять
+    user_agent: "ruby program" # говорит о том что посылает запрос, например при ручном запроса тут будет тип браузера и операционной системы
+  },
+  url: 'https://api.funtranslations.com' # URL на который пошлем запрос
+}
+
+connection = Faraday.new(options) do |faraday|
+  faraday.adapter Faraday.default_adapter # указываем какой адаптер использовать
+  faraday.request :url_encoded # задаем стиль форматирования url_encoded для параметров, теперь когда метод post передаст хэш, например text: "Hello my padawan!", он будет отформатирован в строку "text=Hello my padawan!"
+end
+
+params = { text: "Hello my padawan!" } # перезаем парамаетры в виде хэша, который будет отформатирован в строку url_encoded
+# Посылаем пост-запрос при помощи метода post
+res = connection.post('translate/yoda.json', params)
+
+puts res.body #=>
+# {
+#     "success": {
+#         "total": 1
+#     },
+#     "contents": {
+#         "translated": "Force be with you my padawan!",
+#         "text": "Hello my padawan!",
+#         "translation": "yoda"
+#     }
+# }
 
 
 

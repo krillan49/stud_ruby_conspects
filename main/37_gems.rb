@@ -102,6 +102,14 @@ gem "letter_opener", group: :development # вариант для 1го гема
 
 
 
+puts # К уроку 11
+# https://api.funtranslations.com/
+# https://github.com/fxn/zeitwerk
+
+
+
+
+
 
 
 
