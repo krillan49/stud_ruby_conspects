@@ -99,6 +99,34 @@ p str.downcase #=> "a"
 p str.strip  #=> "abc"   # при этом другие методы не переопределяются
 
 
+puts
+puts '                                Объекты являющиеся атрибутами друг другу'
+
+# Примерно как в AR
+class Aaa
+  attr_accessor :bbb
+  def initialize(name)
+    @name = name
+  end
+end
+
+class Bbb
+  attr_accessor :aaa
+  def initialize(name)
+    @name = name
+  end
+end
+
+a = Aaa.new('aa')
+b = Bbb.new('bb')
+a.bbb = b
+b.aaa = a
+p a #<Aaa:0x00000271c8ff9830 @name="aa", @bbb=#<Bbb:0x00000271c8ff9380 @name="bb", @aaa=#<Aaa:0x00000271c8ff9830 ...>>>
+p b #<Bbb:0x00000271c8ff9380 @name="bb", @aaa=#<Aaa:0x00000271c8ff9830 @name="aa", @bbb=#<Bbb:0x00000271c8ff9380 ...>>>
+p a.bbb #<Bbb:0x00000271c8ff9380 @name="bb", @aaa=#<Aaa:0x00000271c8ff9830 @name="aa", @bbb=#<Bbb:0x00000271c8ff9380 ...>>>
+p b.aaa #<Aaa:0x00000271c8ff9830 @name="aa", @bbb=#<Bbb:0x00000271c8ff9380 @name="bb", @aaa=#<Aaa:0x00000271c8ff9830 ...>>>
+
+
 
 
 
