@@ -9,6 +9,19 @@ puts '                                              YAML'
 
 
 puts
+puts '                                           YAML в Руби'
+
+# https://ruby-doc.org/stdlib-3.1.0/libdoc/yaml/rdoc/YAML.html
+
+# Этот модуль предоставляет интерфейс Ruby для сериализации данных в YAMLформате. Модуль YAML является псевдонимом Psych, YAML движка Ruby.
+
+# https://github.com/ruby/psych
+# https://ruby-doc.org/stdlib-3.1.0/libdoc/psych/rdoc/Psych.html
+
+# Psych — это анализатор и эмиттер YAML. Psych использует libyaml для своих возможностей анализа и генерации YAML. Помимо упаковки libyaml, Psych также знает, как сериализовать и десериализовать большинство объектов Ruby в формат YAML и из него.
+
+
+puts
 puts '                                      Считывание YAML в Руби'
 
 require 'yaml' # чтобы считывать фаилы YAML в руби нужно подгрузить встроенный модуль
@@ -30,6 +43,14 @@ p data
 #      {:question=>"Что означает польское слово lustra?", :answers=>["Зеркало", "Люстра", "Стекло", "Ковёр"]}
 # ]
 p data[0][:question] #=> "В какой стране придумали панамы?"
+
+
+puts
+puts '                                       Вставки в YAML'
+
+# А вызов вот так:
+Message.call(:you_are_looser, year: 2, month: 2, day: 1)
+# первый аргумент это символ - ключ, остальные — хэш с параметрами. остается только заменить шаблоны в строке и готово
 
 
 
