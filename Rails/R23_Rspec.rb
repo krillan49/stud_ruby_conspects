@@ -2,15 +2,16 @@ puts '                                          Rspec для Rails'
 
 # Установка и настройка гемов
 
-# 1. Добавить в Gemfile для окружений test и development нашего Rails-приложения:
+# 1. Gemfile для окружений test и development:
 group :test, :development do
   gem 'rspec-rails'
-  gem 'shoulda-matchers'     # добавляет матчеры для проверки моделей(работает как для rspec так и для обычных юнит тестов)   http://matchers.shoulda.io/docs/v3.1.3/    https://github.com/thoughtbot/shoulda-matchers
+  gem 'shoulda-matchers'     # добавляет матчеры для проверки моделей
 end
 # > bundle install
 
 # (! Из комментов, не пользовался)Для рельсов 6.1 в Gemfile нужен gem 'rexml'
 # stackoverflow.com/questions/65479863/rails-6-1-ruby-3-0-0-tests-error-as-they-cannot-load-rexml
+
 
 # 2. Настройка Rspec для Rails:
 # > rails g rspec:install   # этот генератор(среди прочих, добавился при установке gem 'rspec-rails') запускает гем и выполняет его установку в наше приложение(установит дополнительные каталоги и хэлперы). Создались:
@@ -18,7 +19,9 @@ end
   # spec                   - Директория для rspec тестов и других фаилов
   # spec/spec_helper.rb
   # spec/rails_helper.rb
-#      (У меня не возникла)(Проблема из комментов: когда прописал команду rails g rspec:install после стоит на месте, нужно прервать и написать так DISABLE_SPRING=true rails generate rspec:install)
+
+# (! У меня не возникла)(Проблема из комментов: когда прописал команду rails g rspec:install после стоит на месте, нужно прервать и написать так DISABLE_SPRING=true rails generate rspec:install)
+
 
 # 3. Настроим Shoulda-matchers, добавив в spec_helper.rb или rails_helper.rb(я добавил в rails_helper.rb):
 RSpec.configure do |config|
@@ -32,6 +35,7 @@ RSpec.configure do |config|
   end
 
 end
+
 
 # 4. Тк тестовая БД(если ее используем) по умолчанию не содержит миграций, нужно их произвести чтобы не было ошибок
 # > rails db:migrate RAILS_ENV=test
@@ -59,16 +63,13 @@ describe Contact do
   it { should validate_presence_of :email } # validate_presence_of - матчер проверяющий присутсвие email(тестируем валидацию)
   it { should validate_presence_of :message }
 end
-
-# > rake spec     # запускаем rspec через rake, но можно и обычным способом
-# (! Возникает ошибка тк по умолчанию тестовая БД не содержит миграций) перенесем в нее миграции при помощи команды:
-# > rails db:migrate RAILS_ENV=test
+# > rake spec     # запускаем rspec через rake, но можно и обычным способом (нужны миграции тестовой БД)
 
 
 puts
 # Использование других матчеров для тестирования моделей(длинны введенных данных и ассоциаций принадлежности):
-# have_many http://matchers.shoulda.io/docs/v3.1.3/Shoulda/Matchers/ActiveRecord.html#have_many-instance_method
-# validate_length_of https://matchers.shoulda.io/docs/v5.3.0/Shoulda/Matchers/ActiveModel.html#validate_length_of-instance_method
+# http://matchers.shoulda.io/docs/v3.1.3/Shoulda/Matchers/ActiveRecord.html#have_many-instance_method       have_many
+# https://matchers.shoulda.io/docs/v5.3.0/Shoulda/Matchers/ActiveModel.html#validate_length_of-instance_method   validate_length_of
 
 # модель /app/models/article.rb которую будем тестировать
 class Article < ApplicationRecord
@@ -93,7 +94,7 @@ describe Article do
   end
 
   # Проверим ассоциавции принадлежности при помощи матчера have_many
-  describe "assotiations" do  # сущность Article должа иметь много комментов
+  describe "assotiations" do  # сущность Article должна иметь много комментов
     it { should have_many :comments } # have а не has ииза правил английского тк есть should
   end
 end
@@ -145,17 +146,16 @@ puts '                                      Factory Bot. Настройка'
 
 # Factory Bot - помогает при тестировании, чтобы не создавать в AR объекты для теста и тестовую БД, вместо этого создаётся фабрика, и она будет создавать нам объекты для теста. Это соотв принципу DRY тк не нужно создавать тестовую БД
 
-# ?? Создается именно в БД просто данные после теста затираются ??
+# ?? Создается в БД просто данные после теста затираются ??
 
 # Раньше был другой гем gem Factory Girl(устарел)
 # https://github.com/thoughtbot/factory_bot/blob/v4.9.0/UPGRADE_FROM_FACTORY_GIRL.md
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md
 
 
-# Установка для Рэилс(Для Рэилс и без него разные подгемы и разная настройка):
-# Добавить в Gemfile:
+# Установка для Рэилс (Для Рэилс и без него разные подгемы и разная настройка):
+# Gemfile:
 group :development, :test do
-  # ... предыдущие гемы
   gem "factory_bot_rails"
 end
 # > bundle install
@@ -192,7 +192,7 @@ end
 puts
 # Напишем тест с использованием созданной фабрики:
 
-# Добавим метод в /app/models/article.rb
+# Добавим метод в models/article.rb
 class Article < ApplicationRecord
   validates :title, presence: true
   validates :text, presence: true
@@ -251,7 +251,7 @@ end
 FactoryBot.define do
   factory :post do
     content { "Post content" }
-    user # возможность создания юзера фабрикой :user ??
+    user # колонка для создания юзера полученного от фабрики :user ??
   end
 end
 
@@ -262,7 +262,7 @@ describe Post do
   describe "#columns" do
     it "returns the post content" do
       user = create :user # создаем юзера фабрикой :user ??
-      post = create(:post, content: 'a' * 100, user: user) # в конце привязываем к юзеру ??(можно добавлять несколько??)
+      post = create(:post, content: 'a' * 100, user: user) # в конце привязываем пост к юзеру ??
       expect(post.content).to eq 'a' * 100
     end
   end
@@ -271,7 +271,7 @@ end
 
 
 post
-# Такой же как прошлый только для полиморфно ассоциированного комментария(к постам и картинкам и одновременно 1 то мэни к юзерам)
+# Такой же как прошлый только для полиморфно ассоциированного комментария(к постам и картинкам и одновременно 1 ту мэни к юзерам)
 
 # Модель Comment
 class Comment < ApplicationRecord
@@ -308,7 +308,7 @@ puts
 # Пример посложнее:
 
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Sequences    # Sequences (последовательности):
-# https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md    # create_list (через поиск по странице):
+# https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md             # create_list (через поиск по странице):
 
 # Добавим метод в модель /app/models/article.rb
 class Article < ApplicationRecord

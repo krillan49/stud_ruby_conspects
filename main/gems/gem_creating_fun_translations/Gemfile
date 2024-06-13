@@ -1,0 +1,3 @@
+source 'http://rubygems.org' # тоесть искать и устанавливать библиотеки будем с сайта rubygems.org
+
+gemspec   # подключает fun_translations.gemspec, добавляет его содержимое из категории spec.add_dependency

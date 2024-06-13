@@ -1,4 +1,4 @@
-puts '                                              Разные Std-lib'
+puts '                                          Разные Std-lib'
 
 # 1. ipaddr
 require 'ipaddr'
@@ -40,4 +40,4 @@ hashsha2 = Digest::SHA2.hexdigest('code') #=> '5694d08a2e53ffcae0c3103e5ad6f6076
 
 
 
-# 
+#

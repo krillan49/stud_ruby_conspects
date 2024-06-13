@@ -33,14 +33,6 @@ puts '                                           Установка gem’ов'
 
 
 
-puts # К уроку 11
-# https://api.funtranslations.com/
-# https://github.com/fxn/zeitwerk
-
-
-
-
-
 
 
 
