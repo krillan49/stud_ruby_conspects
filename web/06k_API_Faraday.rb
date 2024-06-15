@@ -51,7 +51,7 @@ puts response.body #=> строка
 #   ],
 # }
 
-raw_tweets = JSON.parse(response.body) # Преобразуем строку в хэш при помощи библиотеки JSON
+raw_tweets = JSON.parse(response.body) # Преобразуем строку JSON в хэш при помощи библиотеки JSON
 # Теперь мы можем легко оперировать данными из ответа на наш запрос
 
 
@@ -81,6 +81,8 @@ puts res.body #=>
 #         "translation": "yoda"
 #     }
 # }
+
+res_hh = JSON.parse(res.body) # Преобразуем строку JSON ответа(funtranslations тоже возвращает строку отворматированную как хэш) в хэш при помощи библиотеки JSON
 
 
 puts

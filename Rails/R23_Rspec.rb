@@ -369,7 +369,7 @@ puts '                        Приёмочное тестирование(Acce
 
 # УЗНАТЬ:
 # 1. Как копировать все данные в тестовую БД
-# 2. Как использовать маршруты для show в тестах?
+# 2. Как использовать маршруты для show в тестах? (мб просто хэлперы не подключены в фаилы тестов)
   # visit '/posts/1'  - такие работают
   # visit post_path('1') - такие нет ActionController::UrlGenerationError
   # visit post_path(Post.all.last) - такие нет ActionController::UrlGenerationError
@@ -380,20 +380,20 @@ puts
 # http://protesting.ru/testing/levels/acceptance.html
 
 
+# гем Капибара - запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
+# Капибара работает с тестовой БД, по умолчанию с test.sqlite3
+
 # https://www.rubydoc.info/github/teamcapybara/capybara/master    #Capybara
 # https://github.com/teamcapybara/capybara
+# https://github.com/teamcapybara/capybara#using-capybara-with-rspec    # Using Capybara with RSpec
+
+# Gemfile
 group :test do
   gem 'capybara'
 end
 
-# https://github.com/teamcapybara/capybara#using-capybara-with-rspec    # Using Capybara with RSpec
-
 # Для настройки Capybara согласно документации нужно добавить в файл rails_helper(rspec_helper для старых версий) строчку, хотя работает и без этой строки.
 require 'capybara/rspec'
-
-# гем Капибара - запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
-
-# Капибара работает с тестовой БД
 
 
 puts
@@ -402,27 +402,28 @@ puts '                                        Capybara синтаксис'
 # unit:         describe   ->   it
 # acceptance:   feature    ->   scenario
 
-# feature -> scenario - это фишка Capybara аналог - describe it.
+# feature -> scenario - это фишка Capybara аналог - describe -> it.
 # feature - особенность(имеется ввиду какаято функциональность)
 # scenario - сценарий(способ использования функциональности)
-#   Пример: Для контактной формы существует 2 сценария:
-#     а. Убедиться, что контактная форма существует.
-#     б. Что мы можем эту форму заполнить и отправить
 
-# 2 типа тестов(просто удобный нэйминг):
+# Пример: Для контактной формы существует 2 сценария:
+# а. Убедиться, что контактная форма существует.
+# б. Что мы можем эту форму заполнить и отправить
+
+# 2 типа нэйминга тестов(для удобства):
 # visitor_..._spec.rb - анонимный пользователь
 # user_..._spec.rb - пользователь залогиненый в системе
 
 
-# Проведём тестирование формы контактов.
+# /spec/features - каталог для приемочных тестов
 
-# Создадим каталог /spec/features и создадим файл /spec/features/visitor_creates_contact_spec.rb:
+# Создадим файл теста создания контактов /spec/features/visitor_creates_contact_spec.rb:
 require "rails_helper"
 # Далее синтаксис как раньше только вместо describe->it будет feature->scenario
 feature "Contact creation" do
   scenario "allows acess to contacts page" do # будем проверять наличие доступа к странице
     visit new_contacts_path # get 'contacts/new' (можно прописать URL и вручную)
-    # Капибара заходит на указанную страницу(указывать обязательно, даже если это корневая по умолчанию)
+    # Капибара заходит на указанную страницу(указывать обязательно, даже если это корневая)
 
     expect(page).to have_content 'Contact us' # проверяем что страница имеет какуюто строку(учитывает регистр)
     # page - переменная содержащая страницу(полностью сгенерированную вместе с layout)
@@ -457,7 +458,9 @@ feature "Contact creation" do
     # :contact_email - значение id поля;
     # with: 'foo@bar.ru' - то что будет записано в поле
     fill_in :contact_message, with: 'Foo Bar Baz'
-    click_button 'Send message' # click_button - Капибара нажмет на кнопку с именем 'Send message'
+    click_button 'Send message'
+    # click_button - метод Капибары дня нажатия на кнопку
+    # 'Send message' - значение кнопки
 
     expect(page).to have_content 'Contacts create' # Проверяем страницу которая вернется после создания коммента(create.html.erb)
   end
@@ -467,9 +470,9 @@ end
 puts
 puts '                               Capybara тесты с регистрацией и логином'
 
-# 1. Сделаем сначала тест для гостя, что он может зарегистрироваться на сайте, т.е. протестируем форму регистрации.
+# 1. Сделаем сначала тест для гостя, проверяющий, что он может зарегистрироваться на сайте(протестируем форму регистрации)
 
-# Создадим файл /spec/features/visitor_creates_account_spec.rb
+# /spec/features/visitor_creates_account_spec.rb
 require "rails_helper"
 
 feature "Account Creation" do
@@ -485,10 +488,10 @@ feature "Account Creation" do
   end
 end
 # > rake spec
-# Всё это работает с базой данных test.sqlite3
 
 
 # 2. Чтобы не зависеть от порядка исполнения тестов и не повоторяться в коде, вынесем часть кода, которая будет использоваться во многих тестах, в метод sign_up
+
 # /spec/features/visitor_creates_account_spec.rb:
 require "rails_helper"
 
@@ -507,7 +510,7 @@ def sign_up
   fill_in :user_password_confirmation, with: '1234567'
   click_button 'Sign up'
 end
-# Далее вынесем код метода sign_up в файл /spec/support/session_helper.rb
+# Далее вынесем код метода sign_up в отдельный файл хэлпера /spec/support/session_helper.rb
 
 # Далее либо в rails_helper.rb требуем этот файл
 require 'support/session_helper'
@@ -516,7 +519,9 @@ Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 # Так каждый раз вписывать наши новые вспомогательные файлы из support не надо будет. Они будут вписываться автоматически
 
 
-# 3. Тест для просмотра формы и создания статьи и создание статьи залогиненым пользователем /spec/features/user_creates_article_spec.rb:
+# 3. Тест для просмотра формы и создания статьи и создание статьи залогиненым пользователем
+
+# /spec/features/user_creates_article_spec.rb:
 require "rails_helper"
 
 feature "Article Creation" do
@@ -559,9 +564,7 @@ feature "Article Edition" do
 
   scenario "allows user to visit edit article page" do
     visit articles_path # get 'articles'
-
     click_link('Edit article') # нажимаем на ссылку по ее названию
-
     expect(page).to have_content I18n.t('articles.edit.header') # articles/edit.html.erb
   end
 
@@ -589,7 +592,6 @@ feature "Comment Creation" do
   scenario "allows user to create comment" do
     fill_in :comment_body, with: 'Test comment'
     click_button 'Create Comment'
-
     expect(page).to have_content 'Test comment' # проверяем по содержанию самого коммента
   end
 end
