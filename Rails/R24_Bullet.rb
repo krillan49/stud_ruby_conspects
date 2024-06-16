@@ -5,7 +5,7 @@ puts '                               Оптимизация запросов к 
 # Bullet - библиотека для оптимизации запросов к БД, находящая неоптимальные запросы и делающая подсказки при просмотре страниц приложения в браузере
 
 
-# Подключаем гем в девелопмент в Gemfile
+# Gemfile
 group :development do
   gem 'bullet'
 end
@@ -18,6 +18,20 @@ end
 # Enabled bullet in config/environments/development.rb           # Добавляет конфигурацию булет в фаил конфигурации
 # Would you like to enable bullet in test environment? (y/n) n   # Тут выбираем подключать ли в тестовой среде тоже
 
+
+# Отключить Bullet если больше не нужны его подсказки: в config/environments/development.rb находим блок:
+config.after_initialize do
+  Bullet.enable        = false  # и устанавливаем тут значение false
+  Bullet.alert         = true
+  Bullet.bullet_logger = true
+  Bullet.console       = true
+  Bullet.rails_logger  = true
+  Bullet.add_footer    = true
+end
+
+
+
+puts '                                Bullet использование и решение проблемы N+1'
 
 # Далее запускаем сервер, переходим по страницами и там где запросы не оптимальны Bullet выдаст подсказки во всплывающем окне, а так же в консоли приложения: в каких контроллерах, представлениях, на каких строках ошибки, к каким моделям относятся и способы их исправления, например:
 
@@ -37,21 +51,6 @@ def index
   @questions = @questions.decorate
 end
 # Заодно оптимизируем в консерне questions_answers для страницы questions/show.html.erb
-
-
-# Отключить Bullet если больше не нужны его подсказки: в config/environments/development.rb находим блок:
-config.after_initialize do
-  Bullet.enable        = false  # и устанавливаем тут значение false
-  Bullet.alert         = true
-  Bullet.bullet_logger = true
-  Bullet.console       = true
-  Bullet.rails_logger  = true
-  Bullet.add_footer    = true
-end
-
-
-
-
 
 
 
