@@ -54,6 +54,11 @@ puts response.body #=> строка
 raw_tweets = JSON.parse(response.body) # Преобразуем строку JSON в хэш при помощи библиотеки JSON
 # Теперь мы можем легко оперировать данными из ответа на наш запрос
 
+# Так же от объекта ответа можно получить статус, те код состояния HTTP, который возвращает сервер (2xx 3xx 404 500)
+puts response.status #=> 200
+# Метод Фарадея который возвращает true если ответ без ошибок(например 200) и false если ошибка(например 404)
+puts response.success? #=> true
+
 
 puts
 puts '                                POST запрос, при помощи Faraday на API'
@@ -70,7 +75,9 @@ res = conn.post('/translate/yoda.json', "text=Master Obiwan has lost a planet.")
 # '/translate/yoda.json' - тоесть доп часть адреса к переводам Йоды на api.funtranslations.com
 # "text=Master Obiwan has lost a planet." - параметры с текстом для перевода, которые будут пристыкованы к ЮРЛ, тут заданы в стиле форматирования url_encoded
 
-puts res.body #=>
+puts res.status   #=> 200
+puts res.success? #=> true
+puts res.body     #=>
 # {
 #     "success": {
 #         "total": 1

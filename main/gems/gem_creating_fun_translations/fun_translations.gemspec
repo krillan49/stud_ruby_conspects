@@ -14,11 +14,12 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.7.0'                # минимальная необходимая версия Руби
 
   # Массив со всеми именами фаилов, которые нам потребуются
-  spec.files = Dir['README.md', 'LICENSE',
-                   'CHANGELOG.md', 'lib/**/*.rb',
-                   'fun_translations.gemspec', '.github/*.md',
-                   'Gemfile', 'Rakefile']
-  spec.extra_rdoc_files = ['README.md']    # фаил в котором будет докумментация
+  # spec.files = Dir['README.md', 'LICENSE',
+  #                  'CHANGELOG.md', 'lib/**/*.rb',
+  #                  'fun_translations.gemspec', '.github/*.md',
+  #                  'Gemfile', 'Rakefile']
+  spec.files = Dir['lib/**/*.rb', 'fun_translations.gemspec', 'Gemfile']
+  # spec.extra_rdoc_files = ['README.md']    # фаил в котором будет докумментация
   spec.require_paths    = ['lib']          # главный путь/директория нашей библиотеки в которой лежит весь исходный код
 
   # Гемы, которые будут использованы в нашей библиотеке, будут установлены вместе с нашим гемом, тоесть это зависимости
