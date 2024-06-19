@@ -16,13 +16,16 @@
         <%= tag.time datetime: question.formatted_created_at do %>
           <small><%= question.formatted_created_at %></small>
         <% end %>
-        <div class="my-2"><%= render question.tags %></div> <!-- тут рендарятся теги из tags/_tag.html.erb -->
+        <div class="my-2">
+          <%= render question.tags %> <!-- тут рендарятся теги из tags/_tag.html.erb -->
+        </div>
         <p class="my-2"><%= sanitize question.body %></p>
       </section>
 
       <% if policy(question).edit? %>
+        <!-- Теперь эта кнопка подставит форму вместо перехода на страницу редактирования -->
         <%= link_to t('global.button.edit'), edit_question_path(question), class: 'btn btn-secondary' %>
-        <!-- ?? Тут не меняем ссылку тк ссылка внутри турбофрэйма автоматически отправляет с запросом форрмат турбофрэйма, и со страницы edit_question_path(question) возьмет турбофрэйм с айди турбофрэйма этого вопроса, тк запрос послан из него ?? -->
+        <!-- ?? Тут не меняем ссылку тк ссылка внутри турбофрэйма автоматически отправляет запрос в формате турбострима, и со страницы edit_question_path(question) возьмет турбофрэйм с айди турбофрэйма этого вопроса, тк запрос послан из него ?? -->
       <% end %>
 
       <% if policy(question).destroy? %>

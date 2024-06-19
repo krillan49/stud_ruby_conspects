@@ -14,6 +14,7 @@
       </section>
 
       <% if policy(answer).edit? %>
+        <!-- теперь эта кнопка посылает запрос в формате турбо-стрима на edit и возвращает форму из турбострима -->
         <%= link_to t('global.button.edit'), edit_question_answer_path(question, answer), class: 'btn btn-info btn-sm' %>
       <% end %>
 
@@ -24,7 +25,7 @@
     </div>
   <% end %>
 
-  <!-- 10. динамическое создание и удаление комментариев (удаляем html_id: dom_id) -->
+  <!-- динамическое создание и удаление комментариев (удаляем html_id: dom_id) -->
   <%= render 'comments/commentable', commentable: answer, comment: @comment#, html_id: dom_id(answer, 'comment_form') %>
 
 <% end %>

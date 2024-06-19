@@ -1,25 +1,21 @@
 <%= turbo_frame_tag question do %>
-<!-- question - если это форма для нового вопроса то тут тоже будет Question.new, соответсвенно сгенерируется тот же самый айдишник "new_question" что и на кнопке и туброфрэйм-тэге в questions(turbo)/index.html.erb; а если форма для редактирования, тогда соотв используется конкретный вопрос со своим айди для генерации айди турбофрэйма -->
+<!-- question - если это форма используется для создания нового вопроса то тут тоже будет Question.new, соответсвенно сгенерируется тот же самый айдишник "new_question" что и на кнопке и туброфрэйм-тэге в questions(turbo)/index.html.erb; а если форма для редактирования, тогда соотв используется конкретный вопрос со своим айди для генерации айди турбофрэйма -->
 
   <%= form_with model: question do |f| %>
     <%= render 'shared/errors', object: question %>
-
     <div class="mb-3 row">
       <%= f.label :title %>
       <%= f.text_field :title, class: 'form-control' %>
     </div>
-
     <div class="mb-3 row">
       <%= f.label :body %>
       <%= f.text_area :body, class: 'form-control' %>
     </div>
-
     <div class="mb-3 row">
       <%= f.label :tags %>
       <%= f.collection_select :tag_ids, question.tags, :id, :title, {}, multiple: true,
         class: 'js-multiple-select', data: {'ajax-url': '/api/tags'} %>
     </div>
-
     <%= f.submit t('global.button.submit'), class: 'btn btn-primary' %>
   <% end %>
 

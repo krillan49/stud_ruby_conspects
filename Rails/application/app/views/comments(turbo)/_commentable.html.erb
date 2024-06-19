@@ -14,6 +14,7 @@
   <!-- "#{dom_id(commentable)}_#{dom_id(comment_builder)}" - сгенерим сложно чтобы гарантировать уникальность -->
 
     <% if policy(comment_builder).create? %>
+
       <%= form_with model: [commentable, comment_builder], class: 'pt-3 border-top my-2' do |f| %>
         <%= render 'shared/errors', object: comment %> <!-- Соотв и это упростим убрав проверку на is_current_comment -->
         <div>
@@ -22,6 +23,7 @@
         </div>
         <%= f.submit t('global.button.submit'), class: 'btn btn-sm btn-primary' %>
       <% end %>
+      
     <% end %>
 
     <!-- Добавим отдельный вложенный турбофрэйм для списка существующих комментов, чтобы добалять сюда динамически новый -->

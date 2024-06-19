@@ -13,7 +13,8 @@
 </section>
 
 <% if policy(:question).new? %>
-  <!-- При нажатии данной кнопки мы вставим контент со страницы по адресу new_question_path в тело тега turbo_frame_tag с тем же айди, что тут в data -->
+
+  <!-- При нажатии данной кнопки мы отправим запрос в формате турбострима на new и он вставит контент со страницы по адресу new_question_path в тело тега turbo_frame_tag с тем же айди, что тут в data -->
   <%= link_to t('.new'), new_question_path, class: 'btn btn-primary', data: { turbo_frame: dom_id(Question.new) } %>
   <!-- new_question_path - обращаемся к экшену new, чтобы он вернул new.html.erb в котором рендерится паршал _form.html.erb с нужной нам формой -->
   <!-- data: { turbo_frame: dom_id(Question.new) } - в data прописываем какой турбо-фрэйм-тег нужно будет обновить, тоесть куда нужно будет вгрузить форму из _form.html.erb -->
@@ -24,7 +25,7 @@
   <!-- Question.new - при помощи нового объекта сгенерируем id для данного турбо фрэйма(тега), он генерируется при помощи метода dom_id который используется хэлпером turbo_frame_tag по умолчанию -->
 
   <!-- В итоге мы получим: -->
-  <a class="btn btn-primary btn-lg mb-3" data-turbo-frame="new_question" href="/en/questions/new">New question</a>
+  <a class="btn btn-primary" data-turbo-frame="new_question" href="/en/questions/new">New question</a>
   <!-- Турбофрэйм-тег до нажатия кнопки: -->
   <turbo-frame id="new_question"></turbo-frame>
   <!-- Турбофрэйм-тег после нажатия кнопки, в который вставился контент из турбофрэйма в паршале questions(turbo)/_form.html.erb, вставилось только то что в теге турбофрэйма там, без кода из new.html.erb -->
@@ -34,13 +35,14 @@
       <!-- ... поля формы ... -->
     </form>
   </turbo-frame>
+
 <% end %>
 
 <!-- Обернем вывод всех вопросов и пагинацию в еще один фрэйм(фрэйм во фрэйме норм работает) -->
 <%= turbo_frame_tag 'pagination_pagy' do %>
   <%= pagination @pagy %>
 
-  <!-- Обернем рендер вопросов в турбофрэйм со id='questions', чтобы помещать в него только что созданный вопрос без перезагрузки страницы -->
+  <!-- Обернем рендер вопросов в турбофрэйм с id='questions', чтобы помещать в него только что созданный вопрос без перезагрузки страницы -->
   <%= turbo_frame_tag 'questions' do %>
     <%= render @questions %>
   <% end %>
