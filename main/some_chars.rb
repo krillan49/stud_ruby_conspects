@@ -1,3 +1,5 @@
+# https://symbl.cc/en/unicode-table/#box-drawing
+
 p '█'.ord #=> 9608
 p '▀'.ord #=> 9600
 p '▄'.ord #=> 9604
