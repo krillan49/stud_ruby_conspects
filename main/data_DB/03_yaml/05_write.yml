@@ -1,0 +1,11 @@
+---
+- ABC:
+    aaa: AAA
+    bbb: BBB
+    ccc: CCC
+  :nums:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
