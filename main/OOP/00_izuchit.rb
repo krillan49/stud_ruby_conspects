@@ -48,3 +48,18 @@ p ozer2.a #=> 0
 p Ozer::Ozer3.meth #=> "Meth of Ozer class"
 ozer3 = Ozer::Ozer3.new
 p ozer3.a #=> 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 

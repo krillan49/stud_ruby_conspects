@@ -5,9 +5,8 @@ module FunTranslations
     def post(path, client, params = {}) # создаем метод пост-запроса нашего гема
       # path   #=> 'translate/yoda.json'
       # client - экземпляр клиента, чтобы пробросить его в connection и добавить токен в заголовки запроса
-      # params #=> { text: "Hello my padawan!" }  # тк faraday ожидает данные такого вида, чтоб отформатировать их в url_encoded
-      respond_with(
-        # respond_with - наш метод ниже для парсинга JSON-ответа в хэш
+      # params #=> { text: "Hello my padawan!" }  # тк Faraday ожидает данные такого вида, чтоб отформатировать их в url_encoded
+      respond_with( # respond_with - наш метод ниже для парсинга JSON-ответа от API в хэш
         connection(client).post(path, params) #=> JSON-ответ от API
         # connection - метод из lib/fun_translations/connection.rb с экземпляром подключения Faraday
         # post - метод Faraday для отправки пост запроса, вернет JSON-ответ от API
@@ -29,14 +28,18 @@ module FunTranslations
       #     }
       # }
 
-      # Создадим метод обработок ошибок, если Фарадей выявил ошибку ответа (например 404)
+      # Создадим метод порождения исключений и обработок ошибок, если Фарадей выявил ошибку ответа (например 404)
       respond_with_error(raw_response.status, body) if !raw_response.success?
+      # Принимает код состояния(например 404) и тело ошибки(хэш)
 
-      body['contents'] # вернем только контент из хэша
+      body['contents'] # вернем только раздел контента из хэша
     end
 
-    def respond_with_error(code, body) # принимает код ошибки и тело ответа
-      # ...
+    def respond_with_error(code, body) # принимает код состояния HTTP(например 404) и тело ответа(тут с сообщением об ошибке)
+      # вызовем нашу материнскую ошибку, если в хэше констант не учтен данный код ошибки
+      raise(FunTranslations::Error, body) unless FunTranslations::Error::ERRORS.key?(code)
+      # вызовем конкретную ошибку по ее константе из хэша и вызовем метод from_response соответсвующего класса из error.rb
+      raise FunTranslations::Error::ERRORS[code].from_response(body)
     end
   end
 end

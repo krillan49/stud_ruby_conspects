@@ -4,7 +4,7 @@ module FunTranslations
 
     def connection(client)
       # client - объект класса Client, который далее пробросим в options и добавим из него токен в заголовки
-      Faraday.new(options(client)) do |faraday|
+      Faraday.new( options(client) ) do |faraday|
         faraday.adapter Faraday.default_adapter
         faraday.request :url_encoded
       end
