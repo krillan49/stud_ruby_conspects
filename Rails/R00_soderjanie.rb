@@ -77,7 +77,9 @@ puts '                                              Содержание'
 #   обновление 1 поля через params[:item2][:title]
 
 # R28_deploy
-#   Cron. app/workers. gem 'sidekiq-scheduler'
+#   Гем для PostgreSQL
+#   Ошибка Gemfile.lock на Виндоус при деплое (3а)
+#   Cron. app/workers. gem 'sidekiq-scheduler' Настройка Сайдкика в продакшене
 
 
 puts
