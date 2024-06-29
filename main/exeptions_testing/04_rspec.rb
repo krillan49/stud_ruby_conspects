@@ -8,19 +8,33 @@ puts '                                            Rspec'
 # > gem install rspec
 
 # Запуск:
-# > rspec .                      # запуск всех тестов из директории spec, находясь в директории в которой находится spec
-# > rspec . --format doc         # опция '--format' выводит в более удобочитаемом формате 'doc'
-# > rspec filname.rb             # запуск конретного фаила с тестами
-# > rspec ./spec/demo_spec.rb:14 # запуск конкретного теста(it) с указанием строки его начала
+# > rspec .                        # запуск всех тестов из директории spec, находясь в директории в которой находится spec
+# > rspec . --format doc           # опция '--format' выводит в более удобочитаемом формате 'doc'
+# > rspec filname.rb               # запуск конретного фаила с тестами
+# > rspec ./spec/demo_spec.rb:14   # запуск конкретного теста(it) отдельно с указанием строки его начала
 
 
 puts
 puts '                                        Начало по Круковскому'
 
-# Например мы хотип протестировать статический метод run класса Demo что лежит в фаиле demo.rb
+# Например мы хотим протестировать статический метод run класса Demo что лежит в фаиле demo.rb
 class Demo
+  attr_accessor :val
+
+  def initialize
+    @val = 42
+  end
+
   def self.run
     42
+  end
+
+  def calc(a, b)
+    a * b
+  end
+
+  def my_arr
+    [1, 2, 3]
   end
 end
 
@@ -48,7 +62,7 @@ end
 RSpec.describe 'this is a testing suite' do
   # it - метод, которым чаще всего создается тест, он должен находиться в блоке метода describe. Принимает опциональный аргумент строку с описанием этого теста и блок с кодом теста
   it 'self.run' do
-    result = Demo.run # создаем данные по функционалу что хотим проверить
+    result = Demo.run # создаем данные по тому функционалу что хотим проверить
     p result == 43 # при желании можно вывести в терминал кастомную проверку вместе с выводом теста, но так будет не совсем удобно смотреть в терминале результат, нужно будет искать к каждому тесту true или false, при этом для rspec это просто вывод и он не дает объяснений что тест нужно отмечать красным, потому будет отмечено зеленым
   end
 end
@@ -78,7 +92,7 @@ RSpec.describe 'this is a testing suite' do
     if result == 43
       puts 'ok'
     else
-      raise 'not ok, value should be 42'
+      raise 'not ok, value should be 42' # порождаем ошибку
     end
   end
 end
@@ -105,7 +119,7 @@ puts '                                        Метод expect и matchers/ма
 
 # Matchers/матчеры - методы для проверки разных типов условий тестирования(то что мы пишем после expect)
 
-# При помощи expect и матчеров можно задать корректную конкретную инструкцию для RSpec теста и выдаст более подробный ответ что конкретно пошло не так без необходимости писать доб код в тесте
+# При помощи expect и матчеров можно задать корректную конкретную инструкцию для RSpec теста и выдаст более подробный ответ что конкретно пошло не так без необходимости писать дополнительный код в тесте
 RSpec.describe 'this is a testing suite' do
   it 'self.run' do
     result = Demo.run
@@ -131,6 +145,116 @@ end
 # 1 example, 1 failure
 # Failed examples:
 # rspec ./spec/demo_spec.rb:25 # this is a testing suite self.run
+
+
+puts
+puts '                                  Тестирование класса и его методов'
+
+# Когда мы тестируем класс или модуль то вместо строкового описания в метод describe принято передавать константу этого класса или модуля, это сработает, тк фаил этого класса или модуля мы подкюдали в фаил теста
+
+# described_class - метод RSpec возвращает константу тестируемого класса, если он была передана аргументом в метод describe из тела которого вызывается метод
+
+# specify - метод теста, похож на it, его принято использовать тогда, когда тестируется метод класса или экземпляра класса
+# Нэиминг аргумента описания, передаваемого в метод specify:
+# '.metod_name'  - если тестируемый метод metod_name это метод класса
+# '#metod_name'  - если тестируемый метод metod_name это метод экземпляра класса
+
+RSpec.describe Demo do
+  specify '.run' do # тестируем статический метод
+    p "My class is #{described_class.inspect}" #=> "My class is Demo"
+    result = described_class.run # тк возвращает константу Demo, то можем вызывать от нее метод этого класса
+    expect(result).to eq(42)
+  end
+  specify '#calc' do # тестируем метод экземпляра
+    obj = described_class.new # тк возвращает константу Demo, то можем создать от нее экземпляр соответствующего класса
+    expect(obj.calc(2, 3)).to eq(6) # тестируем метод экземпляра
+    # В одном тесте возможно поместить множество проверок, но если не пройдет 1я, то остальные проверены не будут, тк будет вызвано исключение, потому так и не делают.
+    expect(obj).to be_an_instance_of(described_class)
+    # be_an_instance_of - матчер RSpec принимает константу и проверяет является ли объект экземпляром этого класса
+  end
+  specify '#my_arr' do
+    obj = described_class.new
+    expect(obj.my_arr).to include(2)
+    # include - матчер RSpec принимает значение и проверяет включено это значение в массив или строку
+  end
+end
+# > rspec . --format doc
+#=>
+# Demo
+# "My class is Demo"
+#   .run
+#   #calc
+#   #my_arr
+# Finished in 0.09558 seconds (files took 0.93836 seconds to load)
+# 3 examples, 0 failures
+
+
+puts
+puts '                                         Методы в describe'
+
+# Ничего не мешает создавать в describe методы и использовать из для того чтобы не дублировать код
+RSpec.describe Demo do
+  def obj
+    described_class.new # возвращаем объект
+  end
+
+  specify '#calc' do
+    expect(obj().calc(2, 3)).to eq(6) # вызываем наш метод чтобы использовать возвращенный объект
+  end
+
+  specify '#my_arr' do
+    expect(obj().my_arr).to include(2)
+  end
+end
+# > rspec . --format doc
+#=>
+# Demo
+#   #calc
+#   #my_arr
+# Finished in 0.02201 seconds (files took 0.92097 seconds to load)
+# 2 examples, 0 failures
+
+puts
+puts '                                            Метод let'
+
+# let - метод RSpec, принимает аргументом символ из которого создает одноименную локальную переменную и блок кода, возвращаемое значение которого присваивает в эту переменную. Блок кода будет исполнен и эта переменная будет определена для каждого теста, в котором есть явное к ней обращение, а для теста в котором к этой переменной не обращаемся, то блок кода исполнен не будет и переменная не определится. Для каждого вызвавшего эту переменную теста она будет создана независимо отдельная
+
+# Удобнее кастомных методов для того чтобы не дублировать один и тот же код в нескольких тестах
+
+RSpec.describe Demo do
+  let(:obj) { puts 'obj created!' ; described_class.new } # при вызове переменной obj из любого теста будет исполнен весь код блока и возвращено значение described_class.new
+
+  specify '.run' do
+    # в этом тесте нет обращения к переменной obj, потому блок кода из let не исполняется
+    result = described_class.run
+    expect(result).to eq(42)
+  end
+
+  specify '#calc' do
+    #=> obj created!
+    p obj #=> #<Demo:0x0000021e07e5ba38 @val=42>
+    obj.val = 1 # изменение значения никак не повлияет на другой тест, тк объект в let создается отдельный
+    expect(obj.calc(2, 3)).to eq(6)
+  end
+
+  specify '#my_arr' do
+    #=> obj created!
+    p obj #=> <Demo:0x0000021e07e46908 @val=42>
+    expect(obj.my_arr).to include(2)
+  end
+end
+# > rspec . --format doc
+#=>
+# Demo
+#   .run
+# obj created!
+# #<Demo:0x0000021c84e12038 @val=42>
+#   #calc
+# obj created!
+# #<Demo:0x0000021c84e108f0 @val=42>
+#   #my_arr
+# Finished in 0.02416 seconds (files took 0.9317 seconds to load)
+# 3 examples, 0 failures
 
 
 puts
