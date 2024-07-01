@@ -1,5 +1,9 @@
 puts '                                            Rspec'
 
+# (?? почему у Круковского RSpec.describe статический метод с RSpec, а не просто ??)
+# (??  когда let а когда before  ??)
+
+
 # https://rspec.info/
 
 # Rspec - фреймворк для автоматического тестирования приложений. Реализует подход Behavior-driven development (BDD), тоесть тесты описывают ожидаемое поведение проверяемой программы на вызовы ее компонентов
@@ -7,74 +11,66 @@ puts '                                            Rspec'
 # Установка:
 # > gem install rspec
 
+
+# > rspec -v
+#=>
+# RSpec 3.12
+#   - rspec-core 3.12.2
+#   - rspec-expectations 3.12.3
+#   - rspec-mocks 3.12.6
+#   - rspec-rails 6.0.3
+#   - rspec-support 3.12.1
+
+
 # Запуск:
 # > rspec .                        # запуск всех тестов из директории spec, находясь в директории в которой находится spec
-# > rspec . --format doc           # опция '--format' выводит в более удобочитаемом формате 'doc'
-# > rspec filname.rb               # запуск конретного фаила с тестами
+# > rspec . --format doc           # опция '--format' выводит в более удобочитаемом формате 'doc' (удобнее для небольшого числа тестов)
+# > rspec name_spec.rb             # запуск конретного фаила с тестами
 # > rspec ./spec/demo_spec.rb:14   # запуск конкретного теста(it) отдельно с указанием строки его начала
 
 
-puts
-puts '                                        Начало по Круковскому'
-
-# Например мы хотим протестировать статический метод run класса Demo что лежит в фаиле demo.rb
-class Demo
-  attr_accessor :val
-
-  def initialize
-    @val = 42
-  end
-
-  def self.run
-    42
-  end
-
-  def calc(a, b)
-    a * b
-  end
-
-  def my_arr
-    [1, 2, 3]
-  end
-end
-
-# spec - принято создавать директорию с таким названием для фаилов с тестами. В каком-то смысле это спецификация для нашей программы, тоесть там будут находиться фаилы(тесты), описывающие как наша программа должна себя вести
+# spec - принято создавать директорию с таким названием для фаилов с тестами. В каком-то смысле это спецификация для нашей программы, фаилы с тестами, что находятся там, описывают как наша программа должна себя вести
 # spec/demo_spec.rb - для тестов создается фаил с названием состоящим из названия того фаила что тестируем и суффикса _spec.
 # Это соглашения, которым принято следовать, но если хочется можно называть фаилы любыми именами и размещать в любых директориях
 
-# внутри фаила spec/demo_spec.rb нужно подключить тестируемый фаил demo.rb
+# внутри фаила spec/demo_spec.rb нужно подключить тестируемый фаил demo.rb (код там)
 require_relative '../demo'
 
-# Собственно тест в spec/demo_spec.rb
-RSpec.describe 'this is a testing suite' do  # ?? почему тут статический метод с RSpec, а не просто ??
-  # describe - (описывать) - метод опционально может принимать аргумент названия/описания для блока тестов(строку или константу) и собственно блок, который содержит в себе набор тестов (в блоках методов it, specify). Тоесть describe это как бы контейнер
-  # 'this is a testing suite' - название может быть любым
+
+puts
+puts '                                        Метод describe'
+
+# describe - (описывать) - метод опционально может принимать аргумент названия/описания для блока тестов в виде строки или константы и блок, который содержит в себе набор тестов в блоках методов it или specify. Тоесть describe это как бы контейнер
+
+# spec/demo_spec.rb:
+RSpec.describe 'this is a testing suite' do # 'this is a testing suite' - описание может быть любым
 end
 
-# Запустить тест можно из директории с папкой spec. Запустить мжно и полностью пустой блок describe
+# Запустить тест можно из директории с папкой spec (Запустить мжно и полностью пустой блок describe):
 # > rspec .
 #=>
 # No examples found.
 # Finished in 0.00082 seconds (files took 6.16 seconds to load)
 # 0 examples, 0 failures
 
-# Напишем тест
+
+puts
+puts '                                           Метод it'
+
+# it - метод, которым чаще всего создается тест, он должен находиться в блоке метода describe. Принимает опциональный аргумент в виде строки с описанием этого теста и блок с кодом теста
+
+# spec/demo_spec.rb:
 RSpec.describe 'this is a testing suite' do
-  # it - метод, которым чаще всего создается тест, он должен находиться в блоке метода describe. Принимает опциональный аргумент строку с описанием этого теста и блок с кодом теста
   it 'self.run' do
     result = Demo.run # создаем данные по тому функционалу что хотим проверить
     p result == 43 # при желании можно вывести в терминал кастомную проверку вместе с выводом теста, но так будет не совсем удобно смотреть в терминале результат, нужно будет искать к каждому тесту true или false, при этом для rspec это просто вывод и он не дает объяснений что тест нужно отмечать красным, потому будет отмечено зеленым
   end
 end
-
 # > rspec .
 #=>
 # false
-# .
-# Finished in 0.03918 seconds (files took 0.89442 seconds to load)
+# .                       - зеленая точка в выводе обозначает тест который прошел(тоесть нет несоответсвий)
 # 1 example, 0 failures
-
-# . - зеленая точка в выводе обозначает тест который прошел(тоесть нет несоответсвий)
 
 # Так выведет название describe, а вместо точки выведет зеленое название теста
 # > rspec . --format doc
@@ -82,10 +78,9 @@ end
 # this is a testing suite
 # false
 #   self.run
-# Finished in 0.00692 seconds (files took 0.96044 seconds to load)
 # 1 example, 0 failures
 
-# Можно в ручную породить ошибку, чтобы rspec понял что проверка не пройдена и выделял красным и описал тест который провален. Тоесть в принципе можно писать тело тестов полностью в ручную без матчеров
+# Можно в ручную породить исключение, чтобы rspec понял что проверка не пройдена и выделял красным и описал тест который провален. Тоесть в принципе можно писать тело тестов полностью в ручную без матчеров
 RSpec.describe 'this is a testing suite' do
   it 'self.run' do
     result = Demo.run
@@ -106,23 +101,22 @@ end
 #      RuntimeError:
 #        not ok, value should be 42
 #      # ./spec/demo_spec.rb:19:in `block (2 levels) in <top (required)>'
-# Finished in 0.00661 seconds (files took 0.92463 seconds to load)
 # 1 example, 1 failure
 # Failed examples:
 # rspec ./spec/demo_spec.rb:14 # this is a testing suite self.run
 
 
 puts
-puts '                                        Метод expect и matchers/матчеры'
+puts '                                   Метод expect и matchers/матчеры'
 
 # https://relishapp.com/rspec/rspec-expectations/docs/built-in-matchers
 
 # Matchers/матчеры - методы для проверки разных типов условий тестирования(то что мы пишем после expect)
 
-# При помощи expect и матчеров можно задать корректную конкретную инструкцию для RSpec теста и выдаст более подробный ответ что конкретно пошло не так без необходимости писать дополнительный код в тесте
+# При помощи expect и матчеров можно задать конкретную инструкцию проверки для RSpec теста и выдаст более подробный ответ что конкретно пошло не так без необходимости писать дополнительный код в тесте
 RSpec.describe 'this is a testing suite' do
   it 'self.run' do
-    result = Demo.run
+    result = Demo.run # создаем сущность для теста
     expect(result).to(eq(43))
     # expect - (ожидать) - метод принимает значение, которорое мы будем проверять
     # to - метод который вызывается от объекта возвращенного методом expect и принимает проверочный объект возвращенный матчером с которым мы будем сравнивать
@@ -141,10 +135,63 @@ end
 #
 #        (compared using ==)
 #      # ./spec/demo_spec.rb:27:in `block (2 levels) in <top (required)>'
-# Finished in 0.22334 seconds (files took 0.89851 seconds to load)
 # 1 example, 1 failure
 # Failed examples:
 # rspec ./spec/demo_spec.rb:25 # this is a testing suite self.run
+
+
+# В одном тесте возможно поместить множество проверок, но если не пройдет 1я, то остальные проверены не будут, тк будет вызвано исключение, потому так и не делают.
+RSpec.describe 'this is a testing suite' do
+  it 'self.run' do
+    result = Demo.run
+    expect(result).to(eq(43))
+    expect(result).to(eq(45))
+    expect(result).to(eq(47))
+  end
+end
+
+
+puts
+puts '                                           Синтаксис it тестов'
+
+# it - метод теста может опционально принимать аргумент с названием и обязательно принимает блок с телом теста
+describe 'types of it' do
+  # Тест с названием
+  it "has a capitalized name" do
+    hero = Hero.new 'foo'
+    expect(hero.name).to eq 'Foo'
+  end
+
+  # Тест без названия
+  it do
+    hero = Hero.new 'foo'
+    expect(hero.power_up).to eq 110
+  end
+
+  # Тест без названия с {} синтаксисом
+  it { expect(Hero.new('foo').power_up).to eq 110 }
+
+  # Тест с названием с {} синтаксисом. 1й аргумент обязательно в скобках
+  it("displays full hero info") { expect(Hero.new('foo').hero_info).to eq "Foo has 100 health" }
+end
+
+
+puts
+puts '                                  arrange, act, assert (Структура теста)'
+
+# Структура теста:
+# arrange - подготовка всех необходимых данных для проведения теста
+# act     - действие с этими данными, результат которых будет проверять тест
+# assert  - проверка действия на соответсвие желаемому результату
+# Обычно тест описывается по этому принципу при помощи комментариев
+
+describe 'strucure of it' do
+  it "displays full hero info after power up" do
+    hero = Hero.new 'foo'                             # arrange
+    hero.power_up                                     # act
+    expect(hero.hero_info).to eq "Foo has 110 health" # assert
+  end
+end
 
 
 puts
@@ -152,7 +199,7 @@ puts '                                  Тестирование класса и
 
 # Когда мы тестируем класс или модуль то вместо строкового описания в метод describe принято передавать константу этого класса или модуля, это сработает, тк фаил этого класса или модуля мы подкюдали в фаил теста
 
-# described_class - метод RSpec возвращает константу тестируемого класса, если он была передана аргументом в метод describe из тела которого вызывается метод
+# described_class - метод RSpec возвращает константу тестируемого класса или модуля, если он была передана аргументом в метод describe из тела которого вызывается метод
 
 # specify - метод теста, похож на it, его принято использовать тогда, когда тестируется метод класса или экземпляра класса
 # Нэиминг аргумента описания, передаваемого в метод specify:
@@ -167,8 +214,6 @@ RSpec.describe Demo do
   end
   specify '#calc' do # тестируем метод экземпляра
     obj = described_class.new # тк возвращает константу Demo, то можем создать от нее экземпляр соответствующего класса
-    expect(obj.calc(2, 3)).to eq(6) # тестируем метод экземпляра
-    # В одном тесте возможно поместить множество проверок, но если не пройдет 1я, то остальные проверены не будут, тк будет вызвано исключение, потому так и не делают.
     expect(obj).to be_an_instance_of(described_class)
     # be_an_instance_of - матчер RSpec принимает константу и проверяет является ли объект экземпляром этого класса
   end
@@ -185,12 +230,11 @@ end
 #   .run
 #   #calc
 #   #my_arr
-# Finished in 0.09558 seconds (files took 0.93836 seconds to load)
 # 3 examples, 0 failures
 
 
 puts
-puts '                                         Методы в describe'
+puts '                                     Кастомные методы в describe'
 
 # Ничего не мешает создавать в describe методы и использовать из для того чтобы не дублировать код
 RSpec.describe Demo do
@@ -206,21 +250,16 @@ RSpec.describe Demo do
     expect(obj().my_arr).to include(2)
   end
 end
-# > rspec . --format doc
-#=>
-# Demo
-#   #calc
-#   #my_arr
-# Finished in 0.02201 seconds (files took 0.92097 seconds to load)
-# 2 examples, 0 failures
+
 
 puts
 puts '                                            Метод let'
 
-# let - метод RSpec, принимает аргументом символ из которого создает одноименную локальную переменную и блок кода, возвращаемое значение которого присваивает в эту переменную. Блок кода будет исполнен и эта переменная будет определена для каждого теста, в котором есть явное к ней обращение, а для теста в котором к этой переменной не обращаемся, то блок кода исполнен не будет и переменная не определится. Для каждого вызвавшего эту переменную теста она будет создана независимо отдельная
+# let - метод RSpec, принимает аргументом символ от которого создает одноименную локальную переменную и блок кода, возвращаемое значение которого присваивается в эту переменную. Блок кода будет исполнен и эта переменная будет определена только для каждого теста, в котором есть явное к ней обращение. Для каждого вызвавшего эту переменную теста она будет создана независимо отдельная
 
 # Удобнее кастомных методов для того чтобы не дублировать один и тот же код в нескольких тестах
 
+# spec/demo_spec.rb:
 RSpec.describe Demo do
   let(:obj) { puts 'obj created!' ; described_class.new } # при вызове переменной obj из любого теста будет исполнен весь код блока и возвращено значение described_class.new
 
@@ -233,7 +272,7 @@ RSpec.describe Demo do
   specify '#calc' do
     #=> obj created!
     p obj #=> #<Demo:0x0000021e07e5ba38 @val=42>
-    obj.val = 1 # изменение значения никак не повлияет на другой тест, тк объект в let создается отдельный
+    obj.val = 1 # изменение значения никак не повлияет на другой тест, тк объект в let создается каждый раз отдельный
     expect(obj.calc(2, 3)).to eq(6)
   end
 
@@ -253,115 +292,7 @@ end
 # obj created!
 # #<Demo:0x0000021c84e108f0 @val=42>
 #   #my_arr
-# Finished in 0.02416 seconds (files took 0.9317 seconds to load)
 # 3 examples, 0 failures
-
-
-puts
-puts '                                   Потом сопоставить с тем что выше'
-
-# Создадим и протестируем героя компьютерной игры.
-
-# 1. Создадим файл hero.rb
-class Hero
-  attr_reader :name, :health
-
-  def initialize(name, health=100)
-    @name = name.capitalize
-    @health = health
-  end
-
-  def power_up
-    @health += 10
-  end
-
-  def hero_info
-    "#{@name} has #{@health} health"
-  end
-end
-
-# 2. Создадим файл hero_spec.rb (название обычно состоит из имени тестируемой сущности и spec - спецификация/тест, но можно назвать как угодно по-другому)
-require './hero' # необходимо подключить фаил, объекты из которого будем тестировать(тут по относительному пути)
-# В Rspec существует 2 ключевых слова: describe и it
-describe Hero do # метод принимает тестируемый класс как название(название можно задать и просто строкой) и блок с тестами
-  # Тест 1
-  it "has a capitalized name" do # метод принимает имя теста и его тело в блоке
-    hero = Hero.new('foo') # создаем сущность для теста
-    expect(hero.name).to eq 'Foo' # expect (ожидать) - матчер. ожидаем что аргумент hero.name метода expect соответсвует аргументу 'Foo' метода eq  (hero.name == 'Foo')
-  end
-  # Тест 2
-  it "can power up" do
-    hero = Hero.new('foo')
-    expect(hero.power_up).to(eq(110), 'fuck') # чтобы вывести дополнительное сообщение, нужно просто дописать его доп параметром
-  end
-end
-
-# 3. Запустим тест:
-# > rspec hero_spec.rb
-
-# 4а. Вывод. Все тесты прошли без ошибок
-#=> ..   # 2 точки значит что в обоих тестах нет ошибок
-#=> Finished in 0.03575 seconds (files took 2.92 seconds to load)
-#=> 2 examples, 0 failures
-
-# 4б. Вывод. Если обнаружены ошибки
-# .F    # 1 точка знач 1й тест прошел, F - значит во втором тесте ошибка
-# Failures:
-#   1) Hero can power up
-#      Failure/Error: expect(@hero.power_up).to eq 11
-#        expected: 11
-#             got: 110
-#        (compared using ==)
-#      # ./hero_spec.rb:14:in `block (2 levels) in <top (required)>'
-# Finished in 0.23357 seconds (files took 0.72921 seconds to load)
-# 2 examples, 1 failure
-# Failed examples:
-# rspec ./hero_spec.rb:13 # Hero can power up
-
-
-puts
-puts '                                  arrange, act, assert (Структура теста)'
-
-# Структура теста:
-# arrange - подготовка всех необходимых данных для проведения теста
-# act     - действие с этими данными, результат которых будет проверять тест
-# assert  - проверка действия на соответсвие желаемому результату
-# Обычно тест описывается по этому принципу при помощи комментариев
-
-require './hero'
-
-describe Hero do
-  it "displays full hero info after power up" do
-    hero = Hero.new 'foo'                             # arrange
-    hero.power_up                                     # act
-    expect(hero.hero_info).to eq "Foo has 110 health" # assert
-  end
-end
-
-
-puts
-puts '                                           Синтаксис it тестов'
-
-# it - метод теста может опционально принимать аргумент с названием и обязательно принимает блок с телом теста
-
-require './hero'
-
-describe Hero do
-  # Тест с названием
-  it "has a capitalized name" do
-    hero = Hero.new 'foo'
-    expect(hero.name).to eq 'Foo'
-  end
-  # Тест без названия
-  it do
-    hero = Hero.new 'foo'
-    expect(hero.power_up).to eq 110
-  end
-  # Тест без названия с {} синтаксисом
-  it { expect(Hero.new('foo').power_up).to eq 110 }
-  # Тест с названием с {} синтаксисом. 1й аргумент обязательно в скобках
-  it("displays full hero info") { expect(Hero.new('foo').hero_info).to eq "Foo has 100 health" }
-end
 
 
 puts
@@ -387,8 +318,6 @@ end
 
 
 # (Пример) У нас часто повторяется код hero = Hero.new 'foo', и это не совпадает с DRY, потому оптимизируем, добавив before.
-require './hero'
-
 describe Hero do
   before do
     @hero = Hero.new('foo') # не забываем сделать переменную глобальной
@@ -415,8 +344,6 @@ puts '                                     Вложенный describe и его
 # Не методы:                     describe "something" do
 # instance методы:               describe "#method_name" do
 # class методы (self.method):    describe ".method_name" do
-
-require './hero'
 
 describe Hero do
   before do # так же работает и с тестами внутри вложенных describe
@@ -446,6 +373,28 @@ describe Hero do
     end
   end
 end
+
+
+puts
+puts '                                 Фаил инструкций запуска тестов .rspec'
+
+# .rspec - создается(не обязательно) в корне проекта, содержит инструкци(аргументы) командной строки, которые будут исполнены при вызове тестов. Например для опций Rspec и дополнительных задач.
+
+# Например
+# --format doc               # подключаем формат вывода doc по умолчанию
+# --color                    # подключаем формат вывода в цвете(сейчас не актуально цветное по умочанию ??)
+# --order rand               # подключаем случайный порядок выполения тестов(по умолчанию в порядке очереди расположения)
+# --require spec_helper      # подгружаем фаил из директории spec
+
+
+puts
+puts '                                          spec_helper.rb'
+
+# spec_helper.rb - главный фаил(не обязательный), который нужен чтобы настраивать все тесты. Располагается в директории spec с тестами.
+# Чтобы при вызове тестов этот фаил вызывался автоматически добавим его вызов в .rspec
+
+# Содержит например:
+# строки подключения фаилов(require_relative '../demo') с проверяемым кодом
 
 
 

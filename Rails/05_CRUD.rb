@@ -137,6 +137,10 @@ puts
 # выведет список параметров в виде при помощи хэлпера debug, чтобы их отслеживать
 debug(params)
 
+puts
+# что выводит params
+params.inspect #=> #<ActionController::Parameters {"controller"=>"comments", "action"=>"index"} permitted: false>
+
 
 puts
 puts '                                params и параметры из строки GET-запрса'
