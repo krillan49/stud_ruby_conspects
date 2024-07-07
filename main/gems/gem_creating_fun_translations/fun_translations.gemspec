@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   # Гемы(зависимости) только для раработчиков гема, а не для пользователей
   spec.add_development_dependency 'rspec', '~> 3.12'
   spec.add_development_dependency 'simplecov', '~> 0.21'
-  # spec.add_development_dependency 'webmock', '~> 3.14'
+  spec.add_development_dependency 'webmock', '~> 3.23'
 
   # метаданные
   spec.metadata = {

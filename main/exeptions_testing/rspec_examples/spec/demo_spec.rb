@@ -60,6 +60,13 @@ RSpec.describe Demo do
 end
 
 RSpec.describe Demo do
+  it 'calc with support' do
+    res = obj().calc(2, 3)
+    expect(res).to eq(6)
+  end
+end
+
+RSpec.describe Demo do
   let(:obj) { puts 'obj created!' ; described_class.new }
 
   specify '.run' do

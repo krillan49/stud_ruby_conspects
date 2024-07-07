@@ -2,32 +2,32 @@ RSpec.describe FunTranslations::Client do # тестируем класс кли
   describe '#translate' do # тестируем основной метод translate
     it 'translates as yoda' do
       text = 'Master Obi Wan lost a planet'
-      # Но мы не можем просто взять и вызвать этот метод, тк с бесплатным тарифным планом, в час можно сделать всего лишь 5 запросов, что не позволит нормально тестировать, отправляя запросы на реальный API. Да и в общем тесты обращающиеся к стороннему API будут работать медленно или ломаться если сторонний API будет недоступен. Потому нам нужен функционал, который будет симулировать ответ API(заглушка для ответа) на фэйковый запрос.
-#       translated = 'A planet, master Obi Wan lost'
-#       data = {
-#         success: {total: 1},
-#         contents: {
-#           translated: translated,
-#           text: text,
-#           translation: 'yoda'
-#         }
-#       }
-#
-#       stub_request(
-#         :post,
-#         'https://api.funtranslations.com/translate/yoda.json'
-#       ).
-#         with(body: {text: text}).
-#         to_return(
-#           status: 200,
-#           body: JSON.dump(data)
-#         )
-#
-#       translation = test_client.translate :yoda, text
-#
-#       expect(translation.translated_text).to eq(translated)
-#       expect(translation.original_text).to eq(text)
-#       expect(translation.translation).to eq('yoda')
+      # Но мы не можем просто взять и вызвать этот метод, тк с бесплатным тарифным планом, в час можно сделать всего лишь 5 запросов, что не позволит нормально тестировать, отправляя запросы на реальный API. Потому используем webmock заглушку симульрующую ответ от API на фэйковый запрос.
+      translated = 'A planet, master Obi Wan lost'
+      data = { # данные имитирующие ответ сервера, которые мы как бы получим в ответ на запрос, соответсвующие данным, которые присылает обычно https://api.funtranslations.com/
+        success: {total: 1},
+        contents: {
+          translated: translated,
+          text: text,
+          translation: 'yoda'
+        }
+      }
+
+      # stub_request - метод webmock который создает заглушку
+      stub_request(
+        :post, 'https://api.funtranslations.com/translate/yoda.json'
+        # параметры при которых заглушка будет работать, тоесть сработет только при пост-запросе на этот ЮРЛ
+      )
+      .with(body: {text: text}) # данные которые отправляем "на сервер"
+      .to_return(status: 200, body: JSON.dump(data)) # ответ, который "вернет" сервер
+
+      # создаем клиент через метод test_client(?? хз зачем если он делает все тоже, просто чтобы не писать вручную 'FunTranslations.client token' ??) и отправляем запрос который будет принимать webmock
+      translation = test_client.translate(:yoda, text) # передаем эндпоинт и текст
+
+      # Ну и собственно проверяем методы из класса Translation при помощи матчеров, вернутся ли нам ответы заданные для webmock
+      expect(translation.translated_text).to eq(translated)
+      expect(translation.original_text).to eq(text)
+      expect(translation.translation).to eq('yoda')
     end
 #     it 'translates as yoda with token' do
 #       text = 'Master Obi Wan lost a planet'

@@ -25,7 +25,7 @@ require_relative '../hero' # Если SimpleCov запустится после 
 # Stopped processing SimpleCov as a previous error not related to SimpleCov has been detected
 
 # Так же создается директория /coverage в ней есть фаил index.html, который можно открыть в браузере и в удобном графическом формате посмотреть подробную информацию по фаилам о покрытии тестами, в том числе конкретные строки кода покрытые(зеленый) или не покрытые(красный)
-# Стоит добавлять папку coverage в .gitignore    -  coverage/*  
+# Стоит добавлять папку coverage в .gitignore    -  coverage/*
 
 
 
