@@ -38,6 +38,7 @@ import "@hotwired/turbo-rails"
 // import Turbolinks from "turbolinks"       // убираем турболинкс
 import * as ActiveStorage from "@rails/activestorage"  // у круковского есть(я не делал) связано с такими же package.json ??
 
+// import '@popperjs/core'                  // с ESBuild не нужно, можно удалить, тк дропдаун его загружает автоматически
 import 'bootstrap/js/dist/dropdown'
 import 'bootstrap/js/dist/collapse'
 import './scripts/select'

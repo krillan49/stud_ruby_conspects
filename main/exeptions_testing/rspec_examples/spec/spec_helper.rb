@@ -1,4 +1,5 @@
 require 'simplecov'
+require 'webmock/rspec'
 
 SimpleCov.start do
   add_filter 'spec/'
@@ -8,6 +9,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each {|f| require f} # п�
 
 require_relative '../demo' # подключится перед запуском всех тестов
 require_relative '../hero'
+require_relative '../api'
 
 # подключим модуль с методом из support/ во все тесты
 RSpec.configure do |c|

@@ -29,7 +29,7 @@ module FunTranslations
       # }
 
       # Создадим метод порождения исключений и обработок ошибок, если Фарадей выявил ошибку ответа (например 404)
-      respond_with_error(raw_response.status, body) if !raw_response.success?
+      respond_with_error(raw_response.status, body['error']) if !raw_response.success?
       # Принимает код состояния(например 404) и тело ошибки(хэш)
 
       body['contents'] # вернем только раздел контента из хэша
@@ -37,7 +37,7 @@ module FunTranslations
 
     def respond_with_error(code, body) # принимает код состояния HTTP(например 404) и тело ответа(тут с сообщением об ошибке)
       # вызовем нашу материнскую ошибку, если в хэше констант не учтен данный код ошибки
-      raise(FunTranslations::Error, body) unless FunTranslations::Error::ERRORS.key?(code)
+      raise(FunTranslations::Error.from_response(body)) unless FunTranslations::Error::ERRORS.key?(code)
       # вызовем конкретную ошибку по ее константе из хэша и вызовем метод from_response соответсвующего класса из error.rb
       raise FunTranslations::Error::ERRORS[code].from_response(body)
     end

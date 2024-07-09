@@ -8,7 +8,7 @@ puts '                                         Управление ассета
 # Раньше просто создавался фаил ЖС и подключался через скрипт на html-странице (например в конце тега body)
 '<script src="js/app.js"></script>'
 
-# Но ЖС начал сильно развиваться, начали появляться разные сторонние решения, модули, фрэймворки и подгружать их стали через отдельные фаилы - тоесть отдельно библиотеки(например jquery), отдельно утилиты, отдельносвои фаилы итд
+# Но ЖС начал сильно развиваться, начали появляться разные сторонние решения, модули, фрэймворки и подгружать их стали через отдельные фаилы - тоесть отдельно библиотеки(например jquery), отдельно утилиты, отдельно свои фаилы итд
 '<script src="js/app.js"></script>'
 '<script src="js/jquery.js"></script>'
 
@@ -85,7 +85,7 @@ gem 'jsbundling-rails'
 # 2. Бандлинг js  (необходим node.js c yarn)
 # https://github.com/rails/jsbundling-rails
 # Из коробки поддерживает решения: Bun, esbuild, rollup.js, Webpack
-# > ails new myapp -j [bun|esbuild|rollup|webpack]
+# > rails new myapp -j [bun|esbuild|rollup|webpack]
 # Если при созданнии приложения не указать опцию -j с решением, тогда в приложении будет использоваться новое решение по умолчанию importmap-rails
 
 
@@ -126,19 +126,22 @@ gem 'sprockets-rails'
 gem 'jsbundling-rails'
 gem 'cssbundling-rails'
 
-# (! Инфа про бандлы и компиляцию ассетов)
-# Создаем стандартные директории app/assets/ (код там):
-# app/assets/config/manifest.js   -  манифест, тут прописываем куда будут помещаться все скомпилированные ассеты(JS,CSS) и картинки
+
+# app/assets/  - cоздаем стандартные директории (код там):
+# app/assets/config/manifest.js  -  манифест, тут прописываем куда будут помещаться все скомпилированные ассеты(JS,CSS) и картинки
 # app/assets/images/  - сюда(прописано в манифесте) будут помещаться все картинки
 # app/assets/builds/  - сюда(прописано в манифесте) будут помещаться все скомпилированные ассеты(JS, CSS)
-# Ассеты для app/assets/builds/ компилируются заново каждый раз при запуске через foreman start -f Procfile.dev, тоесть даже если удалить все фаилы из директории stylesheets и запускать через rails s то все стили и скрипты останутся, тк они все исполняются из скомпилированных js и css фаилов из app/assets/builds/, а сами фаилы в которых мы пишем стили и скрипты используются только как шаблоны для компиляции билда. Если же удались все ассеты (кроме картинок ??) то они просто заново скомпилируются по шаблону
-# app/assets/stylesheets/ - создадим директории для таблицы стилей(собственно шаблонов для компиляции)
+# app/assets/stylesheets/ - создадим директории для таблицы стилей(шаблонов для компиляции ассетов)
 
-# Запускаем команду(если бутстрап еще не установлен при создании приложения)
+# Ассеты для app/assets/builds/ компилируются заново каждый раз при запуске через 'foreman start -f Procfile.dev', тоесть даже если удалить все фаилы из директории stylesheets и запускать через 'rails s' то все стили и скрипты останутся, тк они все исполняются из скомпилированных js и css фаилов из app/assets/builds/, а сами фаилы в которых мы пишем стили и скрипты используются только как шаблоны для компиляции билда. Если же удались все ассеты (кроме картинок ??) то они просто заново скомпилируются по шаблону
+
+
+# Установим bootstrap если он не установлен:
 # > rails:css:install:bootstrap
-# Создаетст фаил Procfile.dev, установит bootstrap и @popperjs/core если их у нас еще нет, так же добавит в лэйаут строчку <%= stylesheet_link_tag "application" %> те ссылку на app/assets/stylesheets/application.bootstrap.scss
+# Создается фаил Procfile.dev, установит bootstrap и @popperjs/core если их у нас еще нет так же добавит в лэйаут строчку <%= stylesheet_link_tag "application" %> те ссылку на app/assets/stylesheets/application.bootstrap.scss
 
 # Перетаскиваем импорты стилей в app/assets/stylesheets/application.bootstrap.scss (A_application.bootstrap.scss), так же вынесем кастомные стили в _custom.scss и импортируем его в A_application.bootstrap.scss
+
 
 # package.json - изменяем (удаляем все закоменченое)
 # Для версии с вебпакером как у Круковского, а для моей с просто вебпаком удаляем то что совпадает
@@ -192,14 +195,14 @@ gem 'cssbundling-rails'
     # --load-path=node_modules - использует node_modules (там фаилы для ярн нашего проекта ??)
     # "build:css": "sass --style compressed ... - можно прописать и так, чтобы сжимало получившийся фаил
     "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
-    # build:css:prefix - для префиксов, тут запускем автопрефиксер, те просто в кучу через && записать его не выйдет
+    # build:css:prefix - для префиксов, тут запускем автопрефиксер, тк просто в кучу через && записать его не выйдет
     "build:css": "yarn build:css:compile && yarn build:css:prefix", # запускаем скрипты для компиляции и префиксов
     "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"yarn build:css\""
     # --watch - ключ говорит что при изменениях будет заново проделана компиляция, нужно только для девелопмента
   }
 }
 # > yarn install       # появится директория node_modules
-# > yarn build:css     # исполняет команду build:css скомпилируем фаилы css командой (тоже что автоматически делается при запуске через foreman start -f Procfile.dev ??)
+# > yarn build:css     # исполняет команду build:css скомпилируем фаилы css командой (тоже что автоматически делается при запуске через 'foreman start -f Procfile.dev' ??)
 
 
 # Установим в существующий проект ESBuild отдельной командой:
@@ -215,42 +218,52 @@ gem 'cssbundling-rails'
   "scripts": {
     # ...
     # Добавилась запись-скрипт, при помощи которого мы будем делать бандл JS
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets" # добавилось
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets" # если устанавливать при создании проекта то была бы такая
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds" # у Круковского было так
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets"
+    # Но если устанавливать при создании проекта то была бы такая
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets"
+    # А у Круковского было так
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds"
   },
   # ...
 }
 # javascript/application.js - нужно удалить import '@popperjs/core', тк дропдаун его загружает автоматически;
 # (?? import * as ActiveStorage from "@rails/activestorage" // у круковского есть(я не делал) связано с такими же package.json ??; ActiveStorage.start() // у круковского есть(я не делал) связано с такими же package.json ?)
 
+
 # config/initializers/assets.rb - так же если нет(переход с вебпакера) создать это фаил (для Sprockets)
+
 
 # Далее удаляем из проекта все что связано с вебпаком и вебпакером (можно найти через поиск по webpack)
 # Удаляем вебпакер из гемфаила
 
-# > yarn build    - сделает билд "всего этого добра"
+
+# Сделаем билд после всех изменений:
+# > yarn build
 # =>
 # $ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets
 #   app\assets\builds\application.js      340.0kb
 #   app\assets\builds\application.js.map  549.0kb
 # (!! Если произошла ошибка на Винде при выполнении команды, то надо в package.json в пути скрипта "build": "esbuild app/javascript/*.* --bu... заменить *.* на название фаила, получится "build": "esbuild app/javascript/application.js --bun)
 
-# javascript_include_tag - ссылка с хелпером появится в лэйаут, соответсвенно ссылку с хедпером для вебпакера можно удалить
 
-# bin/dev - создался данный фаил(если его не было), он устанавливает гем foreman и при помощи него запускает фаил Procfile.dev (в нем указываютмя инструкции чтобы поднять наш сервер и также запустить компиляцию ассетов)
-# Теперь на никс системах чтобы запустить сервер вместо rails s ввседем команду:
-# > bin/dev
-# На виндоус это не работает потому создаем фаил name.cmd (название любое) и копируем туда строку foreman start -f Procfile.dev из фаила bin/dev и будем выпонять команду:
+# javascript_include_tag - ссылка с хелпером появится в лэйаут, соответсвенно ссылку с хелпером для вебпакера можно удалить
+
+
+# bin/dev - создается данный фаил, если его не было, он устанавливает гем foreman и при помощи него запускает фаил Procfile.dev (в нем указываютмя инструкции чтобы поднять наш сервер и также запустить компиляцию ассетов)
+
+# Теперь на никс системах чтобы запустить сервер вместо 'rails s' введем команду:
+# $ bin/dev
+# На Wíndows это не работает, потому создаем фаил name.cmd (название любое) и копируем туда строку foreman start -f Procfile.dev из фаила bin/dev и будем выпонять команду:
 # > name.cmd
 
 # Procfile.dev  - в нем располагаются все те инструкции которые мы проделали
-web: ruby bin/rails server      # запуск сервера (ruby в строку добавляем на винде)
-js: yarn build --watch          # запуск билда для js (из скриптов из package.json) (--watch - ключ говорит что при изменениях будет заново проделана компиляция, нужно только для девелопмента)
-css: yarn watch:css             # запуск билда для css (из скриптов из package.json), запускает скрипт watch:css, а он по инструкциям в package.json запускает уже стальные(прописано в строках скриптов(они выполняются в командной строке как бы ??))
+web: ruby bin/rails server              # запуск сервера ("ruby" в строку добавляем если на Wíndows)
+js: yarn build --watch                  # запуск билда для js (из скриптов из package.json) (--watch - ключ говорит что при изменениях будет заново проделана компиляция, нужно только для девелопмента)
+css: yarn watch:css                     # запуск билда для css (из скриптов из package.json), запускает скрипт watch:css, а он по инструкциям в package.json запускает уже стальные - прописано в строках скриптов(они выполняются в командной строке как бы ??)
 worker: bundle exec sidekiq -q default  # необязательно, для того чтобы сразу же запускался и сайдкик(как бы на одном сервере ??)
 
-# Команда, которая будет использовать все инструменты(скрипты), которые мы настроли в scripts из package.json, эту команду конфигурируют гемы jsbundling-rails и cssbundling-rails
+
+# Команда, которая будет использовать все скрипты из package.json, ее конфигурируют гемы jsbundling-rails и cssbundling-rails
 # > rails assets:precompile
 # (!! Если возникает ошибка при исполнении команды нужно посмотреть в app/assets/config/manifest.js не добавились/продублировались ли там лишние строки например такое дублирование //= link_tree ../builds//= link_tree ../builds соотв удаляем 2ю )
 
@@ -266,23 +279,27 @@ puts '                                           Propshaft'
 # Переход с Sprockets на Propshaft:
 # https://github.com/rails/propshaft/blob/main/UPGRADING.md   - иструкция по переходу
 
-# Gemfile добавим:
+
+# Gemfile:
 gem 'propshaft', '~> 0.8'
 # gem 'sprockets-rails'      # удалим/закоментим
 # > bundle install
 
-# Открыть config/application.rb и удалить config.assets.paths << Rails.root.join('app','assets');
+
+# config/application.rb - удалить config.assets.paths << Rails.root.join('app','assets');
 
 # Удалим манифест app/assets/config/manifest.js можно вместе с директорией config, тк больше это не нужно
 
-# Если вы импортируете только те платформы, которые вам нужны (вместо rails/all), удалите require "sprockets/railtie";
+# Если импортируем только некоторые платформы, которые вам нужны (вместо rails/all), удалите require "sprockets/railtie";
 
-# Propshaft не полагается на assets_helpers ( asset_path, asset_url, image_url итд), как это делала Sprockets. Вместо этого он будет искать каждую url функцию в ваших CSS-файлах и корректировать их, включив в них дайджест ресурсов, на которые они ссылаются.
+
+# Propshaft не полагается на assets_helpers ( asset_path, asset_url, image_url итд), как это делал Sprockets. Вместо этого он будет искать каждую url функцию в ваших CSS-файлах и корректировать их, включив в них дайджест ресурсов, на которые они ссылаются.
 # Просмотрите CSS-файлы и внесите необходимые изменения:
-"background: image_url('hero.jpg');"   # меняем такие css ссылки в стилях
+"background: image_url('hero.jpg');"   # меняем все такие css ссылки в стилях
 "background: url('/hero.jpg'); "       # на такие
 # Добавляя / в начале пути, мы сообщаем Propshaft считать этот путь абсолютным. Это позволяет внешним библиотекам, таким как темы FontAwesome и Bootstrap, работать «из коробки»
 "background: url('hero.jpg'); "       # ?? но у меня и без слэша работает ??
+
 
 # Propshaft использует динамический преобразователь ресурсов в режиме разработки. Однако при локальном запуске команды assets:precompile переключится на преобразователь статических ресурсов. Таким образом, изменения в ресурсах больше не будут наблюдаться, и вам придется предварительно компилировать ресурсы каждый раз, когда вносятся изменения.
 # Если вы хотите снова включить преобразователь динамических ресурсов, вам необходимо очистить целевую папку (обычно public/assets), и propshaft начнет обслуживать динамический контент из источника.
