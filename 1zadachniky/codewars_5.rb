@@ -228,3 +228,29 @@ p all_permuted(9) # 133496
 [5040,   -5040,   2520,   -840,   210,   -42,   7,   -1]
 [40320,  -40320,  20160,  -6720,  1680,  -336,  56,  -8,  1]
 [362880, -362880, 181440, -60480, 15120, -3024, 504, -72, 9, -1]
+
+
+
+# Affordable Vacation
+# https://www.codewars.com/kata/66871953e441f6da6e36a0cc/train/ruby
+def find_min_cost(money, days, cost)
+  size = cost.length
+  d, m = 0, money + 1
+  (0...size).each do |i|
+    res = cost[i, days]
+    sum = res.sum
+    if m == money + 1 && (sum > money || i > size - days)
+      res.pop while res.sum > money
+      d = res.length if res.length > d
+      break if d >= size - d
+    elsif i <= size - days && sum < m
+      m = sum
+      break if i == size - days
+    elsif i >= size - days && m <= money
+      break
+    end
+  end
+  m > money ? "days: #{d}" : "money: #{m}"
+end
+
+p find_min_cost(29, 18, [3, 8, 3, 6, 9, 4, 1, 10, 4, 4, 9, 7, 4, 3, 5, 2, 2, 8, 3]) # days: 7
