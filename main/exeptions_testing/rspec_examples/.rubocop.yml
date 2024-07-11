@@ -1,0 +1,72 @@
+require: # подключаем гемы-расширения Рубокопа
+  - rubocop-performance
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.1 # версия Руби должна соответсвовать минимально возможной версии нашего проекта
+  NewCops: enable        # все новые проверки, что появятся потом в Рубокоп, включаем по умолчанию
+
+
+# Далее идут правила Рубокопа, которые мы хотим настроить под свои стандарты или выключить какието стоящие по умолчаннию:
+
+Layout/SpaceInsideHashLiteralBraces: # настройка побелов внутри фигурных скобок хэша
+  EnforcedStyle: no_space
+
+Layout/DotPosition: # позиция точек при переносе метода на новую строку
+  EnforcedStyle: trailing
+
+Metrics/BlockLength: # максимальная длинна блоков
+  Max: 36
+  Exclude: # не использует эту провекрку к директориям и фаилам указанным тут
+    - spec/**/*.rb
+    - rating-chgk-v2.gemspec
+
+Metrics/BlockNesting: # вложенность блоков
+  Max: 2 # тоесть максимум 2 влодженных блока
+
+Metrics/MethodLength:      # число строк в методе
+  CountComments: false     # при подсчете не учитываем комментарии
+  Max: 10                  # изменим максимальное число строк в методе
+
+Metrics/AbcSize:
+  Max: 20
+
+Style/CollectionMethods: # предпочитаемые методы вместо других методов
+  Enabled: true
+  PreferredMethods:
+    collect:  'map'
+    collect!: 'map!'
+    inject:   'reduce'
+    find:     'detect'
+    find_all: 'select'
+    delete:   'gsub'
+
+Style/Documentation: # Добавим. Отключаем проверки документации. Style/Documentation - берем из описания ошибки в выводе Рубокопа
+  Enabled: false
+
+RSpec/MultipleExpectations: # не больше 10 экспектейшенс в тестах
+  Max: 10
+
+RSpec/ExampleLength: # длинна теста не больше 35
+  Max: 35
+
+RSpec/MessageSpies:
+  EnforcedStyle: have_received
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
