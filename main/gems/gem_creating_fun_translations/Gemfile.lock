@@ -35,6 +35,7 @@ GEM
     public_suffix (6.0.0)
     racc (1.8.0)
     rainbow (3.1.1)
+    rake (13.2.1)
     regexp_parser (2.9.2)
     rexml (3.3.1)
       strscan
@@ -67,7 +68,9 @@ GEM
     rubocop-performance (1.21.1)
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
-    rubocop-rspec (3.0.2)
+    rubocop-rake (0.6.0)
+      rubocop (~> 1.0)
+    rubocop-rspec (3.0.3)
       rubocop (~> 1.61)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)
@@ -75,6 +78,7 @@ GEM
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
+    simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     strscan (3.1.0)
     unicode-display_width (2.5.0)
@@ -90,11 +94,14 @@ PLATFORMS
 
 DEPENDENCIES
   fun_translations!
+  rake (~> 13.0)
   rspec (~> 3.12)
   rubocop (~> 1.64)
   rubocop-performance (~> 1.21)
+  rubocop-rake (~> 0.6)
   rubocop-rspec (~> 3.0)
   simplecov (~> 0.21)
+  simplecov-lcov (~> 0.8)
   webmock (~> 3.23)
 
 BUNDLED WITH
