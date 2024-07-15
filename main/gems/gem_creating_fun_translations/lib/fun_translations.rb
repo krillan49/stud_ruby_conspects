@@ -17,6 +17,14 @@ loader = Zeitwerk::Loader.for_gem # создаем загрузчик zeitwerk-�
 # lib/my_gem/foo.rb     -> MyGem::Foo
 # lib/my_gem/bar_baz.rb -> MyGem::BarBaz
 # lib/my_gem/woo/zoo.rb -> MyGem::Woo::Zoo
+# Далее пример кода отсюда https://github.com/lokalise/ruby-lokalise-api, подсказки для тех фаилов где зайтверк не может сопоставить имя фаила и находящегося в екм класса:
+# loader.inflector.inflect(
+#   'oauth2' => 'OAuth2',
+#   'oauth2_client' => 'OAuth2Client',
+#   'oauth2_endpoint' => 'OAuth2Endpoint',
+#   'oauth2_token' => 'OAuth2Token',
+#   'oauth2_refreshed_token' => 'OAuth2RefreshedToken'
+# )
 loader.setup
 
 

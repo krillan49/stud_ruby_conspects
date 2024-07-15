@@ -8,7 +8,8 @@
 
 <%= form_for :contact, url: contacts_path, data: {turbo:false} do |f| %>
 
-	<p><%= @contact.errors.full_messages %></p> <!-- Вывод списка ошибок Вариант 1 -->
+	<!-- Вывод списка ошибок Вариант 1 -->
+	<%= @contact.errors.full_messages %>
 
 	<!-- Вывод списка ошибок Вариант 2: в виде списка с проверкой на существование -->
 	<% if @contact && @contact.errors.any? %>
