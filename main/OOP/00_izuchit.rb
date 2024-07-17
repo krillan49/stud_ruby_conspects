@@ -53,6 +53,14 @@ p ozer3.a #=> 0
 
 
 
+# Struct класс при помощи которого удобно создавать "на лету" классы, со свойствами, геттерами и сеттерами
+hh = {a:1, b:2, c:3}
+new_klass = Struct.new(*hh.keys, keyword_init: true)
+obj = new_klass.new(hh)
+p obj #=> #<struct a=1, b=2, c=3>
+p obj.c #=> 3
+obj.c = 9000
+p obj.c #=> 9000
 
 
 
@@ -61,5 +69,4 @@ p ozer3.a #=> 0
 
 
 
-
-# 
+#

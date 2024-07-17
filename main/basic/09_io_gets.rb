@@ -59,6 +59,8 @@ input = STDIN.gets.chomp
 puts
 puts '                                         Стандартный вывод'
 
+$stdout.print('some')
+
 $stdout << "Top 50 words:\n"
 top_words.each { $stdout << "#{_1.first} #{_1.last}\n"  }
 
