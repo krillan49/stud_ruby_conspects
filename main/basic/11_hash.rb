@@ -215,9 +215,9 @@ sum = hash.values.reduce(0){|sum, inner| sum + inner["subtotal"].to_i } #=> 200
 
 
 puts
-puts '                                           Method "dig"'
+puts '                                           Method dig'
 
-# Оператор dig находит и возвращает объект во вложенных объектах, указанный ключом и/или иденксом(альтернатива написанию ключей один за одним).
+# dig находит и возвращает объект во вложенных объектах, указанный ключом и/или иденксом(альтернатива написанию ключей один за одним).
 hh = {foo: {bar: [:a, :b, :c]}}
 hh.dig(:foo)          #=> {:bar=>[:a, :b, :c]}     # hh[:foo]
 hh.dig(:foo, :bar)    #=> [:a, :b, :c]             # hh[:foo][:bar]
@@ -227,9 +227,9 @@ hh.dig(:foo, :BAZ)    #=> nil                      # hh[:foo][:BAZ]
 
 # Пример. При итерации структур с большим коллич уровней вложенности удобно использовать метод dig
 users = [
-    { first: 'John', last: 'Smith', address: { city: 'San Francisco', country: 'US' } },
-    { first: 'Pat', last: 'Roberts', address: { country: 'US' } },
-    { first: 'Sam', last: 'Schwartzman' }
+  { first: 'John', last: 'Smith', address: { city: 'San Francisco', country: 'US' } },
+  { first: 'Pat', last: 'Roberts', address: { country: 'US' } },
+  { first: 'Sam', last: 'Schwartzman' }
 ]
 # Во второй записи отсутствует город. В третьей записи вообще нет адреса. Если мы хотим вывести на экран все города из этого массива, например через each, то возникнут ошибки изза невозможности операций над nil
 users.each do |user|

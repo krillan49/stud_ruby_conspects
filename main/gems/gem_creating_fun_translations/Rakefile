@@ -1,5 +1,5 @@
-# frozen_string_literal: true
-
+# # frozen_string_literal: true
+#
 # require 'rake'
 # require 'rake/clean'
 # require 'rspec/core/rake_task'
@@ -19,13 +19,14 @@
 #   task.requires << 'rubocop-rspec'
 # end
 #
+# # У каждой задачи Рэйк может быть пространство имен
 # namespace :fun_translations do
 #   CLOBBER.include(FileList['./*.gem'])
 #
 #   desc 'Updates RubyGems, installs dependencies'
 #   task :install do
 #     puts 'Running bundle install'
-#     sh 'gem update --system'
+#     sh 'gem update --system' # вызов в терминале
 #     sh 'bundle'
 #   end
 #
@@ -36,7 +37,8 @@
 #   end
 # end
 #
-# task rubospec: %w[rubocop spec]
+# # Но можно запускать задачи и из глобального пространства имен
+# task rubospec: %w[rubocop spec] # задача включает вызов рубокопа, а потом рспек, как будто пишем в терминале
 #
 # task full_build: %w[clobber fun_translations:install fun_translations:build]
 #

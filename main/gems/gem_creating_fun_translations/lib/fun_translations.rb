@@ -25,6 +25,10 @@ loader = Zeitwerk::Loader.for_gem # создаем загрузчик zeitwerk-�
 #   'oauth2_token' => 'OAuth2Token',
 #   'oauth2_refreshed_token' => 'OAuth2RefreshedToken'
 # )
+# Далее пример настройки для фаилов которые Зайтверк не должен подключать на лету
+# loader.ignore "#{__dir__}/lokalise_rails/railtie.rb" # Ignore the Railtie in non-Rails environments
+# loader.ignore "#{__dir__}/generators/templates/lokalise_rails_config.rb"  # Ignore the generator templates
+# loader.ignore "#{__dir__}/generators/lokalise_rails/install_generator.rb" # Ignore installation generator scripts
 loader.setup
 
 

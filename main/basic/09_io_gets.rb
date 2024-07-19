@@ -59,6 +59,8 @@ input = STDIN.gets.chomp
 puts
 puts '                                         Стандартный вывод'
 
+# $stdout - глобальная переменная Руби указывающая на терминал, например когда по умолчанию мы пишем чтото в puts то это stdout
+
 $stdout.print('some')
 
 $stdout << "Top 50 words:\n"

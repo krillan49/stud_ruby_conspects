@@ -1,3 +1,5 @@
 source 'http://rubygems.org' # тоесть искать и устанавливать библиотеки будем с сайта rubygems.org
 
 gemspec   # подключает fun_translations.gemspec, добавляет его содержимое из категории spec.add_dependency
+# Если этот фаил находится в подпапке то в метод gemspec можно передать параметр относительного пути, например:
+# gemspec path: ".." - тоесть тут выходим на уровень выше чтобы получить доступ к fun_translations.gemspec

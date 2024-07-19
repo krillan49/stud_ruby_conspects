@@ -62,6 +62,51 @@ p obj.c #=> 3
 obj.c = 9000
 p obj.c #=> 9000
 
+# Создание анонимного класса с подключением в него модуля
+Class.new { include MessagesDictionary::Injector }
+
+
+
+# манки патчинг - добавление новых методов во встроенный класс ??
+
+# refine - позволяет добавить функционал в существующий класс, чтобы не переоткрывать класс(тут String) на весь проект при помощи макипатчинга, а переоткрывать его только в определенном сценарии, например только для одного фаила и только там где подключен
+module StringUtils
+  refine String do
+    def snakecase
+      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+        gsub(/([a-z\d])([A-Z])/, '\1_\2').
+        tr('-', '_').
+        gsub(/\s/, '_').
+        gsub(/__+/, '_').
+        downcase
+    end
+  end
+end
+# using - используется чтобы подключить функционал refine, тоесть тут метод snakecase добавится в класс String только там где подключаемся через using
+class Config
+  using StringUtils
+
+  def initialize(klass)
+    @__klass = klass.name
+  end
+
+  def file_storage
+    @__klass.snakecase # теперь можем применить метод и изменить камэлкейс в снэйкккейс
+  end
+end
+# Хорошо подходит для того чтобы не изменять встроенные классы глобально
+
+
+
+# self.included метод который срабатывает, когда класс (тут MessagesDictionary) подключается кудато при помощи include
+module MessagesDictionary
+  def self.included(klass)
+    # klass - принимает константу(или спец объект ??) того класса куда подключаем MessagesDictionary
+    klass.include MessagesDictionary::Injector # в итоге подключим в неоходимый класс то что нам нужно
+  end
+end
+# По аналогии с included есть и экстендед
+
 
 
 
