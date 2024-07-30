@@ -15,8 +15,8 @@
 
 	<label>Ваш парикмахер:</label><br>
 	<select name="client[barber]">
-		<% @barbers.each do |row| %>
-			<option <%= 'selected' if @c.barber == row.name %>><%= row.name %></option>
+		<% @barbers.each do |barber| %>
+			<option <%= 'selected' if @c.barber == barber.name %>><%= barber.name %></option>
     <% end %>
   </select><br>
 
