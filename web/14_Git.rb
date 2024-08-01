@@ -33,11 +33,12 @@ puts '                                               Git'
 puts '                                  Git(установка и полезные ссылки)'
 
 # Git - в Линукс и Мак стоит по умолчанию
+# https://gitforwindows.org/                             оф сайт чтобы качнуть гит для Винды
 
-# itnotbad.com/how-to-install-git-2-31-on-windows-10/    How To Install Git 2.31 On Windows 10(там же описаны команды и функции)
+# https://github.com/git-guides/install-git              гайд по установке
 # https://think-like-a-git.net/                          описание работы с Git от энтузиастов
 # https://github.com/nodejs/node-gyp#on-windows          команды и разная инфа
-# gitforwindows.org/
+
 # code.visualstudio.com/docs/editor/github
 
 # codeproject.com/Articles/1177391/How-to-Initialize-a-Git-Repository-using-Visual-St
@@ -53,7 +54,9 @@ puts '                                      Git(логин и конфиг)'
 
 # > git config --global user.name имя_пользователя      - команда установки имени пользователя(у меня k...n)
 # $ git config --global user.name 'имя_пользователя'    - в Баше имя нужно вводить в кавычках.
+
 # > git config --global user.email p...49@gmail.com     - команда установки почты
+
 # --global      - означает установку для всей системы(для любых проектов в ней), без него будет установлено на конкретный проект
 
 # (.gitconfig теперь содержит эти данные в папке пользователя в виндоус)
