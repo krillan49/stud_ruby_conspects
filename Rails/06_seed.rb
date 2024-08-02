@@ -21,16 +21,6 @@ admin = User.create(email: "admin@mail.ru", username: "admin", password: '123456
 # > rake db:seed
 
 
-# Для создания данных можно воспользоваться сторонними решениями например генераторами гема Faker
-# db/seeds.rb:
-30.times do # так мы сгенерируем 30 сущьностей
-  title = Faker::Hipster.sentence(word_count: 3)
-  body = Faker::Lorem.paragraph(sentence_count: 5, supplemental: true, random_sentences_to_add: 4)
-  Question.create title: title, body: body  # Создаем сущность со сгенерированными данными
-end
-# > rails db:seed
-
-
 # Можно добавить/изменить что-то в уже существующих записях
 # db/seeds:
 User.find_each do |u| # тоесть для каждого юзера проделаем:
@@ -39,6 +29,32 @@ User.find_each do |u| # тоесть для каждого юзера проде
 end
 # > rails db:seed
 
+
+
+puts '                                            Faker'
+
+# https://github.com/faker-ruby/faker
+
+# Для создания данных можно воспользоваться сторонними решениями например генераторами гема Faker
+
+# faker - это гем для генерации случайного текста. Имеет множество различных генераторов для обпределенного стиля(слэнга), длинны и других характеристик. Хорошо подходит для заполнения например статей при разработке блога, для применения в тестировании, так же может использоваться и в автотестах.
+
+# gem 'faker' поместить в Gemfile подключается в разработку и тест(тк вряд ли понадобится в продакшене).
+group :development, :test do
+  gem 'faker', '~> 3'
+end
+# > bundle install
+
+# В db/seeds.rb добавим генераторы фэйкера, чтобы заполнить ими вопросы для askit/questions
+30.times do # так мы сгенерируем 30 вопросов
+  title = Faker::Hipster.sentence(word_count: 3)
+  # Для заголовка генерируем название 3х слов(??)
+  body = Faker::Lorem.paragraph(sentence_count: 5, supplemental: true, random_sentences_to_add: 4)
+  # Для тела нашего вопроса генерируем 5 предложений
+  Question.create title: title, body: body
+  # Создаем сущность со сгенерированными данными
+end
+# > rails db:seed
 
 
 
