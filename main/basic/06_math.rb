@@ -24,6 +24,13 @@ puts '                                   Арифметические опера
 x.to_f / y      #=> 0.5
 270.0 / 100     #=> 2.7
 
+p inf = 1.0/0 #=> Infinity
+p nan = 0.0/0 #=> NaN
+p inf.class #=> Float
+p nan.class #=> Float
+p nan || 0 #=> NaN
+p nan.nan? #=> true
+
 # Возведение в степень:
 2 ** 3 #=> 8
 10**-1 #=> (1/10)  Rational
