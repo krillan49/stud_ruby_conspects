@@ -204,6 +204,7 @@ Rails.application.routes.draw do
 
   resource :contacts, only: [:new, :create] # resource(единственное число), мб и contact в единственном ??
   # only: [:new, :create] (или only: %i[new create]) - хэш с параметрами, тут указывает на то, что нужны маршруты только для методов new и create, отстальние 4 нам тут не нужны.
+  # exсept: %i[new show] - создает все маршруты кроме указанных в параметре-массиве
 
   # Теперь если прверить при помощи rails routes то появилось 2 новых строки а не 6
   # new_contacts   GET    /contacts/new(.:format)    contacts#new

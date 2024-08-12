@@ -5,18 +5,20 @@ puts '                                           one-to-many'
 # https://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html
 
 
-# Схема one-to-many: Article 1 - * Comment.
-# Каждая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов(принадлежат ей), но при этом каждый коммент относится только к одной статье
-
 # В генераторах есть возможность указывать reference columns - делать ссылки(foreign_key) на другие сущности
 # reference columns создаются при помощи значения генератора belongs_to или reference (псевдонимы)
+
+
+# Схема one-to-many: Article 1 - * Comment.
+# Каждая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов, но при этом каждый коммент относится только к одной статье
+
 
 # 1. Создадим модель Comment со ссылкой на article:
 # > rails g model Comment author:string body:text article:references
 # или
 # > rails g model Comment author:string body:text article:belongs_to
 # :references / :belongs_to   -   дополнительный параметр, отвечающий за отношение между сущностями
-# Создалось:
+
 # /db/migrate/12312314_create_comments.rb:
 class CreateComments < ActiveRecord::Migration[7.0]
   def change
@@ -32,30 +34,29 @@ class CreateComments < ActiveRecord::Migration[7.0]
 
       # МБ belongs_to лучше использовать для связи 1 - * (сущности разных моделей), а references для таблиц одной сущности при нормализации (1 - 1) ??
 
-      # Связи добавлять отдельной миграцией если в генераторе не указать article:references
-      # можно добавить вручную если данная миграция еще не была запущена
+      # Связи можно добавлять отдельной миграцией если в генераторе не указать article:references
+      # можно добавить и тут вручную если данная миграция еще не была запущена
 
       t.timestamps
     end
   end
 end
+
 # /models/comment.rb:
 class Comment < ApplicationRecord
   belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. Можно добавлять вручную если в генераторе не указать article:references
   # Comment.find(id).article - теперь можно обращаться от любого коммента к статье которой он пренадлежит через метод article
 end
-# > rake db:migrate   # или > rails db:migrate
+# > rails db:migrate
 
 # schema.rb:
 ActiveRecord::Schema[7.0].define(version: 2023_08_04_075512) do
   # ...
-
   create_table "comments", force: :cascade do |t|
     # ...
     t.integer "article_id", null: false # поле для foreign_key, что будет ссылться на поле id таблицы articles
     t.index ["article_id"], name: "index_comments_on_article_id"  # по умолчанию для foreign_key создается и индекс
   end
-
   add_foreign_key "comments", "articles"
 end
 
@@ -74,7 +75,7 @@ class Article < ApplicationRecord
 end
 
 
-Article.find(1).comments # этот синтаксис аналогичен ...
+Article.find(1).comments                      # этот синтаксис аналогичен ...
 Comment.where(article_id: Article.find(1).id) # ... этому(.id  - не обязательно)
 
 
@@ -91,7 +92,7 @@ q = Question.first         #=> #<Question:0x0000024c7357e5b0  #->
 # SELECT "questions".* FROM "questions" ORDER BY "questions"."id" ASC LIMIT ?  [["LIMIT", 1]]
 q.answers                  #=> []  #->
 # SELECT "answers".* FROM "answers" WHERE "answers"."question_id" = ?  [["question_id", 2]]
-a = q.answers.build body: "My first answer" # метод build(?? альтернатива new но для связей ??) требует последующего save
+a = q.answers.build body: "My first answer" # метод build(?? альтернатива new, но для связей ??) требует последующего save
 #=> #<Answer:0x0000024c7358dc90 id: nil, body: "My first answer", question_id: 2, created_at: nil, updated_at: nil>
 a.save #=> true #->
 # INSERT INTO "answers" ("body", "question_id", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["body", "My first answer"], ["question_id", 2], ["created_at", "2023-11-01 08:29:29.370745"], ["updated_at", "2023-11-01 08:29:29.370745"]]
