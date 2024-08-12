@@ -221,7 +221,10 @@ IO.foreach("./text/simple.txt"){|line| puts line}
 puts
 puts '                                           Фаиловые запросы'
 
-# File::exists? проверяет, существует ли файл перед его открытием:
+# File.exist? проверяет, существует ли файл, например перед открытием (новые версии Руби)
+p File.exist?('test3.rb') #=> true
+p File.exist?('test5.rb') #=> false
+# File::exists? проверяет, существует ли файл перед его открытием (старые версии Руби)
 File.open("file.rb") if File::exists?("file.rb")
 
 # выясняет, действительно ли файл является файлом
@@ -248,6 +251,23 @@ File::ftype( "test.txt" )     # => file
 File::ctime( "test.txt" ) # => Fri May 09 10:06:37 -0700 2008
 File::mtime( "text.txt" ) # => Fri May 09 10:44:44 -0700 2008
 File::atime( "text.txt" ) # => Fri May 09 10:45:01 -0700 2008
+
+
+
+puts '                                               Разное'
+
+# Решение ошибок разных версий Руби с методом File::exists?('test.rb') / File.exist?('test.rb')
+def file_exists?()
+  begin
+    File::exists?('test.rb')
+  rescue NoMethodError => e
+    if e.message.include?("undefined method `exists?' for File:Class")
+      File.exist?('test.rb')
+    else
+      raise NoMethodError, e.message
+    end
+  end
+end
 
 
 puts
