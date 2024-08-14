@@ -38,6 +38,56 @@ end
 
 
 
+# (OneToMany) вынесем повторяющийся код из экшенов контроллеров вопросов и ответов в отдельный метод нового консерна questions_answers.rb, тк далее он будет еще и в 3м контроллере
+# answers_controller.rb
+def create
+  @answer = @question.answers.build answer_create_params # разница тут
+  if @answer.save
+    flash[:success] = t '.success'
+    redirect_to question_path(@question)
+  else
+    # далее наш повторяющийся код для выноса в метод консерна:
+    @question = @question.decorate
+    @pagy, @answers = pagy @question.answers.order(created_at: :desc)
+    @answers = @answers.decorate
+    render 'questions/show' # разница тут
+  end
+end
+# questions_controller.rb почти тот же повторяющийся код
+def show
+  @question = @question.decorate
+  @answer = @question.answers.build # разница тут (создаем для генерации URL в форме questions#show)
+  @pagy, @answers = pagy @question.answers.order(created_at: :desc)
+  @answers = @answers.decorate
+end
+# Заменим на
+class AnswersController < ApplicationController
+  include QuestionsAnswers # подключаем консерн
+  # ...
+
+  def create
+    @answer = @question.answers.build answer_create_params
+    if @answer.save
+      flash[:success] = t '.success'
+      redirect_to question_path(@question)
+    else
+      load_question_answers(do_render: true) # вызываем метод консерна с параметром true для render 'questions/show'
+    end
+  end
+end
+class QuestionsController < ApplicationController
+  include QuestionsAnswers # подключаем консерн
+  # ...
+
+  def show
+    load_question_answers # вызываем метод консерна
+  end
+
+  # ...
+end
+
+
+
 
 
 

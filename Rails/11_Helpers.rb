@@ -104,6 +104,11 @@ tag.div val, class: "alert", role: 'alert', id: 'some'
 # val  - произвольная переменная со значением/содержанием тега
 
 
+tag.time datetime: question.formatted_created_at do #<!-- <time datetime="..."> -->
+  # .... какой-то тег например <small><%= question.formatted_created_at %></small>
+end
+
+
 # 2. Теги ссылок (тег "a"):
 
 # link_to - хэлпер ссылки с возможностью задавать параметры(работает совместно с js-фаилом turbolinks)
@@ -192,6 +197,74 @@ puts '                                      Встроенные хэлперы 
 # new_record? - проверяет новая ли запись, те экземпляр модели созданный через new но не заполненный
 User.find(params[:id]).new_record? #=> false
 User.new.new_record?               #=> true
+
+class Comment < ApplicationRecord
+  belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. Можно добавлять вручную если в генераторе не указать article:references
+  # Comment.find(id).article - теперь можно обращаться от любого коммента к статье которой он пренадлежит через метод article
+end
+
+# 2а. Допишем вручную в модель уже Article  /models/article.rb ...
+class Article < ApplicationRecord
+  has_many :comments # добавим ассоциацию comments, тоесть статья связывается с комментами (множественное число).
+  # Article.find(id).comments - теперь можно обращаться от любой статьи к коллекции (массив) принадлежащих ей комментов через метод comments
+end
+# Таким образом мы связали 2 сущности между собой.
+
+# 2б. Настроим владеющую модель чтобы можно было удалять статью со всеми зависимыми комментами (сначала удаляет комменты а потом саму статью)
+class Article < ApplicationRecord
+  has_many :comments, dependent: :destroy
+  # dependent: :destroy  - параметр который и позволит нам удалять статьи у которых созданы принадлежащие им комменты
+end
+
+
+
+puts '                                      Встроенные хэлперы для миграций'
+
+# Вариант references (алиас к belongs_to)
+t.references :article, null: false, foreign_key: true # Создает столбец article_id являющийся foreign_key к id поля той статьи к которой относится коммент в таблице articles.
+# Вариант belongs_to (алиас к references)
+t.belongs_to :article, null: false, foreign_key: true  # в таблице укажет так если генерировали при помощи belongs_to
+# МБ belongs_to лучше использовать для связи 1 - * (сущности разных моделей), а references для таблиц одной сущности при нормализации (1 - 1) ??
+# Связи можно добавлять отдельной миграцией если в генераторе не указать article:references
+# можно добавить и тут вручную если данная миграция еще не была запущена
+
+
+# 1. Создадим новые миграции чтобы добавить user_id с foreign_key в таблицы questions и answers
+# > rails g migration add_user_id_to_questions user:belongs_to
+# > rails g migration add_user_id_to_answers user:belongs_to
+# user:belongs_to - параметр создающий новое поле user_id с foreign_key к id в таблице users
+# Создались миграции:
+class AddUserIdToQuestions < ActiveRecord::Migration[7.0]
+  def change
+    # add_user_id_to_questions - изза такого правильного названия с именами таблиц, автоматически заполнилось:
+    add_reference :questions, :user, null: false, foreign_key: true, default: User.first.id
+    # Но если прямо так запустить миграцию, то опция null: false вызовет ошибку и миграция не пройдет изза того, что значение поля user_id не может быть пустым, но у уже ранее созданных записей оно пустое, а в прдакшене удалить существующие записи - не очень тема, потому, чтобы миграция прошла нужно будет обойти это при помощи временного значения по умолчанию:
+    # default: User.first.id - поставит в старые записи в колонку user_id вместо NULL дефолтное значение с айди этого юзера (мб придумать специального юзера для этого, например с именем "Аноним")
+  end
+end
+
+
+# Теперь удалим временное значения User.first.id из полей user_id при помощи еще одной миграции
+# > rails g migration remove_default_user_id_from_questions_answers
+class RemoveDefaultUserIdFromQuestionsAnswers < ActiveRecord::Migration[6.1]
+  # В миграции заменим метод change на методы up и down:
+
+  def up # этот метод вызывается при применении миграции  > rails db:migrate
+    change_column_default :questions, :user_id, from: User.first.id, to: nil
+    # from: User.first.id, to: nil - не обязательно(но не лишне) писать это при использовании методов up и down
+    change_column_default :answers, :user_id, from: User.first.id, to: nil
+    # Тоесть когда мы применим данную миграцию, мы заменим значения User.first.id в user_id в таблицах на пустое
+  end
+
+  def down # этот метод вызывается при откате миграции  > rails db:rollback
+    change_column_default :questions, :user_id, from: nil, to: User.first.id
+    # from: nil, to: User.first.id - не обязательно(но не лишне) писать это при использовании методов up и down
+    change_column_default :answers, :user_id, from: nil, to: User.first.id
+    # Тоесть когда мы откатим данную миграцию, мы обратно заполним значением User.first.id пустые значения user_id в таблицах
+  end
+
+  # Все тоже самое можно было бы сделать и используя метод change, но тогда писать from: User.first.id, to: nil обязательно иначе будет неоткатываемо
+end
 
 
 
