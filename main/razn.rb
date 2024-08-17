@@ -49,6 +49,73 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each {|f| require f}
 
 
 
+#  Цвета для терминала для Руби и не толлько
+print 'Enter :  '
+word = gets.strip
+loop do
+  word.each_char do |chr|
+    print "\u001b[38;5;#{rand(255)}m"
+    print chr
+    print "\u001b[0m"
+  end
+  print ' '
+  sleep 0.03
+end
+
+print 'Enter : '
+ word = gets.strip
+ loop do
+  background = "\e[48;5;#{rand(255)}m"
+  word.each_char do |chr|
+    print background
+    print "\e[38;5;#{rand(255)}m"
+    print chr,'-'
+    print "\e[0m"
+  end
+  print "\e[0m"
+  sleep 0.1
+end
+
+# ANSI коды
+RESET = "\e[0m"      # Сброс
+BOLD = "\e[1m"       # Жирный текст
+UNDERLINE = "\e[4m"  # Подчеркивание
+
+# Цвета текста (Foreground colors)
+BLACK = "\e[30m"
+RED = "\e[31m"
+GREEN = "\e[32m"
+YELLOW = "\e[33m"
+BLUE = "\e[34m"
+MAGENTA = "\e[35m"
+CYAN = "\e[36m"
+WHITE = "\e[37m"
+
+# Цвета фона (Background colors)
+BG_BLACK = "\e[40m"
+BG_RED = "\e[41m"
+BG_GREEN = "\e[42m"
+BG_YELLOW = "\e[43m"
+BG_BLUE = "\e[44m"
+BG_MAGENTA = "\e[45m"
+BG_CYAN = "\e[46m"
+BG_WHITE = "\e[47m"
+
+# Примеры использования
+puts "#{BOLD}Это жирный текст#{RESET}"
+puts "#{UNDERLINE}Это подчеркивание#{RESET}"
+puts "#{RED}Это красный текст#{RESET}"
+puts "#{GREEN}Это зеленый текст#{RESET}"
+puts "#{BLUE}Это синий текст#{RESET}"
+puts "#{YELLOW}Это желтый текст на черном фоне#{BG_BLACK}#{RESET}"
+
+# Комбинирование стилей и цветов
+puts "#{BOLD}#{MAGENTA}Это жирный и фиолетовый текст#{RESET}"
+puts "#{UNDERLINE}#{CYAN}Это подчеркивание и голубой текст#{RESET}"
+
+
+
+
 
 
 
