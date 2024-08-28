@@ -35,8 +35,8 @@ puts '                                              Содержание'
 #   decorates_association
 #   commentable.object  - извлечение сущьности из задекорированного объекта
 
-# ManyToMany
-#   TomSelect, ajax и поиск
+# Tomselect_Serialize
+#   ajax и поиск
 #   Форма с GET-запросом (экшен index) на ту же страницу
 #   парсинг json(serialize) blueprinter, рендер json
 

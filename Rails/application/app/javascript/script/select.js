@@ -19,15 +19,16 @@ document.addEventListener("turbolinks:load", function() {
     let opts = {
       plugins: { // Подключаем в опциях плагины
         'remove_button': {
+          // 'remove_button' - плагин позволяет удалять элементы(у нас теги при нажатии на крестик ??)
           title: i18n['remove_button'] // перевод для плагина
-        }, // 'remove_button' - плагин позволяет удалять элементы(у нас теги при нажатии на крестик ??)
+        },
         'no_backspace_delete': {}, // для удобства работы с backspace
         'restore_on_backspace': {} // для удобства работы с backspace
       },
-      valueField: 'id', // опция говорит что значениями будут айдишники (тут наших тегов)
-      labelField: 'title', // а для отображения будет title
+      valueField: 'id',     // опция говорит что значениями будут айдишники (тут наших тегов)
+      labelField: 'title',  // а для отображения будет title
       searchField: 'title', // и для поиска тоже title
-      create: false, // если (тут тега) нет, то создать нельзя
+      create: false,        // если (тут тега) нет, то создать нельзя
       // Функция, которя принимает запрос и колбэк, которая и будет подгружать наши теги
       load: function(query, callback) {
         // содадим URL: часть из атрибута data
@@ -48,9 +49,9 @@ document.addEventListener("turbolinks:load", function() {
       }
     }
 
-    new TomSelect(element, opts) // создаем новый элемент TomSelect с тегом(element) и созданными опциями
-
-    // Вместо строки выше. Урок 21 - добавлена "выгрузка" ??
+    // Вариант 1: создаем новый элемент TomSelect с тегом(element) и созданными опциями
+    new TomSelect(element, opts)
+    // Вариант 2: Урок 21 - добавлена "выгрузка" ??
     const el = new TomSelect(element, opts)
     selects.push(el)
   })
