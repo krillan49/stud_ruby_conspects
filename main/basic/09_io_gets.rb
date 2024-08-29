@@ -33,7 +33,7 @@ line2 = gets * 2
 3.times.map{gets.strip} # вернет массив из 3х вводов
 
 
-puts
+
 puts '                                             STDIN.gets'
 
 # http://ruby.qkspace.com/ruby-chem-gets-otlichaetsya-ot-stdin-gets
@@ -56,8 +56,8 @@ input = STDIN.gets.chomp
 # Правило буравчика: если ваша программа использует ARGV, вместо gets необходимо использовать STDIN.gets, если не использует — можно оставить gets, но если везде замените на STDIN.gets хуже не будет.
 
 
-puts
-puts '                                         Стандартный вывод'
+
+puts '                                         Стандартный вывод. ARGV'
 
 # $stdout - глобальная переменная Руби указывающая на терминал, например когда по умолчанию мы пишем чтото в puts то это stdout
 
@@ -70,7 +70,20 @@ $stdout << "\nLetters count:\n"
 ("A".."Z").each { $stdout << "#{_1} #{chars_count[_1]}\n"}
 
 
-puts
+# ARGV - массив с параметрами ввода в строке вызова Руби-скрипта. По умолчанию параметры принимаются в виде строк
+
+res = 0
+ARGV.each do |par|
+  res += par.to_i
+end
+p res
+# > ruby test.rb 5 10 12
+#=>
+
+
+
+
+
 puts '                                           Гем io/console'
 
 # Этот гем встроен в руби по умолчанию
