@@ -14,7 +14,7 @@ puts '                                             irb'
 # Завершить работу в irb можно в любой момент нажав ctrl+c
 
 
-puts
+
 puts '                                             pry'
 
 # https://github.com/pry/pry     http://pry.github.io/

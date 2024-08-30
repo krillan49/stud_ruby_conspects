@@ -9,7 +9,7 @@ puts '                                          API приоложения'
 # Например в Twitter API функционал находится на странице твитер-девелопмент, на ней есть все что необходимо для разработчика, нужно зарегаться, создать новый проект, и в нем создать наше приложение, через которое чтото будем запрашивать из твитера, будем заходить в твитер через это приложение
 
 
-puts
+
 puts '                                             Faraday'
 
 # https://rubygems.org/gems/faraday
@@ -24,7 +24,7 @@ gem 'faraday', '~> 2.9'
 # > gem install faraday
 
 
-puts
+
 puts '                                GET запрос, при помощи Faraday на API'
 
 # Пошлем GET запрос на Twitter API
@@ -64,7 +64,7 @@ puts response.success? #=> true
 raw_tweets = JSON.parse(response.body) # Преобразуем строку JSON в хэш, чтобы можно было легко оперировать данными
 
 
-puts
+
 puts '                                POST запрос, при помощи Faraday на API'
 
 # Пошлем POST-запрос на API https://api.funtranslations.com/, чтобы получить смешной перевод в стиле Мастера Йоды

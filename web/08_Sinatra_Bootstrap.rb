@@ -3,7 +3,7 @@ puts '                                           Sinatra + CSS'
 # фаил стилей styles.css(название можно любое) создаем в папке public(например public/css/styles.css)
 
 
-puts
+
 puts '                                          sinatra-bootstrap'
 
 # Можно подключить и обычным способом, через CDN(сеть доставки контента/content delivery network). Это сервера(в разных локациях для скорости загрузки) хранящие необходимые фаилы

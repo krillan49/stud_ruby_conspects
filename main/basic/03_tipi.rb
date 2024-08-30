@@ -33,7 +33,7 @@ some.to_i
 12345.digits(100) #=> [45, 23, 1]
 
 
-puts
+
 puts '                                             Float'
 
 # Float(плавающий) - числа с плавающей точкой(4 байта?)
@@ -52,13 +52,13 @@ p 3e-20                #=> 3.0e-20
 some.to_f
 
 
-puts
+
 puts '                                         Другие числовые типы'
 
 # Rational (рациональные числа) и Complex (комплексные числа с мнимой единицей).
 
 
-puts
+
 puts '                              TrueClass, FalseClass. Логический тип данных'
 
 # В Руби нет единого типа данных Boolean. Есть тип TrueClass и есть FalseClass. Принимают только true или же false. (1 байт)
@@ -84,7 +84,7 @@ fizz = (num % 3 == 0)
 p fizz #=> false
 
 
-puts
+
 puts '                                             NilClass'
 
 # Тип данных Nil - пустое значение переменной
@@ -95,7 +95,7 @@ p n #=> nil
 p nil.to_i #=> 0
 
 
-puts
+
 puts '                                             String'
 
 # String - строки. Последовательность(массив) байтов в кодировке UTF-8, могут быть любой длины.
@@ -106,14 +106,14 @@ p str #=> Скопец чтоли?
 some.to_s
 
 
-puts
+
 puts '                                           Другие типы'
 
 # Array [...] - тип данных массивы
 # Hash {...} - тип данных хэши
 
 
-puts
+
 puts '                                      Методы class, is_a и methods'
 
 # Object это тоже тип данных

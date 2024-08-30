@@ -82,7 +82,7 @@ puts '                                              Содержание'
 #   Cron. app/workers. gem 'sidekiq-scheduler' Настройка Сайдкика в продакшене
 
 
-puts
+
 puts '                                              Доп Гемы'
 
 # Основные гемы для фронта в 03_Assets_solutions
