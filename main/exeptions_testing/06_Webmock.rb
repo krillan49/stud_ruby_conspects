@@ -36,7 +36,7 @@ include WebMock::API
 WebMock.enable!
 
 
-puts
+
 puts '                                         Webmock: Тестирование API'
 
 # Симитируем POST-запрос на API https://api.funtranslations.com/, задав предполагаемый ответ при помощи Webmock, чтобы протестировать метод из фаила api.rb, который посылает запрос и получает смешной перевод в стиле Мастера Йоды,

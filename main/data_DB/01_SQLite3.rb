@@ -31,7 +31,7 @@
 # > INSERT INTO Cars (Name, Price) VALUES ('Foo', 6743); - пример запроса INSERT, добавим новую строку в таблицу
 
 
-puts
+
 puts '                                            sqlite3 gem'
 
 # https://www.rubydoc.info/github/luislavena/sqlite3-ruby
@@ -62,7 +62,7 @@ end
 db.close # убираемся за собой
 
 
-puts
+
 puts '                         Вставка в строку запрса. Безопасность от SQL Injection'
 
 # SQL Injection - это если пользователь(хакер) введет 'DROP TABLE Cars -- и получит доступ к базе данных(???)
@@ -88,7 +88,7 @@ db.execute( 'SELECT * FROM Barbers WHERE name=?', [name] ) # тут переда
 db.close
 
 
-puts
+
 puts '                                         Вывод данных из БД'
 
 # Для того чтоб сделать вывод из базы данных - нужно создать селект-запрос.

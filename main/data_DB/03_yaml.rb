@@ -26,7 +26,7 @@ puts '                                              YAML'
 # https://1cloud.ru/help/docker/manual_yaml           Краткий мануал по YAML
 
 
-puts
+
 puts '                                           YAML в Руби'
 
 # https://ruby-doc.org/stdlib-3.1.0/libdoc/yaml/rdoc/YAML.html
@@ -39,7 +39,7 @@ puts '                                           YAML в Руби'
 # Psych — это анализатор и эмиттер YAML. Psych использует libyaml для своих возможностей анализа и генерации YAML. Помимо упаковки libyaml, Psych также знает, как сериализовать и десериализовать большинство объектов Ruby в формат YAML и из него.
 
 
-puts
+
 puts '                                      Считывание YAML в Руби'
 
 require 'yaml' # чтобы считывать фаилы YAML в руби нужно подгрузить встроенный модуль
@@ -66,7 +66,7 @@ p data
 p data[0][:question] #=> "В какой стране придумали панамы?"
 
 
-puts
+
 puts '                                       Вставки в YAML(?)'
 
 # Фаил 03_yaml/03_insert.yml
@@ -75,7 +75,7 @@ Message.call(:you_are_looser, year: 2, month: 2, day: 1)
 # первый аргумент это символ - ключ, остальные — хэш с параметрами. остается только заменить шаблоны в строке и готово
 
 
-puts
+
 puts '                                     Запись в YAML. Метод to_yaml'
 
 # https://stackoverflow.com/questions/14532959/how-do-you-save-values-into-a-yaml-file
