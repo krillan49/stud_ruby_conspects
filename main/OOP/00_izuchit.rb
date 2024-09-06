@@ -22,10 +22,15 @@ some3 = Some3.new
 p some3.some #=> 0
 
 
-# хз зачем создавать класс в переменную а не в константу
+# Анонимный класс в локальной переменной
 a = Class.new(Some)
-p #<Class:0x0000022ddd91ac50>
-
+p a #=> #<Class:0x0000022ddd91ac50>
+c = Class.new do
+  def say_hello
+    'hello'
+  end
+end
+p c.new.say_hello #=> "hello"
 
 
 # Можно создавать так классы и внутри класса(можно и через self)
