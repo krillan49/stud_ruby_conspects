@@ -34,7 +34,7 @@
     <%= f.password_field :password_confirmation, class: 'form-control form-control-lg' %>
   </div>
 
-  <% t_key = (user.new_record? ? "register" : "save") %> <!-- Оставим для будущей возможности создания новых юзеров админом по 1 -->
+  <% t_key = (user.new_record? ? "register" : "save") %> <!-- На будущее для возможности создания новых юзеров админом по 1 -->
   <%= f.submit t(t_key, scope: 'users.global.forms'), class: 'btn btn-primary btn-lg' %>
 <% end %>
 
