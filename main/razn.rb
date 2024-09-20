@@ -114,6 +114,13 @@ puts "#{BOLD}#{MAGENTA}Это жирный и фиолетовый текст#{R
 puts "#{UNDERLINE}#{CYAN}Это подчеркивание и голубой текст#{RESET}"
 
 
+# Проверить разные символы chr(Encoding::UTF_8)
+(0..0x10FFFF).each.with_index do |codepoint, i|
+  puts codepoint.chr(Encoding::UTF_8)
+  break if i == 500
+end
+
+
 
 
 
