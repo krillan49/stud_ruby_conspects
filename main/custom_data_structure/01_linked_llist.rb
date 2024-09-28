@@ -1,46 +1,4 @@
-puts '                                       Рекурсия и Linked lists'
-
-# Рекурсивная реализация более элегантна чем итеративная и не имеет изменяемого состояния, но у него есть проблема с потреблением памяти.
-
-
-# 4 kyu Hash.flattened_keys
-# https://www.codewars.com/kata/521a849a05dd182a09000043
-class Hash
-
-  def flattened_keys(obj = nil)
-    obj = self.clone if !obj
-
-    res = obj.map {|k, v|
-      if v.class == Hash or v.class == Array
-        v.map {|key, val|
-          newk = k.to_s + '_' + key.to_s
-          newk = newk.to_sym if k.class == Symbol && key.class == Symbol
-          [newk, val]
-        }
-      else
-        [k, v]
-      end
-    }.flatten
-
-    if res.any?{|e| e.class == Hash or e.class == Array}
-      flattened_keys(res.each_slice(2).to_a)
-    else
-      res.each_slice(2).to_a.to_h
-    end
-  end
-
-end
-
-unflat = {id: 1, info: {name: 'example'}}
-p unflat.flattened_keys # {id: 1, info_name: 'example'}
-unflat = {id: 1, info: {name: 'example', more_info: {count: 1}}}
-p unflat.flattened_keys # {id: 1, info_name: 'example', info_more_info_count: 1}
-unflat = {a: 1, 'b' => 2, info: {id: 1, 'name' => 'example'}}
-p unflat.flattened_keys # {a: 1, 'b' => 2, info_id: 1, 'info_name' => 'example'}
-
-
-puts
-puts '                                      Linked list(связанные списки)'
+puts '                                    Linked list(связанные списки)'
 
 # https://en.wikipedia.org/wiki/Linked_list
 
