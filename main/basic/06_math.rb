@@ -114,6 +114,10 @@ lucky_number = (Kernel::rand() * 100 + 1).floor
 
 puts '                                          Математические классы'
 
+# Целые числа являются экземплярами класса Fixnum, который является подклассом класса Integer.
+2.is_a? Integer #=> true
+2.is_a? Fixnum  #=> true
+
 # Rational - класс для ппостых дробей
 p Rational(1, 3)    #=> (1/3)
 # Перевод в Rational из Float и обратно

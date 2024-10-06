@@ -43,6 +43,12 @@ p 'asdfg'.respond_to?(:split) #=> true
 p %w[a s d f g].respond_to?(:split) #=> false
 
 
+# Проверить равенство методов (алиасы или нет)
+# is_a? и kind_of? методы алиасы реализованы в модуле ядра, который добавлен в класс Object.
+Kernel.instance_method(:kind_of?) == Kernel.instance_method(:is_a?) #=> true
+
+
+
 puts
 puts '                                               Методы/Функции'
 
