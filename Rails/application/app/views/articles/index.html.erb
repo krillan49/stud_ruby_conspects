@@ -58,7 +58,7 @@
 
   <!-- Скроем возможности редактирования и удаления от всех кроме автора статьи: -->
   <% if current_user == article.user %> <!-- Сравнивает сущности активного юзера и юзера к которому привязана статья. Сработает так же как current_user.id == article.user_id. Можно вынести в хэлпер  -->
-    <!-- article.user - возвращает объект юзера которому принадлежит статья, как было с comments только наоборот -->
+    <!-- article.user - возвращает объект юзера которому принадлежит статья -->
     <p><%= link_to "Edit article", edit_article_path(article) %></p>
     <p><%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %></p>
   <% end %>

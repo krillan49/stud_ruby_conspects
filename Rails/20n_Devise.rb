@@ -17,7 +17,7 @@ puts '                                              Devise'
 # https://github.com/heartcombo/devise/wiki/How-To:-Upgrade-to-Devise-4.9.0-%5BHotwire-Turbo-integration%5D
 
 
-puts
+
 puts '                                 Установка в Рэилс-приложение и настройка'
 
 # 1. Gemfile:
@@ -26,14 +26,14 @@ gem 'devise'
 
 # Добавились devise-опции в разные разделы
 
-# Проверим какие у нас появились в системе новые генераторы для работы с Devise:
+# Появился генератор Devise с 4мя опциями(генераторами):
 # > rails g
 # Devise:
 #   devise
 #   devise:controllers
 #   devise:install
 #   devise:views
-# Те у нас появился генератор Devise с 4мя опциями
+
 
 
 # 2. Установим Devise в приложение:
@@ -46,10 +46,10 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 } # добавим строку
 end
 
-#     2-2. Проверить, что в /config/routes.rb указано(добавить если нет):
+#     2-2. /config/routes.rb  - проверить, что указан правельный корень(добавить если нет):
 root to: "home#index"
 
-#     2-3. Добавить(если нет) в Лэйаут нашего приложения app/views/layouts/application.html.erb. Нужно для работы флеш-сообщений:
+#     2-3. app/views/layouts/application.html.erb - добавить(если нет) в Лэйаут элементы для отображения флеш-сообщений:
 # <p class="notice"><%= notice %></p>
 # <p class="alert"><%= alert %></p>
 
@@ -58,16 +58,16 @@ root to: "home#index"
 
 
 # 3. Другое:
-# > rails generate devise:controllers users    - генерация devise-контроллеров, если нужны
+# > rails generate devise:controllers users    - генерация devise-контроллеров, если нужно что-то в них изменить
 
 
 # !!! После добавления и настройки Devise необходимо перезапустить приложение, иначе возникнут ошибки
 
 
-puts
+
 puts '                                Создание devise-модели и миграции'
 
-# Создадим модель пользователя, но при помощи генератора devise вместо model, так модель сразу создастся со всеми необходимыми свойствами для авторизации: e-mail, зашифрованный пароль, токен для сброса пароля, индексы для таблиц итд итп:
+# Создадим модель пользователя, но при помощи генератора devise вместо model, так модель сразу создастся со всеми необходимыми свойствами для авторизации: e-mail, зашифрованный пароль, токен для сброса пароля, необходимые индексы для таблиц итд итп:
 
 # > rails g devise User
 
@@ -106,17 +106,17 @@ end
 # > rake db:migrate
 
 
-# !! В Rails 7 может быть ошибка Undefined method 'user_url' при регистрации.
+# !! В Rails 7 может быть ошибка при регистрации: Undefined method 'user_url'
 # Нужно в config/initializers/devise.rb добавить/раскомментировать:
 config.navigational_formats = ['*/*', :html, :turbo_stream]
 
 
 # 2. Добавим ссылки входа и выхода в лэйаут /app/views/layouts/application.html.erb
 
-# ?? Альтернатива тому чтобв добавлять 'turbo' в ссылки ??
-# Ссылка выхода по умолчанию не работала(?? по умочанию пост а нужен гет ??), необходимо в route.rb:
+# ?? Альтернатива тому чтобы добавлять 'turbo' в ссылки ??
+# Ссылка выхода по умолчанию не работала(?? по умочанию POST а нужен GET ??), необходимо в route.rb:
 devise_for :users # после этой строки...
-# написать еще маршрут(юзер в единственном числе):
+# ... написать еще маршрут(юзер в единственном числе):
 devise_scope :user do
   get '/users/sign_out' => 'devise/sessions#destroy'
 end
@@ -125,33 +125,36 @@ config.sign_out_via = :delete # было это
 config.sign_out_via = :get    # изменить на это
 
 
-puts
+
 puts '                                     Фильтр authenticate_user!'
 
-# Чтобы ограничить доступ неавторизированного пользователя к экшенам контроллера нужно через before_action вызвать в контроллере фильтр devise - authenticate_user!.
-# Подкорректируем контроллеры Articles и Comments, чтобы они запрещали доступ для неавторизированных пользователей к функционалу(создание, изменение, удаление статей и комментов), оставив доступ к просмотру статей и комментов
+# authenticate_user! - встроенный метод-фильтр devise, делает экшены контроллера недоступными неавторизованному юзеру и при запрсах будет перенаправлять на форму авторизации devise. Нужно через before_action вызвать в контроллере authenticate_user!.
+
+# Подкорректируем контроллеры Articles и Comments, чтобы они запрещали доступ для неавторизированных пользователей к функционалу(создание, изменение, удаление статей и комментов), оставив доступ только к просмотру статей и комментов
+
+# /app/controllers/articles_controller.rb:
 class ArticlesController < ApplicationController
-  # Авторизация только для создания и редактирования статьи /app/controllers/articles_controller.rb:
+  # Авторизация только для создания и редактирования статьи
   before_action :authenticate_user!, :only => [:new, :create, :edit, :update, :destroy]
-  # :authenticate_user! - встроенный фильтр devise, делает методы контроллера недоступными неавторизованному юзеру и при запрсах будет перенаправлять на форму авторизации devise
   # ...
 end
+
+# /app/controllers/comments_controller.rb:
 class CommentsController < ApplicationController
-  # Авторизация только для создания комментария /app/controllers/comments_controller.rb:
+  # Авторизация только для создания комментария
   before_action :authenticate_user!, :only => [:create]
   # ...
 end
+
 # Теперь когда мы переходим например на /articles/new то автоматически переходит на /users/sign_in и возвращает нам представление-devise с уже готовой стандартной формой devise для регистрации(sign up)/авторизации(sign_in).
 # Далее мы можем зарегистрироваться, наша User-сущность сохранится в БД и тогда мы получим доступ к экшенам
 
 
 
-puts
 puts '                                  Добавление нового поля(username)'
 
-# Генератор модели devise по умолчанию не создает столбец username. Можно было использовать и email который есть по умолчанию, но часто логичнее использовать username, например для комментов в блоге, поэтому добавим его:
+# Генератор модели devise по умолчанию не создает столбец username. Можно было использовать и email, который есть по умолчанию, но часто логичнее использовать username, например для комментов в блоге, поэтому добавим его:
 
-# https://api.rubyonrails.org/classes/ActiveRecord/Migration.html
 
 # 1. Добавим новый столбец username и индекс для него в таблицу users(Тоже самое можно было сделать изначально дописав нужное поле в фаиле миграции модели User, перед тем как запустили миграцию):
 # > rails g migration add_username
@@ -160,12 +163,12 @@ class AddUsername < ActiveRecord::Migration[7.0]
   def change # метод change изначально не заполнен
     add_column :users, :username, :string
     # add_column - метод для создания столбца(одного отдельного, для другого нужно писать еще раз add_column ...)
-    # :users - имя таблицы в которую добавим новый столбец
-    # :username - имя нового столбца
-    # :string - тип данных нового столбца
+    # :users     - имя таблицы в которую добавим новый столбец
+    # :username  - имя нового столбца
+    # :string    - тип данных нового столбца
     # (4м аргументом можно поставить значение по умолчанию)
 
-    # По умолчанию можно будет вставить в этот столбец неуникальный username(те может быть 2+ одинаковых). Чтобы это исправить создадим на уровне БД уникальный индекс, который означает, что в этот столбец можно будет вставить только уникальные значения
+    # Чтобы username были уникальными создадим в БД уникальный индекс/ограничение уникальности:
     add_index :users, :username, unique: true
   end
 end
@@ -173,13 +176,14 @@ end
 
 
 # 2. Далее, отредактируем форму регистрации Sign Up, для того чтоб там появилось поле для username:
-# Сгенерируем набор views(если еще не сгенерин rails g devise:views), в том числе и представление с нужной нам формой регистрации.
+# Сгенерируем набор views(если еще не сгенерин), в том числе там будет и представление с нужной нам формой регистрации.
+# > rails g devise:views
 # views/devise/registrations/new.html.erb - добавим для sign up поля ввода для username
-# layouts/application.html.erb  - в лэйаут выведем имя вместо e-mail в приветсвии рядом с Sign Out
+# layouts/application.html.erb - в лэйаут выведем имя вместо e-mail в приветсвии рядом с Sign Out
 # articles/show.html.erb - изменим форму комментов, чтобы при создании комментария в поле автор указывался залогиненый юзер
 
 
-# 3. Обновим материнский контроллер ApplicationController для того чтобы в devise можно было использовать username:
+# 3. Обновим материнский контроллер ApplicationController для того, чтобы в devise можно было использовать username:
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   # :configure_permitted_parameters - фильтр, метод ниже.
@@ -194,14 +198,14 @@ class ApplicationController < ActionController::Base
     # keys: [:username] - то что добавляем в этот раздел.
     # Тоесть мы разрешаем добавление параметра :username, что добавили в форму :sign_up.
 
-    # Эти не использовали но как вариант других разделов
+    # Эти не использовали, но как вариант других разделов
     devise_parameter_sanitizer.permit(:sign_in, keys: [:username])
     devise_parameter_sanitizer.permit(:account_update, keys: [:username])
   end
 end
 
 
-puts
+
 puts '                 User 1 - * Article. Возможность удалить и редактировать контент только его автору'
 
 # stackoverflow.com/questions/46633649/how-to-allow-users-to-only-see-edit-and-delete-link-if-the-article-is-their-own
@@ -245,8 +249,8 @@ end
 
 
 # 3. Представления:
-# aticles/new.html.erb добавим скрытое поле с user_id залогиненного пользователя
-# aticles/index.html.erb добавим условия для сокрытия ссылок на редактирование и удаление статьи
+# aticles/new.html.erb   - добавим скрытое поле с user_id залогиненного пользователя, чтобы строка статьи содержала значение id пользователя ее создавшего
+# aticles/index.html.erb - добавим условия для сокрытия ссылок на редактирование и удаление статьи
 
 
 # 4. В контроллере article запретим доступ при ручном переходе по URL:
@@ -283,7 +287,7 @@ class ArticlesController < ApplicationController
 end
 
 
-puts
+
 puts '                                     Добавить роль администратора'
 
 # https://github.com/heartcombo/devise/wiki/How-To%3A-Add-an-Admin-Role    -   3 варианта(тут использую 2й)
@@ -302,13 +306,13 @@ end
 # > rails db:migrate
 
 # Теперь можно идентифицировать администраторов:
-if current_user.admin?  # со знаком вопроса потому что тип boolean
+if current_user.admin?
   # do something
 end
 # Если на странице потенциально может не быть установлен текущий_пользователь, тогда:
 if current_user.try(:admin?)
   # do something
-end # Так если current_user вернет nil, то не вызывая исключения.
+end # Так если current_user вернет nil, то не вызовет исключения а просто будет nil.
 
 # Код ниже можно использовать для предоставления статуса администратора текущему пользователю.
 current_user.update_attribute :admin, true
@@ -336,8 +340,8 @@ users = User.create([{email: 'super@test.com', first_name: 'super', last_name: '
 admin = User.create(email: "admin@mail.ru", username: "admin", password: '123456', password_confirmation: '123456', admin: true)
 
 
-puts
-puts '                                    Переопределение devise-контроллеров'
+
+puts '                                  Переопределение devise-контроллеров'
 
 # https://github.com/heartcombo/devise#configuring-controllers
 

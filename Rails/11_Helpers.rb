@@ -194,6 +194,10 @@ simple_format @foo.body
 
 puts '                                      Встроенные хэлперы для моделей'
 
+# (?? Это метод Рэилс или Девайс ??) update_attribute - Изменение значения поля сущьности(тут сущьность - current_user, поле - admin, значение - true)
+current_user.update_attribute :admin, true
+
+
 # new_record? - проверяет новая ли запись, те экземпляр модели созданный через new но не заполненный
 User.find(params[:id]).new_record? #=> false
 User.new.new_record?               #=> true
