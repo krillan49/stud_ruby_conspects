@@ -1,3 +1,15 @@
+puts '                                   Методы экземпляра модели'
+
+# Можем использовать везде где они доступны(модели, контроллеры итд)
+
+# update (тоже самое self.update) - тоесть метод обновления сущьности(метод экземпляра модели обновляющий запись в БД ??)
+update password_reset_token: digest(SecureRandom.urlsafe_base64), password_reset_token_sent_at: Time.current
+# password_reset_token: - тоесть обновляем значение поля токена сброса пароля
+# digest(SecureRandom.urlsafe_base64) - используем метод чтобы сгенерировать значение-хэш-токен
+# password_reset_token_sent_at: Time.current - тоесть обновляем время обновления в соответсвующей колонке на текущее время в текущей временной зоне (временная зона настраивается в config/application.rb)
+
+
+
 puts '                                          Опции валидаций'
 
 validates :password, confirmation: true, allow_blank: true, length: {minimum: 8, maximum: 70}

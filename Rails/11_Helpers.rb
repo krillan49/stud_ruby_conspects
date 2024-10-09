@@ -63,8 +63,19 @@ root_path
 name_index_path
 # при этом хэлпер для show будет называться стандартно
 
+# some_url - тут именно _url, тк нам нужен полный адрес с доменным именем сайта, например чтобы ссылка могла быть активирована гдето на почтовом сервисе клиента, для этого в config/environments/development.rb мы и указывали доменное имя в host:, тк он и будет тут задействован при генерации URL
+edit_password_reset_url(user: {password_reset_token: @user.password_reset_token, email: @user.email})
+# user: {password_reset_token: @user.password_reset_token, email: @user.email} - записываем в адрес ссылки что-то, например токен для сброса пароля и имэил пользователя, чтобы потом можно было их обработать
+# Получится URL вроде:
+# 'http://localhost:3000/password_reset/edit?user%5Bemail%5D=ser%40ser.com&user%5Bpassword_reset_token%5D=%242a%2412pZrpySgC'
+# edit - тут от экшена или формы ??
 
-# url_for - генерирует URL просто как текст
+# locale: :en - добавим локаль в ссылку. Можно разнести представления с разными переводами в разные представления (локализированные представления), если надо переводить так и тогда ссылка вызовет представление с определенным переводом.
+# Локализированные представления - это представления, которые содержат код локали (ru, en) перед расширениями. Эти локализированные представления автоматически подтянутся, в представлениях нужно только добавить локаль в ссылку, чтобы при переходе по ней язык остался тем же.
+edit_password_reset_url(locale: :en)
+
+
+# url_for - генерирует из URL ту же строку просто как текст
 url_for edit_password_reset_url(user: {password_reset_token: @user.password_reset_token, email: @user.email})
 
 
@@ -139,10 +150,19 @@ link_to questions_path(obj_ids: obj), class: 'badge rounded-pill bg-light text-d
   obj.title
 end
 
+# target: '_blank' - для открытия на другой вкладке
+link_to 'Reset my password', edit_password_reset_url, target: '_blank'
+
+
 
 # 3. Теги форм и полей:
 
 # form_with - встроенный хэлпер для создания формы в виде
+
+# вариант с до юрл
+form_with model: @user, url: password_reset_path, method: :patch do |f|
+end
+# <!-- Тут не смотря на прописывание модели, прописываем URL и метод отдельно, тк если указать только модель, то эта форма будет отправлена на обработку в user-контроллер, но нам нужен контроллер сброса пароля, потому и нужно указать URL и метод, чтоб отправилось на его экшен update -->
 
 # email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу
 f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg'
@@ -288,6 +308,11 @@ dom_id(answer)
 debug(params)
 
 # autolinks - автоматическая подсветка ссылок ??
+
+# minutes - метод Рэилс для чисел
+60.minutes
+# Пример
+Time.current - password_reset_token_sent_at <= 60.minutes
 
 
 
