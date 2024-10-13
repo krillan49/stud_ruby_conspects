@@ -3,7 +3,7 @@
     aaa: AAA
     bbb: BBB
     ccc: CCC
-  :nums:
+  :nums: # сразу тип символ?
   - 1
   - 2
   - 3
