@@ -6,10 +6,10 @@ class UserBulkExportService < ApplicationService
 
     # send_data compressed_filestream.read, filename: 'users.zip' - раньше в контроллере в методе respond_with_zipped_users делали так чтобы отправить фаил для загрузки пользователем сразу через браузер
 
-    # Вариант 1 с сохранением архива в ActiveStorage после отправки письма, на случай если мы еще раз захотим использовать этот фаил
+    # Вариант 1 - с сохранением архива в ActiveStorage после отправки письма, на случай если мы еще раз захотим использовать этот фаил
     ActiveStorage::Blob.create_and_upload! io: compressed_filestream, filename: 'users.zip'
 
-    # Вариант 2 без сохранения в ActiveStorage
+    # Вариант 2 - без сохранения в ActiveStorage
     compressed_filestream # тут просто возвращаем
   end
 

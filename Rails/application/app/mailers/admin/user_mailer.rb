@@ -17,9 +17,9 @@ module Admin
 
       # Вариант 1 для для передачи архива с ActiveStorage
       attachments[stream.attachable_filename] = stream.download
-      # attachments - пристыковывает к письму (?? фаил архива ??)
-      # attachable_filename - метод ActiveStorage - вернет имя фаила в удобоваримом формате
-      # stream.download - тоесть контент архива мы считаем и пристыкуем к письму
+      # attachments         - пристыковывает к письму (?? фаил архива ??)
+      # attachable_filename - метод ActiveStorage, вернет имя фаила в удобоваримом формате
+      # stream.download     - тоесть контент архива мы считаем и пристыкуем к письму
 
       # Вариант 2 для для передачи стрима (без архива ActiveStorage)
       attachments['result.zip'] = stream.read
