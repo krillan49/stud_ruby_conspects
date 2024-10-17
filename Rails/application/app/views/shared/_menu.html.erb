@@ -75,8 +75,7 @@
         <!--  Переключение локалей  -->
         <ul class="nav col-12 col-lg-auto mb-2 mb-md-0">
           <li class="dropdown">
-            <%= link_to '#', class: 'nav-link px-2 dropdown-toggle text-white',
-              data: {"bs-toggle": 'dropdown'} do %>
+            <%= link_to '#', class: 'nav-link px-2 dropdown-toggle text-white', data: {"bs-toggle": 'dropdown'} do %>
               <%= tag.div '', class: "flag #{I18n.locale}-flag mt-1" %> <!-- интерполяция для названия классов, чтоб сделать разные css-свойства для разных языков и картинки языка -->
               <%= t I18n.locale %> <!-- Название текущей локали -->
             <% end %>
@@ -89,7 +88,7 @@
                   <% else %> <!-- если текущая локаль не равна локали из переменной -->
                     <%= link_to t(locale), root_path(locale: locale), class: 'dropdown-item' %> <!-- ссылка переключения локали, добавляет имя локали в URL в (:locale)  -->
                     <!-- root_path(locale: locale) - перебрасывает на главную -->
-                    <!-- url_for(locale: locale) - не перебрасывает на главную, остается на той же странице, но не сохраняет дополнительные значения в гет-запросе после знака ?, а там например стоит пагинация, чтобы это дополнительно улучшить можно использовать вариант отсюда https://stackoverflow.com/questions/35189892/rails5-params-merge-causes-errors-about-being-insecure -->
+                    <!-- url_for(locale: locale)   - не перебрасывает на главную, остается на той же странице, но не сохраняет дополнительные значения в гет-запросе после знака ?, а там например стоит пагинация, чтобы это дополнительно улучшить можно использовать вариант отсюда https://stackoverflow.com/questions/35189892/rails5-params-merge-causes-errors-about-being-insecure -->
                     <!-- locale - название локали (тут :en или :ru) -->
                   <% end %>
                 </li>
