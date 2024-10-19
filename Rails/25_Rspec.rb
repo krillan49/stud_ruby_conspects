@@ -14,7 +14,7 @@ end
 
 
 # 2. Настройка Rspec для Rails:
-# > rails g rspec:install   # этот генератор(среди прочих, добавился при установке gem 'rspec-rails') запускает гем и выполняет его установку в наше приложение(установит дополнительные каталоги и хэлперы). Создались:
+# > rails g rspec:install  - этот генератор(среди прочих, добавился при установке gem 'rspec-rails') запускает гем и выполняет его установку в наше приложение(установит дополнительные каталоги и хэлперы). Создались:
   # .rspec                 - содержит опции/настройки(например для цветового вывода)
   # spec                   - Директория для rspec тестов и других фаилов
   # spec/spec_helper.rb
@@ -41,8 +41,8 @@ end
 # > rails db:migrate RAILS_ENV=test
 
 
-puts
-puts '                                 Тестирование моделей(Матчеры shoulda-matchers)'
+
+puts '                              Тестирование моделей(Матчеры shoulda-matchers)'
 
 # Создадим для тестирования моделей каталог /spec/models. В нем будем создавать фаилы для тестирования моделей
 
@@ -66,7 +66,6 @@ end
 # > rake spec     # запускаем rspec через rake, но можно и обычным способом (нужны миграции тестовой БД)
 
 
-puts
 # Использование других матчеров для тестирования моделей(длинны введенных данных и ассоциаций принадлежности):
 # http://matchers.shoulda.io/docs/v3.1.3/Shoulda/Matchers/ActiveRecord.html#have_many-instance_method       have_many
 # https://matchers.shoulda.io/docs/v5.3.0/Shoulda/Matchers/ActiveModel.html#validate_length_of-instance_method   validate_length_of
@@ -113,17 +112,16 @@ describe Comment do
 end
 
 
-puts
 # Другие матчеры валидации длинны:
 should validate_length_of(:bio).is_at_least(15) # не менее чем
 should validate_length_of(:favorite_superhero).is_equal_to(6) # равен значению
 should validate_length_of(:password).is_at_least(5).is_at_most(30) # одновременно меньше и больше чем
 
 
-puts
+
 puts '                                 Баг тестирования belong_to к Devise модели'
 
-# По умолчанию, если User модель Devise возникает ошибка при тестировании ассоциации /spec/models/comment_spec.rb
+# По умолчанию, если User это модель Devise, возникает ошибка при тестировании ассоциации /spec/models/comment_spec.rb
 require 'rails_helper'
 
 describe Comment do
@@ -141,7 +139,7 @@ class Comment < ApplicationRecord
 end
 
 
-puts
+
 puts '                                      Factory Bot. Настройка'
 
 # Factory Bot - помогает при тестировании, чтобы не создавать в AR объекты для теста и тестовую БД, вместо этого создаётся фабрика, и она будет создавать нам объекты для теста. Это соотв принципу DRY тк не нужно создавать тестовую БД
@@ -171,14 +169,14 @@ end
 require 'support/factory_bot'
 
 
-puts
+
 puts '                                      Factory Bot. Создание фабрики'
 
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Defining_factories
 
 # /spec/factories - создадим каталог с фабриками
 
-#  /spec/factories/articles.rb  - создадим файл в котором будем создавать фабрику для article:
+# /spec/factories/articles.rb - создадим файл в котором будем создавать фабрику для article:
 FactoryBot.define do # определяем фабрики
   factory :article do # фабрика article. По умолчанию будет брать модель Article и устанавливать в нее свойсва:
     # Зададим свойства и их значения, тк наши тесты будут проверять их валидацию и без них выдадут ошибки валидации
@@ -188,8 +186,6 @@ FactoryBot.define do # определяем фабрики
 end
 # Теперь наша фабрика может создать сущность Article с полями title и text
 
-
-puts
 # Напишем тест с использованием созданной фабрики:
 
 # Добавим метод в models/article.rb
@@ -212,7 +208,7 @@ describe Article do
   describe "#subject" do
     it "returns the article title" do
       article = create(:article, title: 'Foo Bar') # создаем объект/сущность Article но не с помощью AR, а при помощи фабрики
-      # create - метод factory_bot для создания сущности
+      # create   - метод factory_bot для создания сущности
       # :article - имя фабрики
 
       expect(article.subject).to eq 'Foo Bar' # проверяем что метод subject возвращает указанное значение title сущности
@@ -243,8 +239,8 @@ end
 FactoryBot.define do
   factory :user do
     email { "user@mail.ru" } # либо sequence(:email) { |n| "user#{n}@mail.ru" }
-    username { "username" } # либо sequence(:username) { |n| "username#{n}" }
-    password { "123456" } # почемуто password, хотя колонка называется encrypted_password
+    username { "username" }  # либо sequence(:username) { |n| "username#{n}" }
+    password { "123456" }    # почемуто password, хотя колонка называется encrypted_password
   end
 end
 # Фабрика posts.rb
@@ -261,8 +257,8 @@ describe Post do
   # ...
   describe "#columns" do
     it "returns the post content" do
-      user = create :user # создаем юзера фабрикой :user ??
-      post = create(:post, content: 'a' * 100, user: user) # в конце привязываем пост к юзеру ??
+      user = create :user # создаем юзера фабрикой :user
+      post = create(:post, content: 'a' * 100, user: user) # привязываем пост к юзеру
       expect(post.content).to eq 'a' * 100
     end
   end
@@ -307,7 +303,7 @@ end
 puts
 # Пример посложнее:
 
-# https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Sequences    # Sequences (последовательности):
+# https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md#Sequences   # Sequences (последовательности):
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md             # create_list (через поиск по странице):
 
 # Добавим метод в модель /app/models/article.rb
@@ -364,7 +360,7 @@ end
 # > rake spec
 
 
-puts
+
 puts '                        Приёмочное тестирование(Acceptance Testing). Gem Capybara'
 
 # УЗНАТЬ:
