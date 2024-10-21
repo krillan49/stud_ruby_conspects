@@ -361,44 +361,44 @@ end
 
 
 
-puts '                        Приёмочное тестирование(Acceptance Testing). Gem Capybara'
+puts '                        Acceptance Testing(Приёмочное тестирование). Gem Capybara'
 
 # УЗНАТЬ:
 # 1. Как копировать все данные в тестовую БД
 # 2. Как использовать маршруты для show в тестах? (мб просто хэлперы не подключены в фаилы тестов)
-  # visit '/posts/1'  - такие работают
-  # visit post_path('1') - такие нет ActionController::UrlGenerationError
-  # visit post_path(Post.all.last) - такие нет ActionController::UrlGenerationError
+# visit '/posts/1'               - такие работают
+# visit post_path('1')           - такие нет ActionController::UrlGenerationError
+# visit post_path(Post.all.last) - такие нет ActionController::UrlGenerationError
 
 
-puts
-# Проверка функциональности на соответствие требованиям. Отличие от юнит-тестов, что для этих тестов обычно существует план приёмочных работ(список требований и выполняются эти требования или нет). А юнит-тесты - проверка чтобы не сломалось. Обычно unit и acceptance используются вместе в проектах
+# Acceptance Testing - Проверка функциональности на соответствие требованиям. Отличие от юнит-тестов, что для этих тестов обычно существует план приёмочных работ(список требований и выполняются эти требования или нет). А юнит-тесты - проверка чтобы не сломалось. Обычно unit и acceptance используются вместе в проектах
 # http://protesting.ru/testing/levels/acceptance.html
 
 
-# гем Капибара - запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
+# Capybara - гем запускает движок браузера, посещает страницы, заполняет поля, потом тесты проверяют это
 # Капибара работает с тестовой БД, по умолчанию с test.sqlite3
 
-# https://www.rubydoc.info/github/teamcapybara/capybara/master    #Capybara
+# https://www.rubydoc.info/github/teamcapybara/capybara/master          - Capybara
 # https://github.com/teamcapybara/capybara
-# https://github.com/teamcapybara/capybara#using-capybara-with-rspec    # Using Capybara with RSpec
+# https://github.com/teamcapybara/capybara#using-capybara-with-rspec    - Using Capybara with RSpec
 
 # Gemfile
 group :test do
   gem 'capybara'
 end
 
-# Для настройки Capybara согласно документации нужно добавить в файл rails_helper(rspec_helper для старых версий) строчку, хотя работает и без этой строки.
+# Для настройки Capybara согласно документации нужно добавить в файл rails_helper(rspec_helper для старых версий):
 require 'capybara/rspec'
+# хотя работает и без этого
 
 
-puts
+
 puts '                                        Capybara синтаксис'
 
 # unit:         describe   ->   it
 # acceptance:   feature    ->   scenario
 
-# feature -> scenario - это фишка Capybara аналог - describe -> it.
+# 'feature -> scenario' - это фишка Capybara аналог 'describe -> it'.
 # feature - особенность(имеется ввиду какаято функциональность)
 # scenario - сценарий(способ использования функциональности)
 
@@ -415,13 +415,13 @@ puts '                                        Capybara синтаксис'
 
 # Создадим файл теста создания контактов /spec/features/visitor_creates_contact_spec.rb:
 require "rails_helper"
-# Далее синтаксис как раньше только вместо describe->it будет feature->scenario
+# Далее синтаксис как раньше, только вместо describe->it будет feature->scenario
 feature "Contact creation" do
   scenario "allows acess to contacts page" do # будем проверять наличие доступа к странице
     visit new_contacts_path # get 'contacts/new' (можно прописать URL и вручную)
     # Капибара заходит на указанную страницу(указывать обязательно, даже если это корневая)
 
-    expect(page).to have_content 'Contact us' # проверяем что страница имеет какуюто строку(учитывает регистр)
+    expect(page).to have_content 'Contact us' # проверяем, что страница имеет какую-то строку(учитывает регистр)
     # page - переменная содержащая страницу(полностью сгенерированную вместе с layout)
   end
 
@@ -434,8 +434,8 @@ end
 # > rake spec
 
 
-puts
-puts '                                     Capybara fill_in и click_button'
+
+puts '                                     Capybara: fill_in и click_button'
 
 #  Протестируем создание нового контакта:
 
@@ -450,12 +450,12 @@ feature "Contact creation" do
   scenario "allows a guest to create contact" do
     visit new_contacts_path
     fill_in :contact_email, with: 'foo@bar.ru'
-    # fill_in - метод для того чтобы Капибара заполнила поле;
-    # :contact_email - значение id поля;
+    # fill_in            - метод для того чтобы Капибара заполнила поле
+    # :contact_email     - значение id поля
     # with: 'foo@bar.ru' - то что будет записано в поле
     fill_in :contact_message, with: 'Foo Bar Baz'
     click_button 'Send message'
-    # click_button - метод Капибары дня нажатия на кнопку
+    # click_button   - метод Капибары дня нажатия на кнопку
     # 'Send message' - значение кнопки
 
     expect(page).to have_content 'Contacts create' # Проверяем страницу которая вернется после создания коммента(create.html.erb)
@@ -463,8 +463,8 @@ feature "Contact creation" do
 end
 
 
-puts
-puts '                               Capybara тесты с регистрацией и логином'
+
+puts '                               Capybara: тесты с регистрацией и логином'
 
 # 1. Сделаем сначала тест для гостя, проверяющий, что он может зарегистрироваться на сайте(протестируем форму регистрации)
 
@@ -548,14 +548,13 @@ end
 # > rake spec
 
 
-puts
-# Тест для посещения страницы редактирования статьи и собственно редактирование статьи юзером user_updates_article_spec.rb
+# 4. Тест для посещения страницы редактирования статьи и собственно редактирование статьи юзером user_updates_article_spec.rb
 require "rails_helper"
 
 feature "Article Edition" do
   before(:each) do
     sign_up
-    create_article # создаем статью(хэлпер выше)
+    create_article
   end
 
   scenario "allows user to visit edit article page" do
@@ -575,8 +574,7 @@ feature "Article Edition" do
 end
 
 
-puts
-# тест для создания комментариев
+# 5. Тест для создания комментариев
 require "rails_helper"
 
 feature "Comment Creation" do
@@ -593,7 +591,7 @@ feature "Comment Creation" do
 end
 
 
-puts
+
 puts '                                         database_cleaner(устарело?)'
 
 # (!!! Нифига не работает как и подсказки из уроков)
