@@ -36,7 +36,7 @@ ActiveStorage.start() // у круковского есть(я не делал) 
 import "@hotwired/turbo-rails"
 // import Rails from "@rails/ujs"            // ujs нам больше не нужен, ссылки использующие его далее мигрируем в turbo-синтаксис
 // import Turbolinks from "turbolinks"       // убираем турболинкс
-import * as ActiveStorage from "@rails/activestorage"  // у круковского есть(я не делал) связано с такими же package.json ??
+import * as ActiveStorage from "@rails/activestorage"  // у Круковского есть(я не делал) связано с такими же package.json ??
 
 // import '@popperjs/core'                  // с ESBuild не нужно, можно удалить, тк дропдаун его загружает автоматически
 import 'bootstrap/js/dist/dropdown'
@@ -45,7 +45,7 @@ import './scripts/select'
 
 // Rails.start()                             // тоже больше не нужно (хз почему)
 // Turbolinks.start()                        // убираем турболинкс
-ActiveStorage.start() // у круковского есть(я не делал) связано с такими же package.json ??
+ActiveStorage.start() // у Круковского есть(я не делал) связано с такими же package.json ??
 
 
 

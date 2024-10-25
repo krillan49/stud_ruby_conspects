@@ -60,7 +60,7 @@ document.addEventListener("turbolinks:load", function() {
 
 
 
-//                                           Версия с использованием turbo
+//                                           Версия с использованием Turbo
 
 import TomSelect from 'tom-select/dist/js/tom-select.popular'
 import Translations from './i18n/select.json'
@@ -81,7 +81,7 @@ const rerender = function() {                                   //  помеща
 
   document.querySelectorAll('select.js-multiple-select').forEach((element) => {
     // select.js-multiple-select - ищем именно селекторы с таким классом тк класс отдельно дублируется и для вложенных элементов
-    if(!element.classList.contains('tomselected')) { // дополнительно проверим что элемент с которым мы сейчас работаем не содержит в списке классов класс tomselected, чтобы на элемент, на который мы томселект назначили, оно не пыталось его назначить еще раз. Тк когда рендерим турбофрэйм с томселектом, то на странице может быть другой томселект и он уже назначен
+    if(!element.classList.contains('tomselected')) { // дополнительно проверим что элемент с которым мы сейчас работаем не содержит в списке классов класс tomselected, чтобы на элемент, на который мы Томселект назначили, оно не пыталось его назначить еще раз. Тк когда рендерим турбофрэйм с Томселектом, то на странице может быть другой Томселект и он уже назначен
       let opts = {
         plugins: {
           'remove_button': {
