@@ -172,6 +172,10 @@ form_with model: @user, url: password_reset_path, method: :patch do |f|
 end
 # <!-- Тут не смотря на прописывание модели, прописываем URL и метод отдельно, тк если указать только модель, то эта форма будет отправлена на обработку в user-контроллер, но нам нужен контроллер сброса пароля, потому и нужно указать URL и метод, чтоб отправилось на его экшен update -->
 
+# data: {'turbo': false} - отключаем турбо если это нужно
+form_with model: @item, data: {'turbo': false} do |f|
+end
+
 # email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу
 f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg'
 
