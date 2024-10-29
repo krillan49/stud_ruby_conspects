@@ -2,22 +2,18 @@ puts '                                         Rubocop'
 
 # https://docs.rubocop.org/rubocop/1.59/index.html
 
-# Rubocop - это инструмент (гем), специальный анализатор кода, который следит за стилем кода который мы пишем, в соответсвии с существующими соглашениями. Может сообщать о стилистических ошибках или исправлять некоторые автоматически.
-
-
 # Установка для Рэилс: https://docs.rubocop.org/rubocop/1.59/installation.html
 group :development do
   gem 'rubocop', '~> 1.59', require: false
-  # так же добавим 2 гема-расширения для Рубокопа(все расширения можно посмотреть во вкладке меню Projects в доках)
-  gem 'rubocop-rails', '~> 2.22', require: false  # доп проверки для Рэилс https://github.com/rubocop/rubocop-rails
+  # так же добавим 2 гема-расширения:
+  gem 'rubocop-rails', '~> 2.22', require: false       # доп проверки для Рэилс https://github.com/rubocop/rubocop-rails
   gem 'rubocop-performance', '~> 1.19', require: false # доп проверки на производительность кода
 end
 # > bundle i
 
 
-# Сконфигурируем Рубокоп: https://docs.rubocop.org/rubocop/1.59/configuration.html
-# .rubocop.yml - нужно создать конфигурационный фаил с таким названием в корневой папрке проекта(создадим и заполним тут)
-# https://github.com/rubocop/rubocop/blob/master/.rubocop.yml  - пример содержания .rubocop.yml
+# Сконфигурируем Рубокоп:
+# .rubocop.yml - создадим конфигурационный фаил с таким названием в корневой папрке проекта(создадим и заполним тут)
 
 
 # Запуск проверки(в корневой директории проекта)
@@ -34,7 +30,7 @@ end
 
 puts '                             Ручное исправление оставшихся ошибок'
 
-# https://docs.rubocop.org/rubocop-rails/cops.html   - посмотреть копы для рэилс
+# https://docs.rubocop.org/rubocop-rails/cops.html   - посмотреть копы для Рэилс
 
 # Структура копа: директория фала с ошибкой, название копа, описание ошибки, место в коде выделенное ^^^:
 # app/controllers/concerns/authentication.rb:6:3: C: Metrics/BlockLength: Block has too many lines. [44/25]
