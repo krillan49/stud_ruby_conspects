@@ -84,7 +84,7 @@ puts '                                              Содержание'
 # deploy
 #   Гем для PostgreSQL
 #   Ошибка Gemfile.lock на Виндоус при деплое (3а)
-#   Cron. app/workers. gem 'sidekiq-scheduler' Настройка Сайдкика в продакшене
+#   Cron. app/workers. gem 'sidekiq-scheduler' Настройка Сайдкика в продакшене для выполнения задач типа Крон
 
 
 
