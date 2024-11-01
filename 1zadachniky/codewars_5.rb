@@ -254,3 +254,23 @@ def find_min_cost(money, days, cost)
 end
 
 p find_min_cost(29, 18, [3, 8, 3, 6, 9, 4, 1, 10, 4, 4, 9, 7, 4, 3, 5, 2, 2, 8, 3]) # days: 7
+
+
+# [Code Golf] Yet Another Base Conversion
+# https://www.codewars.com/kata/5c94b5bac29a2e37dfde5780
+def t n,b
+  r=[]
+  (r.unshift n%b;n/=b)until n==0
+  r
+end
+$b=[*'0'..'9',*'a'..'z',*'A'..'Z']
+def convert n,f,t
+  f,t=$b[...f],$b[...t]
+  n=='0'?n:t(n.chars.map{|e|f.index(e)}.reverse.map.with_index{|n,i|n*f.size**i}.sum,t.size).map{|i|t[i]}.join
+end
+
+p convert("0", 13, 29)        # "0"
+p convert("255", 10, 16)      # "ff"
+p convert("101010", 2, 10)    # "42"
+p convert("c0de", 16, 2)      # "1100000011011110"
+p convert("CodeWars", 62, 26) # "onah0naham"
