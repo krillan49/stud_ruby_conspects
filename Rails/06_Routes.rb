@@ -1,15 +1,14 @@
-# ?? Создать отдельный фаил для инфе по маршрутам, например там описать консерн для маршрутов и всякое такое ?? Так же констрейнт(класс ограничения) для маршрутов из ActiveJob_ActiveStorage => Визуальный интерфейс для отслеживания задач
-
-
-
 puts '                                         Маршруты(routes.rb)'
 
 # http://rusrails.ru/rails-routing             -  Rusrails: Роутинг в Rails
 # https://guides.rubyonrails.org/routing.html
 
-# Маршрут - это то что пишется в адресной строке браузера
+# Маршрут - это то, что пишется в адресной строке браузера
 
 # config/routes.rb - тут мы прописываем и изменяем маршруты, которые будут использоваться в нашем приложении. Когда приходит запрос с методом и маршрутом, то Рэилс смотрит в routes.rb, в какой контроллер и экшен его передавать для обработки
+
+# > rails routes  -  (До версии Rails 6.1 - rake routes) эта команда из каталога конфигурации берёт файл config/routes.rb исполняет его и выводит нам список маршрутов - URLы, типы запросов и к каким представлениям они ведут.
+# Так же можно смотреть маршруты в браузере введя несуществующий URL от нашего корня, либо перейти по адресу /rails/info/routes
 
 # /config/routes.rb - пропишем маршруты, те закрепим обработчики URLов за определенными экшенами определенных контроллеров:
 Rails.application.routes.draw do
@@ -27,8 +26,7 @@ Rails.application.routes.draw do
 
   # 2. resources - маршруты по паттерну REST
 
-  # Маршруты для которые будут обрабатываться контроллером ArticlesController, для работы с моделью Article
-  resources :articles
+  resources :articles # тут маршруты будут обрабатываться контроллером ArticlesController, для работы с моделью Article
   # Prefix       Verb    URI Pattern                  Controller#Action
   # -----------------------------------------------------------------------
   # articles     GET     /articles(.:format)          articles#index
@@ -45,21 +43,21 @@ Rails.application.routes.draw do
 
   resource :contacts, only: [:new, :create] # resource(единственное число), мб и contact в единственном ??
   # only: [:new, :create] (или only: %i[new create]) - хэш с параметрами, тут указывает на то, что нужны маршруты только для методов new и create, отстальние 4 нам тут не нужны.
-  # exсept: %i[new show] - создает все маршруты кроме указанных в параметре-массиве
-
   # Теперь если прверить при помощи rails routes то появилось 2 новых строки а не 6
   # new_contacts   GET    /contacts/new(.:format)    contacts#new
   # contacts       POST   /contacts(.:format)        contacts#create
 
+  resource :contacts, exсept: %i[new show]
+  # exсept: %i[new show] - создает все маршруты кроме указанных в параметре-массиве
 
-  # 4. Обычный подход без REST, определяли маршрут вручную
 
-  # resources это не более чем синтаксический сахар. Нет никакой разницы между написаннным выше и такой конструкцией:
+  # 4. Можно прописать маршруты и отдельно вручную, в том числе и REST. resources / resource - это не более чем просто синтаксический сахар. Нет никакой разницы между написаннным выше и такой конструкцией:
+
   get '/questions', to: 'questions#index'
   get '/questions/new', to: 'questions#new'
   post '/questions', to: 'questions#create'
   get '/questions/:id/edit', to: 'questions#edit'
-  # ...
+
   # или такой (?? адреса через хэлперы ??):
   get "semester" => "semesters#show"
   get "semesters" => "semesters#index"
@@ -69,75 +67,30 @@ Rails.application.routes.draw do
   post "semesters" => "semesters#create"
 
 
-  # 5. Разное
+  # 5. Маршруты для статических страниц (которые не изменяются динамически с бэкенда)
+
+  # Пропишем маршруты от корня, тк удобнее получать их от корня, а не от имени контроллера вЮРЛ
+  get 'terms' => 'pages#terms'
+  get 'about' => 'pages#about', as: 'about'
+  # as: 'about' - для статических тоже можно создать хэлперы юрлов, тут about_path
+
+
+  # 6. Разное
 
   get '/*pages/', to: 'pages#show' # все маршруты для любого уровня вложенности чтоб их принимал один контроллер?
   # И в параметрах приходит условно { pages: 'page1/страница2/.../страница4' }
 end
-# Примечание: если мы прописываем несколько маршрутов URL для одного и тогоже экшена и контроллера, то он будет обрабатывать все эти маршруты
 
-
-# > rails routes  -  (До версии Rails 6.1 - rake routes) эта команда из каталога конфигурации берёт файл config/routes.rb исполняет его и выводит нам список маршрутов - URLы, типы запросов и к каким представлениям они ведут.
-# Так же можно смотреть маршруты в браузере введя несуществующий URL от нашего корня, либо перейти по адресу /rails/info/routes
+# Если мы прописываем несколько маршрутов URL для одного и тогоже экшена и контроллера, то он будет обрабатывать все эти маршруты
 
 
 
-puts '                           Контроллер и роутинг статических страниц(не по REST)'
-
-# Статические страницы это те которые не изменяются динамически, те не содержат динамической информации и всегда отображаются одинаково ?? например просто передаются переменными из экшенов ??. Подходит например для страниц "О нас", "Контакты" итд
-
-# Удобно создать отдельный контроллер для статических страниц
-# > rails g controller pages
-
-# Создаётся контроллер /app/controllers/pages_controller.rb, добавим экшены:
-class PagesController < ApplicationController
-  def terms
-  end
-
-  def about
-  end
-end
-
-# Пропишем маршруты(тк удобнее получать их от корня, а не от /pages) в /config/routes.rb:
-Rails.application.routes.draw do
-  get 'terms' => 'pages#terms'
-  get 'about' => 'pages#about', as: 'about'
-  # as: 'about' - для статических тоже можно создать хэлперы юрлов, тут about_path
-end
-
-# Создадим представления /app/views/pages/terms.html.erb и /app/views/pages/about.html.erb
-
-
-
-puts '                      Полный цикл создания контроллера, маршрутов, модели, видов(resourse)'
-
-# Сделаем страницу /contacts с формой для контактов. Чтобы на сервер и далее в БД передавались email и message из формы контактов.
-
-# 1. > rails g controller contacts  -  Создаем новый контроллер без экшенов
-# Создалось: app/controllers/contacts_controller.rb и app/views/contacts
-class ContactsController < ApplicationController
-  # Добавим в ContactsController экшены
-  def new    # получение страницы(форма с текстовыми полями) от сервера  - get (new по REST)
-  end
-  def create # отправка и обработка данных введенных пользователем на сервер - post (create по REST)
-  end
-end
-
-# 2. Прописываем маршруты. Внесём изменения в файл /config/routes.rb
-Rails.application.routes.draw do
-  resource :contacts, only: [:new, :create] # resource(единственное число).
-end
-
-
-
-puts '                                  Пример изменения стандартных маршрутов'
-
-# Сейчас при GET-запросе на URL /contacts выпадает Routing Error. No route matches [GET] "/contacts", потому что у этого маршрута есть только POST-обработчик(create). Сделаем так, чтобы GET '/contacts' у нас обрабатывался в экшене new, соотв возвращался вид new.html.erb с формой.(У resource по этому запросу по умолчнию show.)
+puts '                                   Изменение стандартных маршрутов'
 
 # /config/routes.rb:
 Rails.application.routes.draw do
   # Способ 1(хардкод):
-  get 'contacts' => 'contacts#new'    # добавим обработку запроса get 'contacts' в экшен new
+  get 'contacts' => 'contacts#new'    # добавим обработку запроса get 'contacts' в экшен new вместо show (тк у resource по этому запросу по умолчнию show)
   resource :contacts, only: [:create] # удаляем :new из [:new, :create], те удалим обработчик get 'contacts/new ' из экшена new
   # Чтобы пользователь получал вид и при GET запросе и на /contacts/new и на /contacts то изменим последнюю строку на resource :contacts, only: [:new, :create], те обратоно добавим :new в маршрут
 
@@ -147,12 +100,29 @@ end
 
 
 
-puts '                                  OneToMany'
+puts '                                     Маршруты с локалями (i18n)'
 
-# 3. Добавим в маршруты статей через блок маршруты комментариев в /config/routes.rb:
+# Можно настроить маршруты для переключения языков пользоавтелем
+
+# Задача в том чтобы адрес мог содержать как наши локали(localhost:3000/en/posts или localhost:3000/ru/posts) так и был адрес без локали, в котором будет локаль по умолчанию(localhost:3000/posts)
+
+Rails.application.routes.draw do
+  # оборачиваем в блок для scope все маршруты, представления для которых будут садержать переводы:
+  scope "(:locale)", locale: /#{I18n.available_locales.join('|')}/ do
+    # "(:locale)" - название элемента локали в маршруте, скобки значат что локаль(например /en/) в маршруте не обязательна
+    # locale: /#{I18n.available_locales.join('|')}/  - аргумет с регуляркой, который проверяет что язык в URL адресе запроса :locale исключительно из тех, что мы прописали в кофиг( %i[en ru] )
+
+    # все наши маршруты, представления для которых будут садержать переводы, будут внутри данного блока для scope
+  end
+end
+
+
+
+puts '                                      Ассоциации One To Many'
+
+# Добавим в маршруты статей через блок в маршруты комментариев
 resources :articles do # Добавим сюда блок с маршрутами комментов, те сделаем вложенный маршрут:
-  resources :comments, exсept: %i[new show] # создает карту маршрутов по REST, но вложенный (одни ресурсы в других)
-  # exсept: %i[new show] - создает все маршруты кроме указанных в параметре-массиве
+  resources :comments, exсept: %i[new show] # создает карту маршрутов по REST, но вложенно (одни ресурсы в других)
 end
 # article_comments_path     GET      /articles/:article_id/comments          comments#index
 # new_article_comment_path  GET      /articles/:article_id/comments/new      comments#new
@@ -166,25 +136,32 @@ end
 
 
 
-puts '                                 Polym_assoc'
+puts '                                      Полиморфные ассоциации'
 
-# 3а. Пропишем маршруты для комментариев
+# Пропишем маршруты для комментариев полиморфно относящихся к вопросоам и ответам вложенно и в те и в другие
+
 resources :questions do
   resources :comments, only: %i[create destroy] # добавим вложенные комменты
-  resources :answers, except: %i[new show] # тут не будем делать еще одно вложение для комментов, тк маршрут получится слишком длинный и сложный ...
+  resources :answers, except: %i[new show]      # тут не будем делать еще одно вложение для комментов, тк маршрут получится слишком длинный и сложный ...
 end
 # ... вместо этого придется сделать дополнительные маршруты ответов и вложить в них комменты
 resources :answers, except: %i[new show] do
   resources :comments, only: %i[create destroy]
 end
 
-# 3б. Пропишем маршруты для комментариев с использованием консерна, чтобы не дублировать маршруты
+
+
+puts '                                      Консерн для маршрутов'
+
+# Пропишем маршруты, аналогичные тем что выше, для полиморфной сущности комметариев, но используем консерн, чтобы не дублировать вложенные маршруты комментариев
+
 Rails.application.routes.draw do
-  concern :commentable do # создаем консерн маршрутов называем его :commentable (? название любое ?)
+  concern :commentable do # создаем консерн маршрутов называем его :commentable (название любое)
     resources :comments, only: %i[create destroy] # помещаем внутрь дублирующиеся маршруты
   end
 
   scope '(:locale)', locale: /#{I18n.available_locales.join("|")}/ do
+
     resources :questions, concerns: :commentable do
       # concerns: :commentable - маршруты из консерна :commentable будут вложены в данный
       resources :answers, except: %i[new show]
@@ -196,7 +173,16 @@ end
 
 
 
-puts '                        Tomselect_Serialize'
+puts '                                     Нэймспэйс для маршрутов'
+
+# Создадим отдельные маршруты, например для юзеров, в namespace для администратора. Это отдельные URLы и им нужен отдельный контроллер useres_controller.rb в поддирректоррии admin
+namespace :admin do # создаем namespace с именем :admin и внутри создаем(копируем) маршруты отдельные для админа
+  resources :users, only: %i[index create]
+end
+# Посмотрим как выглядят эти маршруты:
+# admin_users_path	   GET	     /admin/users(.:format)	   admin/users#index
+#                      POST	     /admin/users(.:format)	   admin/users#create
+
 
 # Создадим новый namespace :api и в нем маршрут для тегов по которому будут передаваться введеные пользователем символы
 Rails.application.routes.draw do
@@ -209,53 +195,9 @@ end
 
 
 
-puts '                      Namespace_Admin'
+puts '                               Констрейт(класс ограничений) для маршрутов'
 
-# 1. Создадим отдельные маршруты в namespace для администратора
-namespace :admin do # создаем namespace с именем :admin и внутри создаем(копируем) маршруты отдельные для админа
-  resources :users, only: %i[index create]
-end
-# Посмотрим как выглядят эти маршруты:
-# admin_users_path	   GET	     /admin/users(.:format)	   admin/users#index
-#                      POST	     /admin/users(.:format)	   admin/users#create
-# тоесть это отдельные URLы и им нужен отдельный контроллер useres_controller.rb в поддирректоррии admin
-
-
-
-puts '                i18n'
-
-# 3. Настройка маршрутов для переключения языков пользоавтелем
-# Задача в том чтобы адрес мог содержать как наши локали(localhost:3000/en/posts или localhost:3000/ru/posts) так и был адрес без локали, в котором будет локаль по умолчанию(localhost:3000/posts)
-Rails.application.routes.draw do
-  # оборачиваем блок для scope все маршруты, представления для которых будут садержать переводы:
-  scope "(:locale)", locale: /#{I18n.available_locales.join('|')}/ do
-    # "(:locale)" - название элемента локали в маршруте, скобки значат что локаль(например /en/) в маршруте не обязательна
-    # locale: /#{I18n.available_locales.join('|')}/  - аргумет с регуляркой, который проверяет что язык в URL адресе запроса :locale исключительно из тех что мы прописали в кофиг( %i[en ru] )
-
-    # все наши маршруты будут внутри данного блока для scope
-  end
-end
-
-
-
-puts '                       mailers'
-
-# 1. Создадим новый маршрут для контроллера сброса пароля в routes.rb
-Rails.application.routes.draw do
-  scope '(:locale)', locale: /#{I18n.available_locales.join("|")}/ do
-
-    resource :password_reset, only: %i[new create edit update]
-    # resource - создаем именно ресурс, а не ресурсы, тк ни с какими id работать не будем, а только с записью юзера по имэйл
-    # new create - для того чтобы запросить у пользователя инструкции для сброса пароля и отправить ему письмо
-    # edit update - для того чтобы сбросить пароль
-  end
-end
-
-
-
-puts '                 ActiveJob_ActiveStorage   Визуальный интерфейс для отслеживания задач. Констрейт для маршрутов'
-
-# В routes.rb настроим маршрут для интерфейса отслеживания задач в нашем приложении, так же ограничим его только для администратора
+# Тут для ActiveJob_ActiveStorage, чтобы подключить визуальный интерфейс для отслеживания задач sidekiq и ограничить его только для администратора
 
 # (Весь код далее из routes.rb)
 
@@ -291,4 +233,19 @@ Rails.application.routes.draw do
   end
 end
 
-# Далее открываем приложение по адресу 'http://localhost:3000/sidekiq' и видем подробную статистику по задачам и действиями с ними со всякими менюшками и графиками
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
