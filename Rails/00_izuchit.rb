@@ -1,5 +1,6 @@
 # ТУДУ:
 # 1. https://habr.com/ru/articles/191762/  - пройти (различные способы загрузки ассоциаций)
+# 2. https://softwareengineering.stackexchange.com/questions/230307/mvc-what-is-the-difference-between-a-model-and-a-service       отличия модели и сервиса
 
 
 # Пример из blog2(с Devise):

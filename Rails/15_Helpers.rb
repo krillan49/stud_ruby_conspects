@@ -95,8 +95,13 @@ questions_path(tag_ids: tag)
 
 puts '                                 Редиректы, рендеры, отпрака фаилов'
 
-# редирект на страницу с которой пришел запрос или корневую
-redirect_to(request.referer || root_path)
+# fullpath - хелпер возвращает относительный URL на который пришел запрос в данный экшен. Так же можно использовать в представлении
+# https://stackoverflow.com/questions/2165665/how-do-i-get-the-current-absolute-url-in-ruby-on-rails
+request.fullpath
+
+# referer - метод возвращает ЮРЛ страницы с которой делали переход на этот контроллер
+redirect_to(request.referer) # редирект на страницу с которой делали переход на этот контроллер
+redirect_to(request.referer || root_path) # редирект на страницу с которой пришел запрос или корневую
 
 # Редирект с оцией изменения кода состояния
 redirect_to question_path(@question), status: :see_other
