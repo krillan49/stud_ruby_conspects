@@ -13,7 +13,7 @@ import Turbolinks from "turbolinks"
 import * as ActiveStorage from "@rails/activestorage" // у круковского есть(я не делал) связано с такими же package.json ??
 
 // для дропдаунов
-import '@popperjs/core'      // с ESBuild не нужно, можно удалить, тк дропдаун его загружает автоматически
+import '@popperjs/core'             // с ESBuild не нужно, можно удалить, тк дропдаун его загружает автоматически
 import 'bootstrap/js/dist/dropdown' // собственно компонент бутстрапа отвечающий за дропдауны
 import 'bootstrap/js/dist/collapse' // для выпадающих форм для commentable
 
