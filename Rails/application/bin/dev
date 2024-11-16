@@ -2,7 +2,7 @@
 
 if ! gem list foreman -i --silent; then
   echo "Installing foreman..."
-  gem install foreman # тут устаназливается гем foreman, если его нет
+  gem install foreman # команда установки гема foreman, установит если его нет
 fi
 
 # Default to port 3000 if not specified
