@@ -33,6 +33,9 @@ end
 # do end тоде можно писать в одну строку
 10.times do |i| print "i=#{i} " end
 
+# 
+a, b, c = 3.times.map { STDIN.gets.to_i }
+
 
 
 puts '                                           upto и downto'
@@ -147,4 +150,4 @@ end
 
 
 
-# 
+#
