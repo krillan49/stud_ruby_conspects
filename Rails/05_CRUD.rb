@@ -1,4 +1,4 @@
-puts '                               CRUD. params. Формы. Валидация. Паршалы'
+puts '                                   CRUD. Формы. Валидация. Паршалы'
 
 # CRUD - аббревиатура обозначающая основыные операции:
 # Create - (new)              .create; .new.save
@@ -15,8 +15,8 @@ puts '                                   new(resourses). form_for. render'
 
 # https://guides.rubyonrails.org/form_helpers.html
 
-# 1. Создадим представление app/views/articles/new.html.erb. Без него при обращении к http://localhost:3000/articles/new - выпадет ошибка ArticlesController#new is missing a template for request formats: text/html.(отсутствует шаблон/представление)
-# Создаем форму form_for (устарела ??) в articles/new.html.erb
+# 1. Создадим представление app/views/articles/new.html.erb. Без него при запросе GET /articles/new выпадет ошибка
+# В articles/new.html.erb создаем форму при помощи форм билдера form_for (устарел ??) и необходимые поля для нее
 
 # 2. app/controllers/articles_controller.rb - добавим в контроллер экшен create для обработки данных формы из new.html.erb:
 class ArticlesController < ApplicationController
@@ -24,16 +24,27 @@ class ArticlesController < ApplicationController
     # по умолчанию рендерит new.html.erb
   end
   def create # post '/articles'
-    render plain: params[:article].inspect
-    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL того экшена из которого вызывавется, тут это create: post '/articles';
-    # plain: - ключ обозначает что будет выведен просто текст;
-    # params[:article].inspect - значение хеша, тут параметры в виде строки;
-    # В итоге выведет: #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
-    # Что выводит просто params
-    # params.inspect #=> #<ActionController::Parameters {"controller"=>"comments", "action"=>"index"} permitted: false>
 
-    # по умолчанию рэндерило бы create.html.erb, тоесть если сами не пропишем render то тут сработает:
-    render 'articles/create' # где articles/create это app/views/articles/create
+    # https://rusrails.ru/layouts-and-rendering   -  про рэндеринг
+
+    # render - метод для возврата/вывода данных из экшена в лэйаут. Выводит по URL того экшена, из которого вызывавется, тут это create: post '/articles'.
+
+    # Рендер каких то данных:
+    render plain: params[:article].inspect
+    # plain: - ключ обозначает что будет выведен просто текст;
+    # params[:article].inspect - значение хеша params, тут параметры в виде строки;
+    # В итоге выведет: #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
+
+    # Рендер представлений. К представлениям применяет переменные из экшена из которого рендерим:
+    render action: 'new'     # полный вариант записи
+    # render  - метод для передачи данных (разных форматов) из экшена, сохраняет данные из экшена, например переменные
+    # action: - ключ для имени представления, которое будем рендерить (?? нужен, если хотим указать еще какие-то опции)
+    # 'new'   - имя представления по которому будет сгенерирована HTML-страница
+    render 'new'             # сокращенный вариант записи
+    render :new              # сокращенный вариант записи
+    render 'articles/create' # можно вывести представления по имени директори и фаила в каталоге views, так можно выводить представления из других контроллеров
+
+    # по умолчанию(если сами не пропишем render) рэндерит представление с именем данного экщена из директории с именем данного контроллера, тоесть тут create.html.erb
   end
 end
 # На данный момент страницу /articles пользователь не сможет открыть вручную, тк для нее сейчас есть только POST-обработчик(create), но нет GET-обработчика(index)
@@ -42,15 +53,15 @@ end
 
 puts '                             Запись в БД. Разрешение на использование атрибутов'
 
-# Изменим /app/controllers/contacts_controller.rb
+# /app/controllers/contacts_controller.rb
 class ContactsController < ApplicationController
   def new
   end
 
-  def create # принимает данные введенные пользователем в форму
+  def create # принимает данные, введенные пользователем в форму
     @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
 
-    # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого используется специальный синтаксис:
+    # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого создадим приватный метод contact_params:
     @contact = Contact.new(contact_params) # вместо params[:contact] вызываем наш разрешающий метод
 
     @contact.save
@@ -60,7 +71,7 @@ class ContactsController < ApplicationController
 
   def contact_params # название метода обычно сущность_params, хотя можно любое
     params.require(:contact).permit(:email, :message)
-    # require(:contact) - получаем соответсвующий подхэш в params
+    # require(:contact)        - запрашиваем/требуем подхэш по ключу :contact в params
     # permit(:email, :message) - разрешает вносить/изменять данные под этими ключами в БД
   end
 end
@@ -68,127 +79,11 @@ end
 
 
 
-puts '                            Реализация объекта params и разрешения параметров'
-
-# https://api.rubyonrails.org/classes/ActionController/Parameters.html -  реализация params в ActionController
-
-# params - объект(хэш хэшей) который по умолчанию присутсвует(переходит при наследовании из ApplicationController) в контроллере. Можно обратиться к нему из любого метода в контроллере. В нем хранятся все параметры которые передаются из браузера в приложение.
-
-# params – это объект определенного класса, но по своему виду очень напоминает хеш
-params = ActionController::Parameters.new({
-  person: {
-    name: "Francesco",
-    age:  22,
-    role: "admin"
-  }
-})
-
-params = ActionController::Parameters.new
-params.permitted? #=> false  # проверяем разрешен или нет только что созданный params. Тоже самое автоматически проверяется методами модели изменяющими БД: save, create, updste, destroy
-
-# require(:contact) - требует наличия параметров.
-ActionController::Parameters.new(person: { name: "Francesco" }).require(:person) #=> #<ActionController::Parameters {"name"=>"Francesco"} permitted: false>
-# require – метод, который получает значение хэша по ключу, где ключом в данном случае является наш ресурс, указанный в форме. Если такого ключа нет, то Rails выбросит ошибку
-
-# permit(:email, :message) (изменяет значение метода permitted? на true)
-params = ActionController::Parameters.new(user: { name: "Francesco", age: 22, role: "admin" })
-permitted = params.require(:user).permit(:name, :age)
-permitted.permitted?      # => true
-permitted.has_key?(:name) # => true
-permitted.has_key?(:age)  # => true
-permitted.has_key?(:role) # => false
-# permit – метод, который определяет разрешенные параметры в нашем ресурсе для передачи их значений в контроллер. Мы указываем только то, что хотим получить!
-
-# Тоесть тут мы разрешили только параметры name и age для сущности user. И теперь если хакер захочет админские права(или прислать данные с айди чтоб перебить его) и отправит в запросе чтото вроде:
-'user[name]=Francesco&user[age]=22&user[role]=admin'
-# то механизм разрешений отсечет все лишнее и пропустит только:
-'user[name]=Francesco&user[age]=22'
-
-# Browser ===> Server ===> Controller ===> ActiveRecord ===> Database
-#                                              ||
-#                                              ===> тут идет наша защита(методы .new, .create итд)
-
-
-puts
-# посмотреть/проверить содержание всего params в приложении:
-def create
-  render plain: params #=>
-  # {
-  #   "authenticity_token"=>"73qb1Y3HRbnFXbkKtZNPHiBV-cp2xSQHyjCVA5qMH3FAyLE0_odUBhaSsouzuYzvuRBuAtHpgDACLVNLSOXhBA",
-  #   "question"=>{"title"=>"some title", "body"=>"some question"},
-  #   "commit"=>"Submit question!",
-  #   "controller"=>"questions",
-  #   "action"=>"create"
-  # }
-
-  render plain: params.to_yaml #=>
-  # --- !ruby/object:ActionController::Parameters
-  # parameters: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
-  #   authenticity_token: EIe2q9uVSAa_pnzea-Zw2Bhr9lIn5D1VHMS7UdCQWN4IY5zG6wPlIFsA7pP8d9zK49qTFdmG2vKFsG15eKWH9A
-  #   email: kroker@mail.ru
-  #   password: '123456'
-  #   commit: Sign In!
-  #   controller: sessions
-  #   action: create
-  # permitted: false
-end
-
-puts
-# выведет список параметров в виде при помощи хэлпера debug, чтобы их отслеживать
-debug(params)
-
-puts
-# что выводит params
-params.inspect #=> #<ActionController::Parameters {"controller"=>"comments", "action"=>"index"} permitted: false>
-
-
-
-puts '                                params и параметры из строки GET-запрса'
-
-# params - хранит и может вернуть данные из URL гет запроса
-
-'http://localhost:3000/?name=kroker&pass=7' # Данные в URL гет-запроса записываются через слэш и знак врпрса после адреса /?. Параметр и значение параметра пишутся через знак =. Несколько разных параметров разделяются знаком &.
-
-# Обработаем параметры из get запроса с URL http://localhost:3000/?name=kroker&pass=7 в нашем контроллере:
-class HomeController < ApplicationController
-  def index
-    # params сможет получить эти данные по ключу, тут соответсвенно по ключу name
-    @name = params[:name] # присваиваем в переменную значение "kroker" из параметра name=kroker
-  end
-end
-# далее вставим @name в вид home/index.html.erb
-
-# В консоли отображается обработка параметров:
-# 12:31:50 web.1  | Started GET "/?name=kroker" for ::1 at 2023-10-16 12:31:50 +0300
-# 12:31:50 web.1  | Processing by PagesController#index as HTML
-# 12:31:50 web.1  |   Parameters: {"name"=>"kroker"}
-
-
-puts
-# Можно посылать данные с разных ссылок или при помощи скрипта менять ссылку и отправлять данные в контроллер, например для меню выборки статы. (Работающий пример можно посмотреть в Chess/app/.../home/...)
-
-# Добавим экшен и представление stata, в представлении создадим ссылки отправляющие данные что будем использовать
-class HomeController < ApplicationController
-  def stata
-    order = params[:order]
-    res = params[:result]
-
-    if [order, res].all?{|e| e == ''}
-      @accounts = Account.all
-    else
-      # @accounts = Account.order("? ?", [(res == '' ? 'id' : res), (order == '' ? 'ASC' : order)]) # так не сработало ??
-      @accounts = Account.order("#{res == '' ? 'id' : res} #{order == '' ? 'ASC' : order}")
-    end
-  end
-end
-
-
-
-puts '                                 Валидация(AR) и сообщения об ошибках'
+puts '                                  Валидация(AR) и сообщения об ошибках'
 
 # Валидация производится когда применяется метод save update итд ??
 
-# 1. Валидацию надо добавить в модель /app/models/contact.rb
+# 1. Валидацию надо добавить в модель, тут /app/models/contact.rb
 class Contact < ApplicationRecord
   validates :email, presence: true
   validates :message, presence: true
@@ -201,15 +96,9 @@ def create
     @contact.save # содается сущность и строка в БД(создастся до возврата вида)
     # тут по умолчанию возвращает create.html.erb
   else
-    # а если не валидно отрендерим/вернем нашу форму new.html.erb(но уже на URL /contacts) при помощи render, с переменными уже из данного экшена create, а не из new
-    render action: 'new'     # полный вариант записи
-    # render - метод для передачи данных (разных форматов) из экшена, сохраняет данные из экшена, например переменные
-    # action: - ключ (устарел ?? для вывода только видов данного экшена)
-    # 'new' - имя представления по которому будет сгенерирована HTML-страница
-    render 'new'             # сокращенный вариант записи
-    render :new              # сокращенный вариант записи
-    render 'articles/create' # можно вывести представления по имени директори и фаила в каталоге views, так можно выводить представления из других контроллеров
-    # https://rusrails.ru/layouts-and-rendering   -  про рэндеринг
+    # а если не валидно отрендерим/вернем нашу форму new.html.erb(но уже на URL /contacts) при помощи render, с переменными уже из данного экшена create, а не из new:
+    render 'new'
+    # по умолчанию(если сами не пропишем render) рэндерило бы представление с именем данного экщена из директории с именем данного контроллера, тоесть create.html.erb
   end
 end
 

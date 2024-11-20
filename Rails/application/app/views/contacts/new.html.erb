@@ -6,7 +6,7 @@
 <!-- <h2>Contact Us!</h2> - значение строки -->
 <!-- =================================================== -->
 
-<%= form_for :contact, url: contacts_path, data: {turbo:false} do |f| %>
+<%= form_for :contact, url: contacts_path, data: { turbo:false } do |f| %>
 
 	<!-- Вывод списка ошибок Вариант 1 -->
 	<%= @contact.errors.full_messages %>
