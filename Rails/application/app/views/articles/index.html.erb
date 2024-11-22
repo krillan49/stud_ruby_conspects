@@ -7,7 +7,7 @@
 
   <!--                                      Ссылки на show, edit, destroy -->
 
-  <!-- Можно писать и как в Синатре, но тогда получится хардкод: -->
+  <!-- Хардкод: -->
   <a href="/articles/<%= article.id %>">Show article</a>
   <a href="/articles/<%= article.id %>/edit">Edit article</a>
 
@@ -20,12 +20,12 @@
   <%= link_to "Edit article", edit_article_path(article) %> <!-- это будет: --> <a href="/articles/2/edit">Edit article</a>
   <!-- edit_article_path(article) - в итоге перейдет на /articles/id/edit -->
 
-  <!--                             Ссылка/кнопка на удаление статьи -->
+  <!--                              Ссылка/кнопка на удаление статьи -->
 
   <!-- В Рэилс 6 была такая ссылка для удаления, в 7й для такого необходимо подключить UJS -->
   <%= link_to "Destroy", article_path(article), class: 'btn btn-danger', data: {method: :delete, confirm: 'Are you sure?'} %>
   <!-- confirm: 'Are you sure?' - необязательный элемент c окном подтверждения -->
-  <!-- В Рэилс 7 если не отключить хотваир, то ссылка как выше уже не сработает, тк link_to delete-ссылки по умолчанию связаны с js и turbo и отключен UJS и ссылка шлет GET, с turbo нужно чтобы слало метод DELETE, потому вместо удаления просто откроется данный вопрос те show -->
+  <!-- В Рэилс 7 если не отключить Хотваир, то ссылка как выше уже не сработает, тк link_to delete-ссылки по умолчанию связаны с js и turbo и отключен UJS и ссылка шлет GET, с turbo нужно чтобы слало метод DELETE, потому вместо удаления просто откроется данный вопрос те show -->
   <!-- Для Рэилс 7, чтобы все работало поменяем все data опции, добавив им префикс turbo_ -->
   <%= link_to "Destroy", article_path(article), data: {turbo_method: :delete, turbo_confirm: 'Действительно удалить?'} %>
   <!-- Альтернативный вариант использовать хэлпер button_to вместо link_to, но тогда будет тег кнопки а не ссылки -->

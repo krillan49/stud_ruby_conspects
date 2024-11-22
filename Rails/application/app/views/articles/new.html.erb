@@ -28,7 +28,7 @@
   <!-- https://guides.rubyonrails.org/form_helpers.html -->
 
   <p>
-    <%= f.label :title %><br> <!-- это будет: --> <label for="article_title">Title</label>
+    <%= f.label :title %> <!-- это будет: --> <label for="article_title">Title</label>
     <!-- label - хэлпер тега label -->
     <!-- title - название столбца в таблице/модели для создания for -->
     <%= f.text_field :title %> <!-- будет: --> <input type="text" name="article[title]" id="article_title" />
@@ -36,13 +36,15 @@
   </p>
 
   <p>
-    <%= f.label :text %><br> <!-- будет: --> <label for="article_text">Text</label>
-    <%= f.text_area :text %> <!-- будет: --> <textarea name="article[text]" id="article_text"></textarea>
+    <%= f.label :text, 'Message' %> <!-- Поменять текст лэйбла -->
+    <!-- будет: --> <label for="article_text">Message</label>
+    <%= f.text_area :text %>
+    <!-- будет: --> <textarea name="article[text]" id="article_text"></textarea>
   </p>
 
   <!-- ===== Devise User 1 - * Article. Возможность удалить и редактировать только автору ===== -->
   <p>
-    <%= current_user.username %><br> <!-- вместо лэйбла -->
+    <%= current_user.username %> <!-- вместо лэйбла -->
     <%= f.hidden_field :user_id, value: current_user.id %>
     <!-- это будет: -->
     <input value="2" autocomplete="off" type="hidden" name="article[user_id]" id="article_user_id" />
@@ -55,8 +57,12 @@
   <!-- Между значениями опций селектора и параметрами класса нужен пустой хэш -->
 
 
-  <p><%= f.submit %></p> <!-- будет: -->
-  <input type="submit" name="commit" value="Save Article" data-disable-with="Save Article" />
+  <p><%= f.submit %></p>
+  <!-- будет: --> <input type="submit" name="commit" value="Save Article" data-disable-with="Save Article" />
+
+  <!-- Поменять название кнопки отправки формы можно при помощи передачи параметра в виде строки: -->
+  <%= f.submit 'Send message' %>
+  <!-- будет: --> <input type="submit" name="commit" value="Send message" data-disable-with="Save Article" />
 
 
 <% end %>

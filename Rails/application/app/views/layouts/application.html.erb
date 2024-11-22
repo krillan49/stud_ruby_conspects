@@ -94,7 +94,7 @@
     <main class="container mt-3">
       <% flash.each do |k, v| %>
         <!-- flash - это хранилище похожее на хэш но не являющееся хэшэм ? -->
-        <!-- k тут передает :success; v передает "Question created!" -->
+        <!-- k - тут передает :success; v - передает "Question created!" -->
 
         <!-- Вариант 1: синтаксис html -->
         <div class="alert alert-<%= k %>"> <!-- подставляем ключ k, который у нас имеет значение :success в значение класса, те получаем класс бутстрапа alert-success -->
@@ -102,7 +102,7 @@
         </div>
 
         <!-- Вариант 2: синтаксис Рэилс с хэлпером tag (эта конструкция аналог для той что выше) -->
-        <%= tag.div v, class: "alert alert-#{k}", role: 'alert' %> <!--  -->
+        <%= tag.div v, class: "alert alert-#{k}", role: 'alert' %>
 
       <% end %>
 

@@ -107,6 +107,14 @@ redirect_to(request.referer || root_path) # редирект на страниц
 redirect_to question_path(@question), status: :see_other
 # status: :see_other - меняем код состояния, так же можно например написать - status: 303
 
+# Редирект как по ссылке якорю с применением dom_id и без
+redirect_to question_path(@question, anchor: "answer-#{@answer.id}") # редиректит на URL /questions/2#answer-6
+# anchor: "answer-#{@answer.id}"  - при помощи данного хэша редирект будет генерировать ссылку с указанным якорем
+# anchor: - ключ параметра-хэша, переводится как якорь, устанавливает значение хэша якорем в ссылку
+# "answer-#{@answer.id}" - значение которое и будет якорем
+redirect_to question_path(@question, anchor: dom_id(@answer))
+# dom_id(@answer) - значение якоря
+
 # Рендер с опцией изменения кода состояния
 render :edit, status: :unprocessable_entity
 # status: :unprocessable_entity - добавляем код состояния, который поможет правильно рендерить ошибки валидации с Turbo
@@ -181,11 +189,23 @@ end
 form_with model: @item, data: {'turbo': false} do |f|
 end
 
+# Ассинхронная/синхронная форма - Атрибут local для формы form_with:
+form_with model: @question, local: false
+# local: false - добавляет в тег формы атрибут data-remote="true", он указывает на то, что данная форма должна отправляться с использованием ajax, тоесть это должен быть ассинхронный запрос и в этом случае мы ожидаем что контроллер отвечает в формате JS, а не в формате html, как это происходит по умолчанию
+# local: true - обычное синхронное поведение формы, раньше нужно было прописывать, так как по умолчанию стояло local: false, но теперь local: true стоит по умолчанию
+
+# Поле с аттрибутами валидации на стороне браузера
+f.text_field :title, required: true, minlength: 2, placeholder: 'Title'
+# required: true, minlength: 2  - атрибуты required="required" minlength="2" будут добавлены в тег, при помощи них браузер будет проводить валидацию поля на стороне клиента(что не отменяет неоходимости валидации на сервере, тк клиентскую проверку очень легко обойти)
+
 # email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу
 f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg'
 
 # file_field - хэлпер генерирует поле для загрузки фаила
 f.file_field :archive, class: 'form-control'
+
+# text_area - хэлпер генерирует поле текстареа
+f.text_area :body, required: true, minlength: 2
 
 # collection_select - хэлпер селектора, который может принимать коллекцию сущностей и подставлять ее свойства
 f.collection_select :tag_ids, objcts, :id, :title, {}, multiple: true
