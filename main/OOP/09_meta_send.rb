@@ -182,6 +182,16 @@ define_method(meth, lmbd)
 p one_to_five(3, 8) #=> [3, 4, 5, 6, 7, 8]
 
 
+# Пример создания методов из https://www.codewars.com/kata/525f3eda17c7cd9f9e000b39/train/ruby
+%w[zero one two three four five six seven eight nine].zip(0..9).each do |n,d|
+  define_method(n) {|op = nil| op&.call(d) || d }
+end
+
+%w[plus minus times divided_by].zip(%i[+ - * /]).each do |n,m|
+  define_method(n) {|o| ->(a) { a.send(m, o) } }
+end
+
+
 puts
 # Создание метода экземпляра в методе класса
 class Conjurer
