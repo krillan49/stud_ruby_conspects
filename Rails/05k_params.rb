@@ -1,10 +1,14 @@
 puts '                                                params'
 
-# params - объект(хэш хэшей) который по умолчанию присутсвует(переходит при наследовании из ApplicationController) в контроллере. Можно обратиться к нему из любого метода в контроллере. В нем хранятся все параметры которые передаются из браузера в приложение.
+# params - объект(похож на хэш хэшей), в нем хранятся все параметры которые передаются запросами из браузера в приложение.
+
+# params по умолчанию наследуется из ApplicationController во все контроллеры, тоесть можно обратиться к нему из любого метода в контроллере
 
 
 
-puts '                        Разрешение на использование атрибутов params для записи в БД'
+puts '                              Разрешение на запись в БД значений из params'
+
+# Атрибуты params по умолчанию запрещены для записи значений из них и их нужно разрешить
 
 # /app/controllers/contacts_controller.rb
 class ContactsController < ApplicationController
@@ -12,9 +16,9 @@ class ContactsController < ApplicationController
   end
 
   def create # принимает данные от post '/contacts', введенные пользователем в форму
-    @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
+    @contact = Contact.new(params[:contact]) # Если принимать параметры так, то при нажатии кнопки формы вылезет ошибка, тк атрибуты params по умолчанию запрещены: ActiveModel::ForbiddenAttributesError in ContactsController#create.
 
-    # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого создадим приватный метод contact_params:
+    # Для того чтобы разрешить атрибуты params создадим приватный метод contact_params:
     @contact = Contact.new(contact_params) # вместо params[:contact] вызываем наш разрешающий метод
 
     @contact.save
@@ -46,18 +50,19 @@ params = ActionController::Parameters.new({
 })
 
 params = ActionController::Parameters.new
-params.permitted? #=> false  # проверяем разрешен или нет только что созданный params. Тоже самое автоматически проверяется методами модели изменяющими БД: save, create, updste, destroy
+# permitted? - метод проверяет разрешен ли только что созданный params. Тоже самое автоматически проверяется методами модели изменяющими БД: save, create, updste, destroy
+params.permitted? #=> false
 
 # require – метод, который получает значение хэша по ключу, где ключом в данном случае является наш ресурс, указанный в форме. Если такого ключа нет, то Rails выбросит ошибку
 ActionController::Parameters.new(person: { name: "Francesco" }).require(:person) #=> #<ActionController::Parameters {"name"=>"Francesco"} permitted: false>
 
-# # permit – метод, который определяет разрешенные параметры в нашем ресурсе для передачи их значений в контроллер. Мы указываем только то, что хотим получить. ?? permit(:email, :message) - изменяет значение метода permitted? на true ??
+# permit – метод, который определяет разрешенные параметры в нашем ресурсе для передачи их значений в контроллер. Мы указываем только то, что хотим получить. ?? permit(:email, :message) - изменяет значение метода permitted? на true ??
 params = ActionController::Parameters.new(user: { name: "Francesco", age: 22, role: "admin" })
 permitted = params.require(:user).permit(:name, :age)
-permitted.permitted?      # => true
-permitted.has_key?(:name) # => true
-permitted.has_key?(:age)  # => true
-permitted.has_key?(:role) # => false
+permitted.permitted?      #=> true
+permitted.has_key?(:name) #=> true
+permitted.has_key?(:age)  #=> true
+permitted.has_key?(:role) #=> false
 
 # Тоесть тут мы разрешили только параметры name и age для сущности user. И теперь если хакер захочет админские права(или прислать данные с айди чтоб перебить его) и отправит в запросе чтото вроде:
 'user[name]=Francesco&user[age]=22&user[role]=admin'
@@ -102,10 +107,10 @@ class ContactsController < ApplicationController
     # permitted: false
 
     # Посмотреть в формате строки:
+    render plain: params.inspect
+    #=> #<ActionController::Parameters {"controller"=>"comments", "action"=>"index"} permitted: false>
     render plain: params[:article].inspect
     # => #<ActionController::Parameters {"title"=>"какойто тайтл", "text"=>"какой то текст"} permitted: false>.
-    render plain: params.inspect # Что выводит просто params
-    #=> #<ActionController::Parameters {"controller"=>"comments", "action"=>"index"} permitted: false>
   end
 end
 
