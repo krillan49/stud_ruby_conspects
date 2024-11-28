@@ -107,6 +107,55 @@ Code.some #=> some2
 
 
 
+puts '                         Переменные экземпляра и attr_reader с методами класса'
+
+# (!! В self методе что @ значит?  - погуглить)
+# То же что и в не self? Только инстанс "глобальный", не? Тоесть есть какой-то объект для каждого класса по умолчанию? Или это main?
+
+# Ответ ??:
+# У каждого класса есть инстанс. В контексте этого инстанса и выполняются self методы.
+
+# в статических методах возможно юзать переменные экземпляра без привязки к объекту и attr-методы
+
+# Но использовать инстанс переменные в случая когда можно передать в аргументы - зло. Получается неявная передача состояния через инстанс переменные. И надо трекать в голове, что между вызовами методов они апдейтят состояние, что не очевидно, если не читать ВЕСЬ код всех методов.
+
+# class instance variables чтобы просто передать состояние в display result. display_result можно инлайнить и избавиться от переменных, либо использовать параметры функции чтобы передать состояние.
+# Так метод становится Не только более чистый, но и его становится проще переиспользовать, ибо когда все неявное состояние вынесено в аргументы функций, эти функции становится можно использовать за пределами класса, так как он становится отвязан от этих функций
+
+class Result
+  attr_reader :success, :data, :error_message
+
+  def self.create(success, data = nil, error_message = nil)
+    @success = success
+    @data = data
+    @error_message = error_message
+
+    display_result
+  end
+
+  def self.success(data)
+    Result.create(true, data)
+  end
+
+  def self.failure(error_message)
+    Result.create(false, nil, error_message)
+  end
+
+  private
+
+  def self.display_result
+    {
+      success: @success,
+      data: @data || @error_message
+    }
+  end
+end
+
+p Result.success('Vasya') #=> {:success=>true, :data=>"Vasya"}
+p Result.failure('Pidor') #=> {:success=>false, :data=>"Pidor"}
+
+
+
 
 
 
