@@ -135,10 +135,13 @@ tag.div val, class: "alert", role: 'alert', id: 'some'
 # div - метод создаст в представлении тег div
 # val  - произвольная переменная со значением/содержанием тега
 
-
-tag.time datetime: question.formatted_created_at do #<!-- <time datetime="..."> -->
+# time - хэлпер для генерации тега <time datetime="...">
+tag.time datetime: question.formatted_created_at do
   # .... какой-то тег например <small><%= question.formatted_created_at %></small>
 end
+
+# image_tag - хэлпер для генерации тега <img ...>
+image_tag "https://www.gravatar.com/avatar.jpg", class: "rounded", alt: 'some'
 
 
 # 2. Теги ссылок (тег "a"):

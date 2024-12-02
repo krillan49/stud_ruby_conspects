@@ -13,9 +13,8 @@ puts '                                              Содержание'
 #   Флэш сообщения
 #   Редирект по ссылке якорю и хелпер dom_id
 
-# ModelMethod_Decorators.rb
+# Decorators
 #   Отображение аватаров юзера при помощи Gravatar
-#   callbacks(функции обратного вызова)
 
 # filters_consern
 #   before_action
