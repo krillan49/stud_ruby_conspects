@@ -232,8 +232,8 @@ puts '                            Сложные примеры со связа�
 # c. answers(turbo)/_answer.html.erb - обернем паршал ответа в турбофрэйм-тег с айди от конкретного ответа, заодно удалим лишние опции с dom_id
 # d. answers_controller.rb - добавим обработку формата турбострима в экшены create, update и destroy
 class AnswersController < ApplicationController
+  include QuestionsAnswers # подключим консерн questions_answer.rb чтобы использовать его метод load_question_answers
   # ...
-
   def create
     @answer = @question.answers.build answer_create_params
     if @answer.save
@@ -248,7 +248,7 @@ class AnswersController < ApplicationController
         end
       end
     else
-      load_question_answers(do_render: true)
+      load_question_answers(do_render: true) # используем метод из консерна questions_answer.rb
     end
   end
 
@@ -295,8 +295,8 @@ end
 # d. comments(turbo)/_comment.html.erb  - обернем коммент в турбофрэйм тег
 # e. comments_controller.rb - добавим формат турбострима в экшены create и destroy:
 class CommentsController < ApplicationController
+  include QuestionsAnswers
   # ...
-
   def create
     @comment = @commentable.comments.build comment_params
     authorize @comment
