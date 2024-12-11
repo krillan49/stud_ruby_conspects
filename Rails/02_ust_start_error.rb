@@ -1,5 +1,7 @@
 puts '                                              Rails'
 
+# https://www.fastruby.io/blog/ruby/rails/versions/compatibility-table.html   совместимость версий Руби и Рэилс
+
 # http://guides.rubyonrails.org/routing.html  -  Rails Routing from the Outside In — Ruby on Rails Guides
 # http://rusrails.ru/command-line             -  Rusrails: Командная строка Rails
 

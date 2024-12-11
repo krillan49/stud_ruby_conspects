@@ -1,5 +1,7 @@
 puts '                                        Std-lib. Gem. RubyGems'
 
+# https://guides.rubygems.org/rubygems-basics/
+
 # В других языках gem’ы называются библиотеками (library) или пакетами (package).
 
 # Std-lib - стандартные библиотеки входят в базовую комплектацию Руби
