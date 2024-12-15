@@ -22,6 +22,15 @@ some3 = Some3.new
 p some3.some #=> 0
 
 
+# С передачей тела класса в блоке
+SomeClass = Class.new do
+  define_method(:some_method) do
+    v2 = 2
+  end
+end
+some_class = SomeClass.new
+
+
 # Анонимный класс в локальной переменной
 a = Class.new(Some)
 p a #=> #<Class:0x0000022ddd91ac50>
