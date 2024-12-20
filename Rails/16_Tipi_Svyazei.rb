@@ -1,6 +1,7 @@
 puts '                                            Типы связей(AR)'
 
 # http://www.rusrails.ru/active-record-associations
+# https://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html
 
 # Существует множество типов связей, среди них 3 основные это: one-to-many, one-to-one, many-to-many
 

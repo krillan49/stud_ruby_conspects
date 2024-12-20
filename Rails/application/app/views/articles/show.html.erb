@@ -11,15 +11,18 @@
 
 <!-- По умолчанию URL формы будет '/articles/id'(show), а нужен '/articles/:article_id/comments', можно поменять вручную, но так делать не рекомендуется и лучше для генерации нужного URL использовать синтаксис из 2х компонентов связанных сущностей:  -->
 <%= form_for([@article, @comment]) do |f| %>
-<!-- но тут мы не создавали переменную @comment в контроллер articles#show get '/articles/id' из которого и возвращается это представление с формой, потому либо нужно ее создать, либо используем метод build прямо в форме -->
-<!-- У нас есть коллекция(тут @article.comments). Если применить к этой коллекции метод build, то создастся новый объект Comment, все поля которого будут со значением nil, за исключением aricle_id, соответсвующего @article, те привязан к нашей статье. Этот объект пока не будет сохранен, но его будет достаточно для создания нужного URL для form_for -->
+<% end %>
+
+<!-- Но если мы не создавали переменную @comment в контроллере articles#show get '/articles/id' из которого и возвращается это представление с формой, то либо нужно ее создать, либо использовать метод build прямо в форме -->
+
+<!-- Применим к коллекции @article.comments метод build, чтобы создать новый объект Comment, все поля которого будут со значением nil, за исключением aricle_id, соответсвующего @article, те он будет привязан к этой статье. Этот объект пока не будет сохранен, но его будет достаточно для создания нужного URL для form_for -->
 <%= form_for([@article, @article.comments.build]) do |f| %>
   <!-- Теперь у нас есть нужный URL '/articles/:article_id/comments' в атрибуте action -->
 
-  <%= f.label :author %> <!-- <label for="comment_author">Author</label> -->
+  <%= f.label :author %>      <!-- <label for="comment_author">Author</label> -->
   <%= f.text_field :author %> <!-- <input type="text" name="comment[author]" id="comment_author" /> -->
 
-  <%= f.label :body %> <!-- <label for="comment_body">Body</label> -->
+  <%= f.label :body %>     <!-- <label for="comment_body">Body</label> -->
   <%= f.text_area :body %> <!-- <textarea name="comment[body]" id="comment_body"> -->
 
   <%= f.submit %> <!-- <input type="submit" name="commit" value="Create Comment" data-disable-with="Create Comment" /> -->

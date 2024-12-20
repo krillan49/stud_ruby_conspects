@@ -1,11 +1,10 @@
 puts '                                           one-to-many'
 
-# https://railsguides.net/advanced-rails-model-generators/
 # https://guides.rubyonrails.org/association_basics.html
-# https://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html
 
 
 # В генераторах есть возможность указывать reference columns - делать ссылки(foreign_key) на другие сущности
+
 # reference columns создаются при помощи значения генератора belongs_to или reference (псевдонимы)
 
 
@@ -13,7 +12,10 @@ puts '                                           one-to-many'
 # Каждая статья имеет много комментариев. Тоесть к каждой сущностьи статьи относится много сущностей комментов, но при этом каждый коммент относится только к одной статье
 
 
-# 1. Создадим модель Comment со ссылкой на article:
+
+puts '                         Article 1 - * Comment. Модели и миграции с ассоциациями'
+
+# 1. Сгенерируем модель Comment со ссылкой на article:
 # > rails g model Comment author:string body:text article:references
 # или
 # > rails g model Comment author:string body:text article:belongs_to
@@ -34,7 +36,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
 
       # МБ belongs_to лучше использовать для связи 1 - * (сущности разных моделей), а references для таблиц одной сущности при нормализации (1 - 1) ??
 
-      # Связи можно добавлять отдельной миграцией если в генераторе не указать article:references
+      # Связи можно добавлять отдельной миграцией если в генераторе не указать article:references / article:belongs_to
       # можно добавить и тут вручную если данная миграция еще не была запущена
 
       t.timestamps
@@ -45,7 +47,7 @@ end
 # /models/comment.rb:
 class Comment < ApplicationRecord
   belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. Можно добавлять вручную если в генераторе не указать article:references
-  # Comment.find(id).article - теперь можно обращаться от любого коммента к статье которой он пренадлежит через метод article
+  # Comment.find(id).article - теперь можно обращаться от любого коммента к статье, которой он пренадлежит, через метод article
 end
 # > rails db:migrate
 
@@ -61,55 +63,62 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_04_075512) do
 end
 
 
-# 2а. Допишем вручную в модель уже Article  /models/article.rb ...
+# 2. /models/article.rb - допишем метод ассоциации вручную в модель Article
 class Article < ApplicationRecord
-  has_many :comments # добавим ассоциацию comments, тоесть статья связывается с комментами (множественное число).
+  has_many :comments, dependent: :destroy # добавим ассоциацию comments, тоесть статья связывается с комментами (множественное число).
   # Article.find(id).comments - теперь можно обращаться от любой статьи к коллекции (массив) принадлежащих ей комментов через метод comments
+  # dependent: :destroy  - параметр который и позволит удалять статьи у которых созданы принадлежащие им комменты. При этом удаляются и все связанные комменты (сначала удаляет комменты а потом саму статью)
 end
 # Таким образом мы связали 2 сущности между собой.
-
-# 2б. Настроим владеющую модель чтобы можно было удалять статью со всеми зависимыми комментами (сначала удаляет комменты а потом саму статью)
-class Article < ApplicationRecord
-  has_many :comments, dependent: :destroy
-  # dependent: :destroy  - параметр который и позволит нам удалять статьи у которых созданы принадлежащие им комменты
-end
 
 
 Article.find(1).comments                      # этот синтаксис аналогичен ...
 Comment.where(article_id: Article.find(1).id) # ... этому(.id  - не обязательно)
 
 
+
+puts '                         Создание связанных сущьностей в rails console. Метод build'
+
+# https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
+
 # Посмотрим в rails console:
 Article.comments           #=> будет ошибка тк у самой модели нет такого свойства comments
 @article = Article.find(1) # но если создать объект с одной статьей ...
 @article.comments          #=> ... то мы получаем доступ к списку всех комментов для этой статьи
 
-# Создание через create:
+
+# 1. Создание через create:
 @article.comments.create(:author => 'Foo', :body => 'Bar') #=> создание коммента для данной статьи, через сущность статьи
 
-# Создание через build:
+
+# 2. Создание через метод build. (?? альтернатива new, но для связей ??) требует последующего save:
+
+# Если к коллекции, например @article.comments, применить метод build, то создастся новый объект Comment, все поля которого будут со значением nil, за исключением aricle_id, которое будет соответствовать @article, те новый коммент будет привязан к этой статье. Этот объект пока не будет сохранен, для сохранения после нужно применить метод save
+
 q = Question.first         #=> #<Question:0x0000024c7357e5b0  #->
 # SELECT "questions".* FROM "questions" ORDER BY "questions"."id" ASC LIMIT ?  [["LIMIT", 1]]
 q.answers                  #=> []  #->
 # SELECT "answers".* FROM "answers" WHERE "answers"."question_id" = ?  [["question_id", 2]]
-a = q.answers.build body: "My first answer" # метод build(?? альтернатива new, но для связей ??) требует последующего save
+a = q.answers.build body: "My first answer" # создание методом build новый ответ от коллекции ответов
 #=> #<Answer:0x0000024c7358dc90 id: nil, body: "My first answer", question_id: 2, created_at: nil, updated_at: nil>
 a.save #=> true #->
 # INSERT INTO "answers" ("body", "question_id", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["body", "My first answer"], ["question_id", 2], ["created_at", "2023-11-01 08:29:29.370745"], ["updated_at", "2023-11-01 08:29:29.370745"]]
 q.answers #=> [ #<Answer:0x0000024c7358dc90 id: 1, body: "My first answer", question_id: 2, created_at: Wed, 01 Nov 2023 08:29:29.370745000 UTC +00:00, updated_at: Wed, 01 Nov 2023 08:29:29.370745000 UTC +00:00>]
 
+
 # build и new работают с ассоциациями одинаково ?? Для рельсов 2.2 и более поздних версий new и build делают то же самое для отношений has_many и has_and_belongs_to_many.
 q.answers.build #=> #<Answer:0x000001fa4a53f958 id: nil, body: nil, question_id: 4, created_at: nil, updated_at: nil>
 q.answers.new   #=> #<Answer:0x000001fa47c4bc90 id: nil, body: nil, question_id: 4, created_at: nil, updated_at: nil>
 
-# https://mkdev.me/ru/posts/vsyo-chto-nuzhno-znat-o-routes-params-i-formah-v-rails  - доп инфа по созданию через build
 
 
-# 3. Добавим в маршруты статей через блок маршруты комментариев в /config/routes.rb:
+puts '                             Article 1 - * Comment. Маршруты с ассоциациями'
+
+# Создадим карту маршрутов по REST, но вложенный (одни ресурсы в других). Добавим в маршруты статей через блок маршруты комментариев в /config/routes.rb:
 resources :articles do # Добавим сюда блок с маршрутами комментов, те сделаем вложенный маршрут:
-  resources :comments, exсept: %i[new show] # создает карту маршрутов по REST, но вложенный (одни ресурсы в других)
-  # exсept: %i[new show] - создает все маршруты кроме указанных в параметре-массиве
+  resources :comments, exсept: %i[new show]
 end
+
 # article_comments_path     GET      /articles/:article_id/comments          comments#index
 # new_article_comment_path  GET      /articles/:article_id/comments/new      comments#new
 #                           POST     /articles/:article_id/comments          comments#create
@@ -118,21 +127,30 @@ end
 #                           PATCH    /articles/:article_id/comments/:id      comments#update
 #                           PUT      /articles/:article_id/comments/:id      comments#update
 #                           DELETE   /articles/:article_id/comments/:id      comments#destroy
-# Тут article_id то что в маршрутах articles являлось id, тут id это айди коммента
+# Тут article_id то, что в маршрутах articles являлось id, тут id это айди коммента
 
 
-# 4a. Добавим форму для комментариев и вывод всех комментариев для статьи на articles/show.html.erb
-# 4b. Либо вариант для form_with и проекта AskIt questions/show.html.erb(Форма для ответа). Там же вывод всех ответов и хэлперы URL для создания пути для ссылки на связанную сущность.
+
+puts '                         Article 1 - * Comment. Ассоциации в представлениях'
+
+# 1. form_for:
+# articles/show.html.erb - добавим форму для комментариев и вывод всех комментариев для статьи
+
+# 2. form_with:
+# questions/show.html.erb (Форма для ответа AskIt). Там же вывод всех ответов и хэлперы URL для создания пути для ссылки на связанную сущность.
 
 
-# 5a. Добавляем контроллер для комментариев
+
+puts '                         Article 1 - * Comment. Ассоциации в контроллерах'
+
+# 1. Добавляем контроллер для комментариев
 # > rails g controller Comments
-# Для комментариев нам(тут) нужен только один метод - create, тк не будем с ним больше ничего делать, кроме добавления(POST), а форма для него и вывод будут на странице статьи к которой он относится(article#show).
+# Для комментариев нам тут нужен только один метод - create, тк не будем с ним больше ничего делать, кроме добавления(POST), а форма и вывод для него будут на странице статьи к которой он относится(article#show).
 class CommentsController < ApplicationController
   # Создадим метод create в /app/controllers/comments_controller.rb:
   def create # post '/articles/:article_id/comments'
     @article = Article.find(params[:article_id]) # используем :article_id тк это контроллер Comments и его карта маршрутов
-    @article.comments.create(comment_params) # создаем комментарий через сущность статьи
+    @article.comments.create(comment_params)     # создаем новый комментарий через сущность статьи
 
     redirect_to article_path(@article) # get '/articles/id'  articles#show
   end
@@ -144,7 +162,8 @@ class CommentsController < ApplicationController
   end
 end
 
-# 5b. (AskIt) answer_controller.rb
+
+# 2. (AskIt) answer_controller.rb
 class AnswersController < ApplicationController
   before_action :set_question!
   before_action :set_answer!, except: :create
@@ -156,7 +175,7 @@ class AnswersController < ApplicationController
       flash[:success] = "Answer created!"
       redirect_to question_path(@question)
     else
-      @answers = @question.answers.order created_at: :desc # нужен тк используется в виде что рендерится ниже
+      @answers = @question.answers.order created_at: :desc # нужна тк используется в виде questions/show
       render 'questions/show'  # рэндерим вид из папки другого контроллера, тот где наша форма
     end
   end
@@ -208,7 +227,7 @@ puts '                                User 1 - * Some. Методы up и down'
 
 # (На примере AskIt) Привяжем вопросы и ответы к пользователям(их авторам) что были созданы кастомно в CustomAutReg
 
-# 1. Создадим новые миграции чтобы добавить user_id с foreign_key в таблицы questions и answers
+# 1. Создадим новые миграции чтобы добавить user_id с foreign_key в существующие таблицы questions и answers
 # > rails g migration add_user_id_to_questions user:belongs_to
 # > rails g migration add_user_id_to_answers user:belongs_to
 # user:belongs_to - параметр создающий новое поле user_id с foreign_key к id в таблице users
