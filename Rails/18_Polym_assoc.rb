@@ -1,6 +1,6 @@
 puts '                                       Полиморфные ассоциации'
 
-# При написании приложения могут быть сущности, которые содержат одинаковое поведение, одинаковые свойства. Например могут быть публикации: постов, картинок, ссылкок итд. И все эти сущности можно комментировать и пришлось бы создавать для каждой отдельную сущность коммента:
+# Могут быть сущности, которые содержат одинаковое поведение, одинаковые свойства. Например могут быть публикации: постов, картинок, ссылкок итд. И все эти сущности можно комментировать и пришлось бы создавать для каждой отдельную сущность коммента:
 # Post   -  PostComment
 # Image  -  ImageComment
 
@@ -28,7 +28,7 @@ class Comment < ApplicationRecord
   belongs_to :commentable, polymorphic: true
   # При связывании с полиморфной ассоциацией надо в belongs_to добавить аргумент(любой) с окончанием able:
   # commentable - получается комментируемый, тоесть комментарий принадлежит комментируемому(посту, изображению итд), как бы виртуальной модели
-  # polymorphic: true - говорит о том что ассоциация полиморфная и соответсвенно commentable это не какаято отдельная сущность, а хэндл/рукоятка(посредник), которая существует у других сущностей и отвечает за группу всех этих сущностей
+  # polymorphic: true - говорит о том, что ассоциация полиморфная и соответсвенно commentable это не какая-то отдельная сущность, а хэндл/рукоятка/посредник, которая существует у других сущностей и отвечает за группу всех этих сущностей
   # Comment.find(1).commentable  - сосдастся хэлпер связи с комментируемыми сущностями
 end
 # /app/models/post.rb:
@@ -50,7 +50,8 @@ class CreateComments < ActiveRecord::Migration[5.2]
       # добавим строку:
       t.references :commentable, polymorphic: true # создает 2 столбца "commentable_type" и "commentable_id"
       # "commentable_type" - содержит имя модели к сущности, к которой относится коммент, например "Post"
-      # "commentable_id" - содержит id сущности(например Post) к которой принадлежит коммент
+      # "commentable_id"   - содержит id сущности(например Post) к которой принадлежит коммент
+      # Эта строка просто создает поля commentable_type и commentable_id и миграция не определяет какие именно сущности будут commentable и сколько их будет, тоесть всегда можно будет потом добавить и новые комментируемые сущьности
       t.timestamps
     end
   end
@@ -63,7 +64,7 @@ post = Post.create(content: 'Foo bar') # создадим пост(c id 1)
 post.comments #=> [] # все комменты данного поста
 post.comments.create(content: 'Baz Buuu Foo') # создадим коммент  #=> INSERT INTO "comments" ("content", "commentable_type", "commentable_id", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)  [["content", "Baz Buuu Foo"], ["commentable_type", "Post"], ["commentable_id", 1], ["created_at", "2023-08-15 07:53:00.708040"], ["updated_at", "2023-08-15 07:53:00.708040"]]
 # "commentable_type", "Post" - коммент относится к сущности модели Post
-# "commentable_id", 1 - коммент относится к сущности(Post) id которой 1
+# "commentable_id", 1        - коммент относится к сущности(Post) id которой 1
 post.comments.create(content: 'Comment 2')
 image = Image.create(url: '1.jpg') # создадим картинку(c id 1)
 image.comments #=> [] # все комменты данной картинки
@@ -94,7 +95,7 @@ image2.comments.create(content: 'Bar') #=> ... [["content", "Bar"], ["commentabl
 
 
 
-puts '                         Генерация полиморфных ассоциаций. concern для модели и маршрутов'
+puts '                                 Генерация полиморфных ассоциаций'
 
 # 1. Сгенерируем модель комментариев с полиморфическими ассоциациями, указав все необходимые параметры в генераторе
 # > rails g model Comment body:string commentable:references{polymorphic} user:belongs_to
@@ -108,7 +109,7 @@ class CreateComments < ActiveRecord::Migration[7.0]
   def change
     create_table :comments do |t|
       t.string :body
-      t.references :commentable, polymorphic: true, null: false # тоесть миграции не в курсе какие именно сущности commentable, тоесть можно будет потом добавить новые
+      t.references :commentable, polymorphic: true, null: false
       t.belongs_to :user, null: false, foreign_key: true
 
       t.timestamps
@@ -124,13 +125,13 @@ create_table "comments", force: :cascade do |t|
   t.integer "user_id", null: false
   t.datetime "created_at", null: false
   t.datetime "updated_at", null: false
-  t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+  t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable" # индекс по 2м полям
   t.index ["user_id"], name: "index_comments_on_user_id"
 end
 add_foreign_key "comments", "users"
 
 
-# 2. models/concerns/commentable.rb  - создадим консерн, общий для всех комментируемых моделей. В нем пропишем ассоциации для комментируемых моделей, вместо того чтобы писать их в каждой модели, просто подключим в них консерн
+# 2. models/concerns/commentable.rb  - ассоциации в комментируемые модели передадим через консерн(код там), общий для всех комментируемых моделей, чтобы не писать их вкаждой модели. В нем пропишем ассоциации для комментируемых моделей, вместо того чтобы писать их в каждой модели, просто подключим в них консерн:
 class Question < ApplicationRecord
   include Commentable
   # ...
@@ -141,17 +142,31 @@ class Answer < ApplicationRecord
 end
 
 
-# 3а. Пропишем маршруты для комментариев
-resources :questions do
-  resources :comments, only: %i[create destroy] # добавим вложенные комменты
-  resources :answers, except: %i[new show] # тут не будем делать еще одно вложение для комментов, тк маршрут получится слишком длинный и сложный ...
-end
-# ... вместо этого придется сделать дополнительные маршруты ответов и вложить в них комменты
-resources :answers, except: %i[new show] do
-  resources :comments, only: %i[create destroy]
+# 3. Дополнительно создадим декоратор для комментариев comment_decorator.rb
+class CommentDecorator < ApplicationDecorator
+  delegate_all
+  decorates_association :user # задекорируем юзера, вызванного от комментария (для методов gravatar и name_or_email)
 end
 
-# 3б. Пропишем маршруты для комментариев с использованием консерна, чтобы не дублировать маршруты
+
+
+puts '                                 Маршруты с полиморфными ассоциациями'
+
+# Пропишем маршруты для комментариев с вложением:
+Rails.application.routes.draw do
+  # ...
+  resources :questions do
+    resources :comments, only: %i[create destroy] # добавим вложенные комменты
+    resources :answers, except: %i[new show] # тут не будем делать еще одно вложение для комментов, тк маршрут получится слишком длинный и сложный ...
+  end
+
+  # ... вместо этого придется сделать дополнительные маршруты ответов и вложить в них комменты
+  resources :answers, except: %i[new show] do
+    resources :comments, only: %i[create destroy]
+  end
+end
+
+# Но удобнее прописать маршруты для комментариев с использованием консерна, чтобы не дублировать их
 Rails.application.routes.draw do
   concern :commentable do # создаем консерн маршрутов называем его :commentable (? название любое ?)
     resources :comments, only: %i[create destroy] # помещаем внутрь дублирующиеся маршруты
@@ -168,40 +183,40 @@ Rails.application.routes.draw do
 end
 
 
-# 4. Добавим в application.js модуль бутстрапа collapse для выпадающих форм
+
+puts '                           Ассеты и представления с полиморфными ассоциациями'
+
+# 1. Добавим в application.js модуль Бутстрапа collapse для выпадающих форм, тк форма комметрариев будет выпадать
 
 
-# 5. Представления:
+# 2. Представления:
 # a. questions/show.html.erb - добавим рендер паршала comments/commentable с формой и списком комментариев
 # б. answers/_answer.html.erb - добавим рендер паршала comments/commentable с формой комментариев (заодно добавим новую версию паршала)
 # в. comments/_commentable.html.erb - создадим директорию и паршал с формой комментариев и списком всех комментариев для commentable сущности. Форма и список комментов будут выпадающими при помощи бутстрапа, для чего добавим уникальные значения айди(для каждого элемента коллекции ответов, тк для каждого будет своя форма и список комментов и для вопроса), по которому кнопка будет открывать нужный выпадающий элемент, соотв будем передавать это айди и со страниц questions/show.html.erb и answers/_answer.html.erb, где нужная форма и список комментариев и рендерятся
 # г. _comment.html.erb - создадим паршал для конкретного комментария. Так же создадим полиморфическую ссылку для удаления коммента
 
 
-# 6. Создадим декоратор для комментариев comment_decorator.rb
-class CommentDecorator < ApplicationDecorator
-  delegate_all
-  decorates_association :user # задекорируем юзера, вызванного от комментария (для методов gravatar и name_or_email)
-end
 
+puts '                                  Контроллер комментируемой сущности'
 
-# 7. Создадим контроллер для комментариев comments_controller.rb
+# comments_controller.rb - создадим контроллер для полиморфных комментариев
 class CommentsController < ApplicationController
-  include QuestionsAnswers # подключим консерн questions_answer.rb чтобы использовать его метод load_question_answers
-  before_action :set_commentable! # определение сущьности для @commentable
-  before_action :set_question # сущность вопроса для метода консерна в create, если валидация не прошла и для редиректа
+  include QuestionsAnswers        # консерн questions_answer.rb чтобы использовать его метод load_question_answers
+  before_action :set_commentable! # определение сущности для @commentable
+  before_action :set_question     # сущность вопроса для метода консерна в create, если валидация не прошла и для редиректа
 
   def create
     @comment = @commentable.comments.build comment_params # создадим новый комментарий
 
     if @comment.save
       flash[:success] = t '.success'
-      redirect_to question_path(@question) # GET 'questions/:id' questions/show.html.erb
-      # так же можно редиректить: (?? переменная @commentable для этих вариантов определяется както проще чем метод ниже ??)
-      redirect_to @commentable # GET 'some/:id' но для этого нам нужны экшены show в контроллерах и виды для всех комментируемых сущьностей, больше подходит для множества комментируемых сущностей
+      # 1. Редиректим всегда связанный вопрос, через ответ, если комментился он:
+      redirect_to question_path(@question) # GET 'questions/:id'   questions/show.html.erb
+      # 2. Редиректим на сртаницу самой комментируемой сущности, но для этого нужны экшены show во всех контроллерах комментируемых сущностей и соответсвуюие виды, чтобы было куда рендерить. Больше подходит для множества комментируемых сущностей
+      redirect_to @commentable # GET 'some/:id'   some/show.html.erb
     else
       @comment = @comment.decorate
-      load_question_answers do_render: true # используем метод из консерна questions_answer.rb если не прошла валидация, для того чтоб передать все необходимые задекорированные коллекции с пагинацией и сущности и отрендерить questions/show.html.erb
+      load_question_answers do_render: true # если не прошла валидация используем метод из консерна questions_answer.rb, для того чтоб передать все необходимые задекорированные коллекции с пагинацией и сущности и отрендерить questions/show.html.erb
     end
   end
 
@@ -216,43 +231,47 @@ class CommentsController < ApplicationController
   private
 
   def comment_params
-    params.require(:comment).permit(:body).merge(user: current_user) # сразу добавим юзера
+    params.require(:comment).permit(:body).merge(user: current_user) # сразу добавим юзера для колонки user_id
   end
 
-  def set_commentable! # с воскл знаком, тк метод опасный, потому что может вызвать ошибку
-    klass = [Question, Answer].detect { |c| params["#{c.name.underscore}_id"] } # определяем константу класса комментируемой сущности, для этго константы вопроса и ответа преобразуем либо в 'question_id' либо в 'answer_id' и проверяем через params передается ли это значение в URL
+  def set_commentable! # метод обозначается как опасный, потому что может вызвать ошибку
+    klass = [Question, Answer].detect { |c| params["#{c.name.underscore}_id"] } # определяем константу класса комментируемой сущности - для этого константы вопроса и ответа преобразуем либо в 'question_id' либо в 'answer_id' и проверяем через params передается ли это значение в URL
     raise ActiveRecord::RecordNotFound if klass.blank? # вызываем ошибку если никакой класс не найден в параметрах
     @commentable = klass.find(params["#{klass.name.underscore}_id"]) # ищем нашу сущность в БД по ее айди, взятое из 'question_id' или 'answer_id' в зависимости от того какая константа в переменной klass
   end
 
   def set_question
     @question = @commentable.is_a?(Question) ? @commentable : @commentable.question
-    # Если комментируемая сущность это вопрос, то оставляем @commentable, а если ответ то вызываем от него связанный вопрос
+    # Если комментируемая сущность это вопрос - то оставляем @commentable, а если ответ - то вызываем от него связанный вопрос
   end
 end
 
 
 
-puts '                       Решение проблемы с отображением ошибки при не прохождении валидаций'
+puts '                      Решение проблемы с отображением ошибки при не прохождении валидаций'
 
 # Тк при ошибке валидации переменная @comment с заполненными полями из comments_controller#create, передаваемая через questions/show.html.erb в паршал _commentable.html.erb и соотв в паршал ошибок из него, передается в блок каждого ответа и вопроса, то сообщения об ошибке появляется в блоке каждого ответа и вопроса на странице show.html.erb, а не только в целевом
-form_with model: [commentable, (@comment || commentable.comments.build)] # тоесть @comment тут это просто инстанс коментария и он не содержит информацию о том к какому классу и индексу комментируемой сущности он отностится и соотв мы не знаем где конкретно исполнять или не исполнять код отображения об ошибке
+
+form_with model: [commentable, (@comment || commentable.comments.build)] # @comment тут - это просто инстанс коментария и он не содержит информацию о том к какому классу и индексу комментируемой сущности он отностится и соответственно мы не знаем где конкретно исполнять или не исполнять код отображения об ошибке
+
 render 'shared/errors', object: @comment # тоесть этот код исполняется в блоке вопроса и каждого ответа
 
-# Эту проблему можно было бы решить при помощи ассинхронных форм JS но тут решим без этого:
-# Нужно определить для какой комментируемой сущьности был оставлен комментарий переданный в @comment и соотв отображать ошибку только в нужном блоке конкретного ответа или вопроса, а не везде, а так же дополнительно раскроем только необходимый коллапс-блок
+# Эту проблему можно было бы решить при помощи ассинхронных форм JS но тут решим без них:
+# Нужно определить для какой комментируемой сущьности был оставлен комментарий переданный в @comment и отображать ошибку только в нужном блоке конкретного ответа или вопроса, а не везде, а так же раскрывать только необходимый коллапс-блок
 
-# 1. Пропишем основную логику определения класса комментируемой сущности в методе for? декораторе comment_decorator.rb, но возможно лучше это писать прямо в модели Comment
+
+# 1. Пропишем основную логику определения класса комментируемой сущности в методе for? в декораторе comment_decorator.rb, но возможно лучше это писать прямо в модели Comment
 class CommentDecorator < ApplicationDecorator
   delegate_all
   decorates_association :user
 
-  def for?(commentable) # commentable - парамертр с комментируемой сущностью, те вопросом или ответом (не знаем с чем именно)
-    commentable = commentable.object if commentable.decorated? # тоесть если комментируемая сущьность была задекорирована то нужно вытащить эту сущность при помощи метода object, тк гем Дрэйпер добавляет к задекорированному объекту свои артибуты
+  def for?(commentable) # commentable - комментируемая сущность, тоесть вопрос или ответом (не знаем что именно)
+    commentable = commentable.object if commentable.decorated? # если комментируемая сущьность была задекорирована то нужно вытащить эту сущность при помощи метода object, тк гем Дрэйпер добавляет к задекорированному объекту свои артибуты
     commentable == self.commentable # сравниваем и возвращаем true или false
     # self.commentable - self указывает на конкретный комментарий от которого вызвали метод for? и вызываем от него commentable которому он принадлежит
   end
 end
+
 
 # 2. Используем метод for? в паршале _commentable.html.erb
 

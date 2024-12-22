@@ -10,7 +10,7 @@
   <!-- id: html_id - назначаем в этот div значение id которое передали из questions/show.html.erb или answers/_answer.html.erb в точке рендера, соотв id на теге с классом collapse будет соответсвовать значению якоря на кнопке -->
 
   <%= form_with model: [commentable, (@comment || commentable.comments.build)], class: 'pt-3 border-top my-2' do |f| %>
-  <!-- Строим URL по 2м моделям commentable и @comment, если коммента еще нет то создаем при помощи build, тоесть запрос будет POST "/questions/:question_id/comments" или "/answers/:answer_id/comments" -->
+  <!-- Строим URL по 2м моделям commentable и @comment, если коммента еще нет, то создаем при помощи build, тоесть запрос будет POST "/questions/:question_id/comments" или "/answers/:answer_id/comments" -->
 
     <%= render 'shared/errors', object: @comment %>
 
@@ -26,7 +26,7 @@
 
 
 
-<!--                                 Вариант с исправлением отображения вывода ошибок -->
+<!--                              Вариант с исправлением отображения вывода ошибок -->
 
 <!-- Создадим локальную переменную для данного паршала, чтобы не дублировать код -->
 <% is_current_comment = comment&.for?(commentable) %> <!-- возвращает true или false -->
@@ -39,7 +39,7 @@
 <!-- #{'show' if is_current_comment} - добавляем класс бутстрапа открывающий коллапс объект для нужного блока -->
 
   <%= form_with model: [commentable, (is_current_comment ? comment : commentable.comments.build)] do |f| %>
-  <!-- В URL используем comment, если это тот блок в который передается ошибка (тоесть это значит что валидация не прошла) и форма подсветится красным(обводки полей) или билд новой сущьности для остальных блоков -->
+  <!-- В URL используем comment, если это тот блок, в который передается ошибка (тоесть это значит что валидация не прошла) и форма подсветится красным(обводки полей) или если это 1я тправка формы тоесть билд новой сущьности для остальных блоков -->
 
     <!-- тоесть теперь мы вызываем отображение ошибок только для нужного блока -->
     <% if is_current_comment %>
