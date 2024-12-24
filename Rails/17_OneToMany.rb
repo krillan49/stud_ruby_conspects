@@ -1,4 +1,4 @@
-puts '                                           one-to-many'
+puts '                                          One-to-many (1 - *)'
 
 # https://guides.rubyonrails.org/association_basics.html
 

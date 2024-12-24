@@ -75,6 +75,9 @@ class AddUsernameAndToken < ActiveRecord::Migration[7.0]
     # :username    - имя столбца на который будет поставлен индекс
     # unique: true - доп опция с ограничением UNIQUE для данного столбца
     # Имя индексу создается автоматически
+
+    # Индекс сразу по 2м полям:
+    add_index :question_tags, [:question_id, :tag_id], unique: true
   end
 end
 # > rake db:migrate
