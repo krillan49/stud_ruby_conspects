@@ -2,7 +2,7 @@
 
 @import 'bootstrap/scss/bootstrap'; // загружаем все стили из данного фаила(с Гитхаба ??), но лучше загружать только отдельные компоненты а не все как тут
 @import 'bootstrap-icons/font/bootstrap-icons';
-@import 'tom-select/dist/css/tom-select.bootstrap5'; // стили для TomSelect (ManyToMany)
+@import 'tom-select/dist/css/tom-select.bootstrap5'; // стили для TomSelect
 
 
 // Данный фаил SCSS(препроцессор Sass), который заменаяет стандартный CSS фаил с тем же именем с импортами выше создан изначально в версии Рэилс 7 из уроков крукоовского

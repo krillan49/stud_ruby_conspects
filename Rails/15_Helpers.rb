@@ -217,6 +217,10 @@ form_with model: @user, url: password_reset_path, method: :patch do |f|
 end
 # Тут если указать только модель, то форма будет отправлена на обработку в user-контроллер, но нам нужен контроллер сброса пароля, потому и нужно указать URL и метод, чтоб отправилось на его экшен update.
 
+# Форма без передачи модели, просто на URL какого-то контроллера#экшена, потому и метод пишем вручную ??
+form_with url: questions_path, method: :get do |f|
+end
+
 
 # Текстовое поле с аттрибутами валидации на стороне браузера
 f.text_field :title, required: true, minlength: 2, placeholder: 'Title'

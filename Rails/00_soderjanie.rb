@@ -33,10 +33,9 @@ puts '                                              Содержание'
 #   decorates_association
 #   commentable.object  - извлечение сущьности из задекорированного объекта
 
-# Tomselect_Serialize
-#   ajax и поиск
+# Tomselect
+#   ajax и ассинхронный поиск
 #   Форма с GET-запросом (экшен index) на ту же страницу
-#   парсинг json(serialize) blueprinter, рендер json
 
 # Scaffolding
 #   Некоторые методы AR

@@ -36,12 +36,13 @@
     <!-- {} - пустые опции  -->
     <!-- multiple: true - ставит атрибут multiple в селектор (выбор множества вариантов через Ctrl) -->
   </div>
-  <!-- селектор(вариант 2) с ассинхронными запросами и поиском вместо списка при помощи blueprinter (ManyToMany) -->
+
+  <!-- селектор(вариант 2) с ассинхронными запросами и поиском вместо списка при помощи blueprinter (TomSelect) -->
   <div>
     <%= f.label :tags %>
     <%= f.collection_select :tag_ids, @question.tags, :id, :title, {}, multiple: true,
       class: 'js-multiple-select', data: {'ajax-url': '/api/tags'} %>
-      <!-- @question.tags вместо tags, чтобы отображались выбранные теги в questions/edit.html.erb либо получится пустая коллекция в questions/new.html.erb, а теги для поиска будут приходить из сгенерированного json  -->
+      <!-- @question.tags вместо tags, чтобы отображались выбранные теги в questions/edit.html.erb, либо получится пустая коллекция в questions/new.html.erb, а теги для поиска будут приходить из сгенерированного json  -->
   </div>
 
   <%= f.submit "Submit question!" %>

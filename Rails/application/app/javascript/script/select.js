@@ -1,4 +1,5 @@
-import TomSelect from 'tom-select/dist/js/tom-select.popular' // подключаем tom-select, заодно добавим самые популярные плагины для него (.popular)
+// подключаем tom-select, заодно добавим самые популярные плагины для него (.popular):
+import TomSelect from 'tom-select/dist/js/tom-select.popular'
 import Translations from './i18n/select.json'  // подключаем переводы из подпапки
 
 
@@ -20,7 +21,7 @@ document.addEventListener("turbolinks:load", function() {
       plugins: { // Подключаем в опциях плагины
         'remove_button': {
           // 'remove_button' - плагин позволяет удалять элементы(у нас теги при нажатии на крестик ??)
-          title: i18n['remove_button'] // перевод для плагина
+          title: i18n['remove_button'] // перевод для плагина (кнопки ??)
         },
         'no_backspace_delete': {}, // для удобства работы с backspace
         'restore_on_backspace': {} // для удобства работы с backspace
@@ -28,12 +29,12 @@ document.addEventListener("turbolinks:load", function() {
       valueField: 'id',     // опция говорит что значениями будут айдишники (тут наших тегов)
       labelField: 'title',  // а для отображения будет title
       searchField: 'title', // и для поиска тоже title
-      create: false,        // если (тут тега) нет, то создать нельзя
+      create: false,        // если сущьности (тут тега) нет, то создать нельзя
       // Функция, которя принимает запрос и колбэк, которая и будет подгружать наши теги
       load: function(query, callback) {
         // содадим URL: часть из атрибута data
         const url = element.dataset.ajaxUrl + '.json?term=' + encodeURIComponent(query)
-        // element.dataset.ajaxUrl - часть URL берем из атрибута data в форме (data: {'ajax-url': '/api/tags'})
+        // element.dataset.ajaxUrl   - часть URL берем из атрибута data в форме - data: {'ajax-url': '/api/tags'}
         // encodeURIComponent(query) - то что ввел пользователь (добавим к 'term=')
 
         fetch(url)

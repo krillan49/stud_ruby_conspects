@@ -17,7 +17,7 @@ import '@popperjs/core'             // с ESBuild не нужно, можно у
 import 'bootstrap/js/dist/dropdown' // собственно компонент бутстрапа отвечающий за дропдауны
 import 'bootstrap/js/dist/collapse' // для выпадающих форм для commentable
 
-// подключаем скрипт с кодом для TomSelect (ManyToMany)
+// подключаем скрипт с кодом для TomSelect
 import './scripts/select'
 
 // Запускаем скрипты
