@@ -49,94 +49,33 @@ puts '                                   Установка, обновлени�
 
 # Чтобы обновить/установить ваши SSL-сертификаты - запустите этот скрипт(ниже), чтобы загрузить cacert.pem. Убедитесь, что вы добавили переменную SSL_CERT_FILE в свою среду, указывающую на загруженный файл cacert.pem.
 
-# require 'net/http'
-#
-# ruby_install_dir = 'e:\programs\Ruby31-x64'
-# cacert_file = "#{ruby_install_dir}\\cacert.pem"
-#
-# Net::HTTP.start("curl.haxx.se") do |http|
-#   resp = http.get("/ca/cacert.pem")
-#   if resp.code == "200"
-#     open(cacert_file, "wb") { |file| file.write(resp.body) }
-#     puts "\n\nA bundle of certificate authorities has been installed to"
-#     puts "#{cacert_file}\n"
-#     puts "* Please set SSL_CERT_FILE in your current command prompt session with:"
-#     puts "     set SSL_CERT_FILE=#{cacert_file}"
-#     puts "* To make this a permanent setting, add it to Environment Variables"
-#     puts "  under Control Panel -> Advanced -> Environment Variables"
-#   else
-#     abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
-#   end
-# end
+require 'net/http'
+
+def ssl_add # метод просто чтобы не запустить случайно
+  ruby_install_dir = 'e:\programs\Ruby31-x64'
+  cacert_file = "#{ruby_install_dir}\\cacert.pem"
+
+  Net::HTTP.start("curl.haxx.se") do |http|
+    resp = http.get("/ca/cacert.pem")
+    if resp.code == "200"
+      open(cacert_file, "wb") { |file| file.write(resp.body) }
+      puts "\n\nA bundle of certificate authorities has been installed to"
+      puts "#{cacert_file}\n"
+      puts "* Please set SSL_CERT_FILE in your current command prompt session with:"
+      puts "     set SSL_CERT_FILE=#{cacert_file}"
+      puts "* To make this a permanent setting, add it to Environment Variables"
+      puts "  under Control Panel -> Advanced -> Environment Variables"
+    else
+      abort "\n\n>>>> A cacert.pem bundle could not be downloaded."
+    end
+  end
+end
 
 
 
-puts '                                          RVM и Ruby под Linux'
+puts '                                   Установка системного Руби на Linux'
 
-# rvm - ruby version manager - позволяет переключаться между версиями Руби
-
-# https://rvm.io/
-
-# Для установки rvm по очереди выполняем команды что перечислены в пункте "Cut Rubies with ease!"
-# 1. Install GPG keys:
-# $ gpg2 --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-# 2. Install RVM:
-# $ \curl -sSL https://get.rvm.io | bash -s stable
-# 3. For installing RVM with default Ruby and Rails in one command, run:
-# $ \curl -sSL https://get.rvm.io | bash -s stable --rails
-
-# Далее можем устанавливать и переключать версии интерпритаторов Руби, например
-# $ rvm install 3.1.2               - установка Руби версии 3.1.2
-# $ rvm use 3.1.2                   - переключиться на Руби версии 3.1.2
-# $ rvm -v                          #=> ruby 3.1.2p20 (2022-04-12 revision 4491bb740a) [x64-mingw-ucrt]
-
-
-
-# небольшое дополнение для тех кто устанавливает Ruby на Linux:
-# После установки rvm и открытия окошка терминала (не забыв поставить галку run command as login shell (для гномовского баша, остальны как-то аналогично)), затем делаем команды
-# rvm pkg install openssl
-# rvm install ruby-2.7.6 --with-openssl-dir=$HOME/.rvm/usr
-
-
-
-puts '                                                RBENV'
-
-# https://github.com/rbenv/rbenv
-
-
-# ДЛЯ RBENV
-# https://help.dreamhost.com/hc/en-us/articles/360001435926-Installing-OpenSSL-locally-under-your-username до 11 шага, затем
-# RUBY_CONFIGURE_OPTS=--with-openssl-dir=$HOME/.openssl/openssl-1.1.1g (путь куда положили правильно написать) перед rbenv install (asdf install)
-# Ну, у нас версия сейчас посвежее, то есть 3.1.2, но должно быть актуально.
-
-
-# чеьл из чатика про установку Руби на линукс:
-# А руби уже установлен? как?
-#
-# sudo apt install ruby-full
-#
-# майн гот
-#
-# а теперь:
-# sudo apt update && \
-# sudo apt purge ruby-full -yqq && \
-# sudo apt install git rbenv -yqq && \
-# sudo apt purge ruby-build -yqq && \
-# git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build && \
-# exec $SHELL -l
-#
-# а что оно делает-то?
-#
-# уберёт системный руби и поставит rbenv в качестве менеджера версий
-# затем просто напишешь rbenv install <версия>
-#
-# там, конечно, баг странный тоже. ruby-build какой-то кривой ставится из апта/пакмана, поэтому нужно руками его ставить с гитхаба
-# не знаю, исправили ли сейчас
-#
-# это сделал. Ввел rbenv install 3.2.2. В итоге
-#
-# sudo apt install libyaml -y
-
+# $ sudo apt install ruby-full
 
 
 
