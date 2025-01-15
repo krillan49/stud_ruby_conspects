@@ -296,6 +296,8 @@ debug(params)
 
 # minutes - метод Рэилс для чисел
 Time.current - password_reset_token_sent_at <= 60.minutes
+# days - метод создаёт объект ActiveSupport::Duration с количеством дней, умноженным на 24 часа
+Time.now - 1.days
 
 
 
