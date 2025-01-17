@@ -395,6 +395,8 @@ require 'capybara/rspec'
 
 puts '                                        Capybara синтаксис'
 
+# https://gist.github.com/steveclarke/2353100      - матчеры для веба(проверять элементы штмл и ксс)
+
 # unit:         describe   ->   it
 # acceptance:   feature    ->   scenario
 

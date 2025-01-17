@@ -175,6 +175,23 @@ end.to raise_error(
 expect { process = described_object.export!.first.process }.to output(/complete!/).to_stdout
 
 
+# Проверка на `nil`
+expect(value).not_to be_nil
+
+# Проверка на существование и ненулевое значение
+expect(value).to be_truthy
+
+# Если вы работаете с массивом или коллекцией, вы можете использовать matcher `include`:
+expect(array).to include(expected_value)
+
+# Если вы проверяете наличие записи в базе данных с помощью ActiveRecord:
+expect(User.exists?(id: user_id)).to be_truthy
+
+
+# Проверка на присутствие строки или не пустой массив Вы можете использовать `be_present` для проверки, существует ли значение и не пусто:
+expect(value).to be_present
+
+
 
 puts '                                           Синтаксис it тестов'
 

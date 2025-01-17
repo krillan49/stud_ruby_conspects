@@ -48,6 +48,9 @@ Rails.cache.fetch("welcome_message") { "Welcome to Rails!" } #=> Welcome to Rail
 # Rails.cache.delete - метод для удаления значения из кэша по ключу
 Rails.cache.delete("greeting")
 
+# Rails.cache.clear - очистить весь кэш
+Rails.cache.clear
+
 
 # Например Product модель с методом экземпляра, который ищет цену продукта на веб-сайте. Данные, возвращаемые этим методом, идеально подходят для низкоуровневого кэширования:
 class Product < ApplicationRecord
@@ -73,6 +76,41 @@ ids = Rails.cache.fetch("super_admin_user_ids", expires_in: 12.hours) do
 end
 # Получаем объекты по ключам
 User.where(id: ids).to_a
+
+
+
+puts '                                        Rspec + Rails.cache'
+
+# По умолчанию методы Rails.cache не раотают в тестах
+
+# !!! Не следует на самом деле тестировать фреймворк. Тесты кэширования Rails, по-видимому, покрывают это для вас.
+
+# Разные варианты решения:
+# https://stackoverflow.com/questions/5035982/optionally-testing-caching-in-rails-3-functional-tests
+# https://makandracards.com/makandra/46189-rails-cache-individual-rspec-tests
+# https://stackoverflow.com/questions/16156862/how-can-i-test-rails-cache-feature
+
+
+# 1. Оставьте конфигурацию по умолчанию
+# 2. Теперь заглушите кэш Rails и очистите его перед каждым примером :
+RSpec.describe SomeClass do
+  # объем памяти ограничен для каждого процесса, и поэтому в параллельных тестах нет конфликтов
+  let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+  let(:cache) { Rails.cache }
+
+  before do
+    allow(Rails).to receive(:cache).and_return(memory_store)
+    Rails.cache.clear
+  end
+
+  it do
+    expect(cache.exist?('some_key')).to be(false)
+
+    cache.write('some_key', 'test')
+
+    expect(cache.exist?('some_key')).to be(true)
+  end
+end
 
 
 
