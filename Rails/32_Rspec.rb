@@ -117,6 +117,9 @@ should validate_length_of(:bio).is_at_least(15) # не менее чем
 should validate_length_of(:favorite_superhero).is_equal_to(6) # равен значению
 should validate_length_of(:password).is_at_least(5).is_at_most(30) # одновременно меньше и больше чем
 
+# Матчер чтобы проверить существование объекта AR
+expect(Foo.where(bar: 1, bax: 2)).to exist
+
 
 
 puts '                                 Баг тестирования belong_to к Devise модели'

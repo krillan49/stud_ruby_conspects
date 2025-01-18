@@ -163,6 +163,7 @@ end
 
 # image_tag - хэлпер для генерации тега <img ...>
 image_tag "https://www.gravatar.com/avatar.jpg", class: "rounded", alt: 'some'
+image_tag @podcast.photo
 
 
 # 2. link_to - хэлпер генерирующий тег ссылки <a>, с возможностью задавать параметры(работает совместно с js-фаилом turbolinks)
