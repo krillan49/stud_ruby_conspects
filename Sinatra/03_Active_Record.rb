@@ -265,6 +265,8 @@ Comment.where("post_id = ?", params[:post_id]) #=> возвращает объе
 # -- order выводит коллекцию сущьностей в порядке по убыванию или возрастанию относительно столбцов
 Barber.order "created_at DESC" # получаем всю таблицу barbers(SELECT * FROM barbers ORDER BY created_at DESC) отсортированную по полю created_at и DESC переданные параметром в виде строки через пробел.
 
+# Проверить существует ли хоть одна сущность (строка в таблице)
+Barber.exists?
 
 # Чейнинг - запись методов подряд(но нужно чтобы возвращали то что подходит ??)
 Answer.where(question: @question).limit(2).order(created_at: :desc)
