@@ -272,6 +272,12 @@ p s.set_n(1)   #=> "ha-ha"
 p s.set_n = 1  #=> 1
 
 
+class C; def m=(arg); end; end
+c = C.new
+# c.m = (с пробелом) это метод
+p c.m = 'lol' #=> "lol"
+
+
 puts
 puts '                             Методы объекта .respond_to?() .instance_variables'
 
