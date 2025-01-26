@@ -3,7 +3,8 @@ module Authentication
 
   included do
     before_action :require_authentication
-    helper_method :authenticated?
+    helper_method :authenticated?, :current_user
+    # Добавлено в helper_method: current_user
   end
 
   class_methods do
@@ -14,6 +15,13 @@ module Authentication
   end
 
   private
+    # ============ кастомные методы ================
+    def current_user
+      @current_user ||= User.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
+    end
+    # ==============================================
+
+
     # authenticated? - проверяет, есть ли активная сессия для текущего пользователя.
     def authenticated?
       resume_session
