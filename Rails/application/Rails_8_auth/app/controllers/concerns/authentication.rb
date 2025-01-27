@@ -8,7 +8,7 @@ module Authentication
   end
 
   class_methods do
-    # allow_unauthenticated_access - позволяет выполнить определенные действия для обхода require_authentication проверки. Те разрешает доступ без аутентификации, по умолчанию для всех экшенов. Надо добавить этот метод в контроллер
+    # allow_unauthenticated_access - позволяет выполнить определенные действия для обхода require_authentication проверки. Те разрешает доступ без аутентификации, по умолчанию для всех экшенов. Надо добавить этот метод в контроллер. При переходе на экшен который не указан(если выбраны разрешенные) вернет страницу регистрации
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
     end
@@ -17,8 +17,10 @@ module Authentication
   private
     # ============ кастомные методы ================
     def current_user
-      @current_user ||= User.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
+      @current_user ||= User.find_by(id: cookies.signed[:user_id]) if cookies.signed[:user_id]
     end
+    # start_new_session_for(user) - в этот метод добавим сохранение :user_id в сессию
+    # terminate_session - в этот метод добавим удаление :user_id из куки
     # ==============================================
 
 
@@ -55,6 +57,9 @@ module Authentication
       user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
         Current.session = session
         cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
+
+        # Добавим строку для того чтобы сохранить айди юзера в куки сессии и применять его в методе current_user
+        cookies.signed.permanent[:user_id] = { value: user.id, httponly: true, same_site: :lax }
       end
     end
 
@@ -62,6 +67,9 @@ module Authentication
     def terminate_session
       Current.session.destroy
       cookies.delete(:session_id)
+
+      # Добавим строку для того чтобы удалять айди юзера(для current_user) из куки когда сессия завершена
+      cookies.delete(:user_id)
     end
 end
 

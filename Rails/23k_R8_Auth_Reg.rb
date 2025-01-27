@@ -101,7 +101,7 @@ end
 
 # Контроллер с публичным доступом:
 class HomeController < ApplicationController
-  allow_unauthenticated_access(only: :index)  # метод консерна разрешает заходить без утентификации только на index
+  allow_unauthenticated_access(only: :index)  # метод консерна разрешает заходить без утентификации только на index, при переходе на другой экшен вернет страницу регистрации
   def index # Get /home будет доступен всем
   end
 end

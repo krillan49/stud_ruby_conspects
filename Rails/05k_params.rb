@@ -160,6 +160,12 @@ class HomeController < ApplicationController
 end
 
 
+# Посылать параметры мжно из URL-хэлпера, чтобы потом принимать их в контроллере, например:
+questions_path(filter: 'Vasya')
+# Принимаем в контроллере и используем как нам надо:
+render 'fuck_you/vasya' if params[:filter] == 'Vasya'
+
+
 
 
 
