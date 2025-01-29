@@ -65,12 +65,12 @@ class User < ApplicationRecord
   has_many :subscriptions      # Связь с промежуточной таблицей подписок
   has_many :subscribed_podcasts, through: :subscriptions, source: :podcast # Подкасты на которые подписан юзер
 
-  # Метод для подписки на подкаст
+  # Метод для подписки на подкаст(?? чето сомнительный не проще ли писать в контроллере)
   def subscribe_to_podcast(podcast)
     subscriptions.create(podcast: podcast)
   end
 
-  # Метод для отписки от подкаста
+  # Метод для отписки от подкаста(?? чето сомнительный не проще ли писать в контроллере)
   def unsubscribe_from_podcast(podcast)
     subscriptions.find_by(podcast: podcast)&.destroy
   end
@@ -92,16 +92,19 @@ end
 # 3. Методы ассоциаций:
 user = User.find(user_id)
 podcast = Podcast.find(podcast_id)
+
 # все подкасты, созданные пользователем:
 user.podcasts
+
 # все пользователи, подписанные на подкаст:
 podcast.subscribers
+# все подкасты, на которые подписан пользователь:
+user.subscribed_podcasts
+
 # подписаться на подкаст:
 user.subscribe_to_podcast(podcast)
 # отписаться от подкаста:
 user.unsubscribe_from_podcast(podcast)
-# все подкасты, на которые подписан пользователь:
-user.subscribed_podcasts
 # количество подписчиков у подкаста:
 podcast.subscriber_count
 
@@ -112,6 +115,86 @@ podcast.subscriber_count
 # • Многие пользователи могут подписываться на многие подкасты (User has_many subscribed_podcasts through subscriptions).
 # • Многие подкасты могут иметь многих подписчиков (Podcast has_many subscribers through subscriptions).
 # • Есть методы для управления подписками и получения связанных данных.
+
+
+
+puts '                       Контроллер, маршруты и представление Subscription(подписки/лайков)'
+
+# 1. Контроллер subscriptions_controller.rb (тут с турбофрэймами):
+class SubscriptionsController < ApplicationController
+  before_action :set_podcast!
+
+  def create # подписываемся на подкаст, создавая экземпляр Subscription с айдишниками
+    subscription = current_user.subscriptions.create(podcast: @podcast)
+    respond_to do |format|
+      if subscription.save
+        flash[:notice] = "Your subscription was successfully created."
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("podcast_frame", partial: "podcasts/podcast", locals: { podcast: @podcast }),
+            turbo_stream.append("flash", partial: "shared/flash", locals: { message: notice })
+          ]
+        end
+      else
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("podcast_frame", partial: "podcasts/podcast", locals: { podcast: @podcast }),
+            turbo_stream.replace("alert", partial: "shared/errors", locals: { resource: @podcast })
+          ]
+        end
+      end
+      format.html { redirect_to @podcast, notice: notice }
+    end
+  end
+
+  def destroy # отписываемся, удаляя экземпляр Subscription с айдишниками
+    subscription = current_user.subscriptions.find_by(podcast: @podcast)
+    respond_to do |format|
+      if subscription&.destroy
+        flash[:notice] = "Your subscription was successfully deleted."
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("podcast_frame", partial: "podcasts/podcast", locals: { podcast: @podcast }),
+            turbo_stream.append("flash", partial: "shared/flash", locals: { message: notice })
+          ]
+        end
+      else
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("podcast_frame", partial: "podcasts/podcast", locals: { podcast: @podcast }),
+            turbo_stream.replace("alert", partial: "shared/errors", locals: { resource: @podcast })
+          ]
+        end
+      end
+      format.html { redirect_to @podcast, notice: notice }
+    end
+  end
+
+  private
+
+  def set_podcast!
+    @podcast = Podcast.find_by(id: params[:podcast_id])
+  end
+end
+
+
+# 2. Маршруты вложенные в подкасты, чтобы сразу приходило айди подкаста config/routes.rb:
+resources :podcasts do
+  resources :subscriptions, only: [:create, :destroy]
+end
+
+
+# 3. Кнопка лайка/подписки например, в впредставлении show.html.erb подкаста:
+if current_user && current_user.subscriptions.exists?(podcast: @podcast)
+  button_to 'Отписаться', podcast_subscription_path(@podcast, 1), method: :delete#, remote: true
+  # podcast_subscription_path(@podcast, 1) - тут 1 костыль, тк хэлпер требует айдишшник сущьности, но нам он не нужен тк удаляем от айдишника current_user и подкаста
+elsif current_user
+  button_to 'Подписаться', podcast_subscriptions_path(@podcast), method: :post#, remote: true
+end
+
+
+# Опционально: Ответ на AJAX-запросы
+# Если вы используете `remote: true`, вам может понадобиться обработка ответов на JavaScript. Создайте соответствующие файлы JavaScript для обработки успешных/неуспешных запросов.
 
 
 
