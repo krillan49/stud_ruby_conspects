@@ -250,7 +250,10 @@ end
 FactoryBot.define do
   factory :post do
     content { "Post content" }
+    # Вариант 1 (? тоже самое только сокращенный ?)
     user # колонка для создания юзера полученного от фабрики :user ??
+    # Вариант 2 (? тоже самое только полный ?)
+    association :user
   end
 end
 
@@ -592,6 +595,73 @@ feature "Comment Creation" do
     fill_in :comment_body, with: 'Test comment'
     click_button 'Create Comment'
     expect(page).to have_content 'Test comment' # проверяем по содержанию самого коммента
+  end
+end
+
+
+
+puts '                                         Capybara + Factory Bot'
+
+# На примере того что кнопки редактирования и удаления подкаста может увидить только зарегистрированный пользователь, нужно создать этого пользователя через фабрику и потом им зарегаться
+
+# spec/factories/users.rb:
+FactoryBot.define do
+  factory :user do
+    sequence(:email_address)  { |n| "#{n}@google.com" }
+    password                  { "my password" }
+  end
+end
+
+# spec/factories/podcasts.rb:
+FactoryBot.define do
+  factory :podcast do
+    sequence(:title)  { |n| "My Podcast #{n}" }
+    description       { "This is a description of my podcast." }
+    user
+  end
+end
+
+# spec/support/session_helper.rb:
+def sign_in
+  visit login_path
+  fill_in "email_address", with: user.email_address
+  fill_in "password",      with: user.password
+  click_button "Sign in"
+end
+
+# spec/features/podcasts/show_spec.rb:
+require 'rails_helper'
+
+RSpec.feature "Podcasts#show", type: :feature do
+  let(:user) { FactoryBot.create(:user) }
+  let(:podcast) do
+    FactoryBot.create(:podcast, title: Faker::Alphanumeric.alpha(number: 10),
+                                description: Faker::Markdown.emphasis,
+                                user: user)
+  end
+
+  before do
+    sign_in # както использует переменную user из let
+    visit podcast_path(podcast)
+  end
+
+  context 'user see' do
+    scenario "podcast details" do
+      expect(page).to have_content(podcast.title)
+      expect(page).to have_content(podcast.description)
+      expect(page).to have_content(podcast.created_at)
+    end
+
+    scenario "special notice cuz no photo" do
+      expect(page).to have_selector("div.alert.alert-warning", text: "No Photo Available!")
+      expect(page).to have_selector("div.alert.alert-warning", text: "No Audio Available!")
+    end
+
+    # Этот тест пройдет только зареганный юзер, для него и делаем юзера фабрикой
+    scenario "manipulation buttons" do
+      expect(page).to have_link("Редактировать Podcast", href: edit_podcast_path(podcast))
+      expect(page).to have_button("Удалить Podcast")
+    end
   end
 end
 
