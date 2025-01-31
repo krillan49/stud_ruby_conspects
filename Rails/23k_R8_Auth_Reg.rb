@@ -79,6 +79,16 @@ puts '                                  Контроллеры и консерн
 puts '                                Свои дополнения для консерна Authentication'
 
 # 1. current_user - добавим метод-хэлпер для возврата текущего пользователя (код в Authentication)
+# Для того чтобы найти текущего юзера используем его связь с models/session.rb через метод resume_session из того же Authentication консерна
+class Session < ApplicationRecord
+  belongs_to :user # вызовем текущего юзера от этой ассоциации
+end
+class User < ApplicationRecord
+  has_secure_password
+  has_many :sessions, dependent: :destroy # вызовем текущего юзера от этой ассоциации
+
+  normalizes :email_address, with: ->(e) { e.strip.downcase }
+end
 
 
 

@@ -16,11 +16,20 @@ module Authentication
 
   private
     # ============ кастомные методы ================
+
+    # Вариант 1 (Не очень тк хранение идентификаторов в чистом виде небезопасно)
     def current_user
       @current_user ||= User.find_by(id: cookies.signed[:user_id]) if cookies.signed[:user_id]
     end
     # start_new_session_for(user) - в этот метод добавим сохранение :user_id в сессию
     # terminate_session - в этот метод добавим удаление :user_id из куки
+
+    # Вариант 2 (найдем пользователя, через связь модели юзера и одели сессии)
+    def current_user
+      @current_user ||= resume_session.user if resume_session
+    end
+    # resume_session - метод, который возвращает текущую сессию, от которой через ассоциацию моделей можем получить текущего юзера
+
     # ==============================================
 
 
@@ -58,7 +67,7 @@ module Authentication
         Current.session = session
         cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
 
-        # Добавим строку для того чтобы сохранить айди юзера в куки сессии и применять его в методе current_user
+        # (для current_user Вариант 1) Добавим строку для того чтобы сохранить айди юзера в куки сессии
         cookies.signed.permanent[:user_id] = { value: user.id, httponly: true, same_site: :lax }
       end
     end
@@ -68,7 +77,7 @@ module Authentication
       Current.session.destroy
       cookies.delete(:session_id)
 
-      # Добавим строку для того чтобы удалять айди юзера(для current_user) из куки когда сессия завершена
+      # (для current_user Вариант 1) Добавим строку для того чтобы удалять айди юзера из куки когда сессия завершена
       cookies.delete(:user_id)
     end
 end
