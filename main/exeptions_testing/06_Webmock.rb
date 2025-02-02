@@ -24,12 +24,16 @@ end
 
 # Подключение для RSpec. Подключаем в spec/spec_helper:
 require 'webmock/rspec'
+
 # Подключение для Cucumber. Create a file features/support/webmock.rb with the following contents:
 require 'webmock/cucumber'
+
 # Подключение для MiniTest. Add the following code to test/test_helper:
 require 'webmock/minitest'
+
 # Подключение для Test::Unit. Add the following code to test/test_helper.rb
 require 'webmock/test_unit'
+
 # Подключение для Outside a test framework. You can also use WebMock outside a test framework:
 require 'webmock'
 include WebMock::API
@@ -49,7 +53,7 @@ RSpec.describe 'translate' do
 
     # данные иммитирующие ответ сервера, которые мы как бы получим в ответ на запрос, соответсвующие данным, которые присылает обычно https://api.funtranslations.com/
     data = {
-      success: {total: 1},
+      success: { total: 1 },
       contents: {
         translated: 'A planet, master Obi Wan lost',
         text: text,
@@ -62,8 +66,8 @@ RSpec.describe 'translate' do
       :post, 'https://api.funtranslations.com/translate/yoda.json'
       # параметры при которых заглушка будет работать, тоесть сработет только при пост-запросе на этот ЮРЛ
     )
-    .with(body: {text: text})                      # данные которые отправляем "на сервер"
-    .to_return(status: 200, body: JSON.dump(data)) # ответ, который "вернет" сервер в формате JSON
+    .with(body: { text: text })                      # данные которые отправляем "на сервер"
+    .to_return(status: 200, body: JSON.dump(data))   # ответ, который "вернет" сервер в формате JSON
 
     # Используем метод, посылающий запрос, для которого сработает заглушка webmock, вместо реального запроса
     translation = translate(:yoda, text) # передаем эндпоинт и текст
@@ -74,7 +78,7 @@ RSpec.describe 'translate' do
 end
 
 
-# Если тест не пройдет Webmock даст развернутый ответ почему не прошел и посоветует исправления(на хедеры при проверке ему пофиг, если мы их явно не проаеряем, так что можно игнорить совет добавить их)
+# Если тест не пройдет Webmock даст развернутый ответ почему не прошел и посоветует исправления(на хедеры при проверке ему пофиг, если мы их явно не проверяем, так что можно игнорить совет добавить их)
 #=>
 # Failure/Error: translation = translate(:yoda, text)
 #

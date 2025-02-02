@@ -4,6 +4,11 @@ RSpec.describe 'this is a testing suite' do
 end
 
 RSpec.describe 'this is a testing suite' do
+  it 'some' do
+  end
+end
+
+RSpec.describe 'this is a testing suite' do
   it 'self.run' do
     result = Demo.run
     p result == 43
