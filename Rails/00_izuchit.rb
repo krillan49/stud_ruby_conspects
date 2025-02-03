@@ -3,6 +3,10 @@
 # 2. https://softwareengineering.stackexchange.com/questions/230307/mvc-what-is-the-difference-between-a-model-and-a-service       отличия модели и сервиса
 
 
+# История Рэилс, отличие разных верий
+# https://habr.com/ru/articles/871710/
+
+
 # Пример из blog2(с Devise):
 # При редиректе с fallback_location: происходит почемуто множественный редирект если пользователь не соответсвует фильтру:
 class ProtectedController < ApplicationController

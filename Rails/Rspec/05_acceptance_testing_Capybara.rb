@@ -44,7 +44,9 @@ puts '                                         Capybara синтаксис'
 # acceptance:   feature    ->   scenario
 
 # 'feature -> scenario' - это фишка Capybara аналог 'describe -> it'.
+# 'feature -> context -> scenario'
 # feature  - особенность(имеется ввиду какаято функциональность)
+# context  - аналог вложенных describe
 # scenario - сценарий(способ использования функциональности)
 
 # Пример: Для контактной формы существует 2 сценария:
@@ -237,6 +239,93 @@ end
 
 
 
+puts '                                         Хэлперы действий'
+
+# visit - переходим по ЮРЛ
+visit podcast_path(podcast)
+
+# click_link - переход по ссылке
+click_link "Назад"
+
+# fill_in - заполняем поле
+fill_in 'podcast[title]', with: '1' # идентифицируем по name и заполняем значением '1'
+fill_in 'podcast[title]', with: podcast.title # идентифицируем по name и заполняем значением title из сущности podcast
+
+# attach_file - ?? подгружаем фаил в тег поля которое принмает фаил ??
+attach_file('podcast[photo]', Rails.root.join('spec/fixtures/files/sample_image.png'))
+attach_file('podcast[audio]', Rails.root.join('spec/fixtures/files/sample_audio.mp3'))
+
+# click_button - нажимаем на кнопку
+click_button(id: "subscribe_button") # выбираем кнопку по id
+
+
+
+puts '                                             Матчеры'
+
+# have_content - проверяем наличие текста
+expect(page).to have_content("Your podcast was successfully created.") # сравниваем с текстом
+expect(page).to have_content("Редактировать Podcast: #{podcast.title}")
+expect(page).to have_content(podcast.description) # тут сравниваем со значением поля description из сущьности podcast
+
+# have_selector - проверяем по наличию селектора
+expect(page).to have_selector("#random_podcast") # id со значением random_podcast
+expect(page).to have_selector(".authentication") # class со сзначением authentication
+expect(page).to have_selector("nav.navbar")      # тег nav с классом navbar
+expect(page).to have_selector("turbo-frame#podcast_frame") # тег turbo-frame с id podcast_frame
+expect(page).to have_selector("div.alert.alert-warning", text: "No Photo Available!") # цепочка селекторов и ?text?
+expect(page).to have_selector("#flash .flash__message", text: "Successfully sign in!") # ? одновременно id и class ?
+expect(page).to have_selector("label[for='email_address']", text: "Email Address") # тег с атрибутом
+expect(page).to have_selector("input[type='email'][name='email_address'][required][autocomplete='username']") # много атрибутов
+expect(page).to have_selector(".card", count: 3) # хз в чем отличие от have_css ??
+
+# have_css - ? проверяем на наличие полей с селектором в колличестве count штук ?
+expect(page).to have_css('.card',                  count: 10)
+expect(page).to have_css('img.card-img-top',       count: 10)
+
+# have_title - проверяем наличие тега title со значением
+expect(page).to have_title("Podcaster")
+
+# have_link - проверяем по наличию ссылки
+expect(page).to have_link("Podcaster", href: root_path) # ссылка с текстом "Podcaster" и значением href
+expect(page).not_to have_link("Редактировать Podcast", href: edit_podcast_path(podcast))
+expect(page).to have_link('My podcasts', href: podcasts_path(filter: 'my_podcasts')) # еще и с дополнительным параметром в ЮРЛ
+
+# have_button - проеряем наличие кнопки
+expect(page).to have_button('Sign Out') # по тексту кнопки
+expect(page).to have_button(id: "subscribe_button") # по id кнопки
+
+# have_field - проверяем поле ввода ? по значению name ?
+expect(page).to have_field('podcast_photo')
+expect(page).to have_field('podcast[title]')
+
+
+# find_field - для поиска поля, чтобы использовать его в expect
+expect(find_field('podcast[title]').value).to eq(podcast.title)
+
+
+
+puts '                                              Блок within'
+
+# within - ??? тоесть тег с селектором из параметра within включает какоето условие из блока на свое содержание или вложенные теги ???
+within(".authentication") { have_selector('a[btn btn-outline-success]', text: 'register', visible: true) }
+within(".card-group") { expect(page).to have_selector(".card", count: 3) }
+
+RSpec.feature "Sessions#create", type: :feature do
+
+  scenario "User typing wrong data and has error" do
+    within "turbo-frame#podcast_frame" do
+      fill_in "email_address", with: '@jkhgjhvgh.mail'
+      fill_in "password",      with: ''
+
+      click_button "Sign in"
+    end
+
+    expect(page).to have_selector("#flash .flash__message", text: "Wrong email or password")
+  end
+end
+
+
+
 puts '                                         Capybara + Factory Bot'
 
 # На примере того что кнопки редактирования и удаления подкаста может увидить только зарегистрированный пользователь, нужно создать этого пользователя через фабрику и потом им зарегаться
@@ -301,6 +390,10 @@ RSpec.feature "Podcasts#show", type: :feature do
     end
   end
 end
+
+
+
+
 
 
 

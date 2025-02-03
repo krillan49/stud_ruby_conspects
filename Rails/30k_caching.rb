@@ -112,6 +112,45 @@ RSpec.describe SomeClass do
   end
 end
 
+# Пример из silver-palm-tree
+RSpec.feature "Home Page", type: :feature do
+  before do
+    10.times { FactoryBot.create(:podcast) }
+  end
+
+  context "random podcast" do
+    # connect the cache to the tests only in this block
+    let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+    let(:cache) { Rails.cache }
+
+    before do
+      allow(Rails).to receive(:cache).and_return(memory_store)
+      Rails.cache.clear
+    end
+
+    scenario "by default" do
+      visit root_path
+
+      random_podcast_id = Rails.cache.read("random_podcast_id")
+
+      expect(random_podcast_id).to be_present
+      expect(Podcast.exists?(id: random_podcast_id)).to be_truthy
+      expect(page).to have_selector("#random_podcast")
+    end
+
+    scenario "forced" do
+      Rails.cache.write("random_podcast_id", 6, expires_in: 1.days)
+      visit root_path
+
+      random_podcast_id = Rails.cache.read("random_podcast_id")
+
+      expect(random_podcast_id).to eq(6)
+      expect(Podcast.exists?(id: 6)).to be_truthy
+      expect(page).to have_selector("#random_podcast")
+    end
+  end
+end
+
 
 
 
