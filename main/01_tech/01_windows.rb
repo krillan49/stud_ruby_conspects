@@ -73,9 +73,7 @@ end
 
 
 
-puts '                                   Установка системного Руби на Linux'
 
-# $ sudo apt install ruby-full
 
 
 
