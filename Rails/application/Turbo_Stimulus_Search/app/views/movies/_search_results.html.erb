@@ -1,0 +1,23 @@
+<%= movies.count %>
+<!-- movies - переменная переданная в паршал при его рендеринге из контроллера -->
+<% movies.each do |movie| %>
+  <br>
+  <%= link_to highlight(movie.title, params[:title_search]), movie %>
+  <!-- highlight(movie.title, params[:title_search]) - имя ссылки при помощи хэлпера, который подсветит выбранные пользователем в поиске символы в названии фильма -->
+  <!-- movie - ЮРЛ на show.html.erb -->
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->

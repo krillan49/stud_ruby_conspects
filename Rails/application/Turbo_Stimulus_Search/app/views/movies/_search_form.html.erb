@@ -1,0 +1,37 @@
+<!-- Вариант 1: Без Stimulus -->
+<%= form_with url: search_movies_path, method: :post do |form| %>
+  <!-- search_movies_path - хэлпер для /movies/search ЮРЛ экшена search контроллера movies  -->
+  <%= form.search_field :title_search, oninput: "this.form.requestSubmit()" %> <!-- это поле передаст в контроллер символы что вводит пользователь, чтобы найти по ним фильмы -->
+  <!-- :title_search - имя поля для params -->
+  <!-- oninput: "this.form.requestSubmit()" - чтобы отправка запроса (requestSubmit) происходила только по обработчику событий oninput, а не перманентно  -->
+<% end %>
+
+
+<!-- Вариант 2: С использованием Stimulus контроллеров -->
+<%= form_with url: search_movies_path, method: :post, data: {controller: "debounce", debounce_target: "form" } do |form| %>
+  <!-- data: {controller: "debounce", debounce_target: "form" } - тут подключаевмся к контроллеру javascript/controllers/debounce_controller.js и передаем в него ?объект? формы -->
+  <%= form.search_field :title_search, data: { action: "input->debounce#search" } %>
+  <!-- data: { action: "input->debounce#search" } - при вводе символов запросы пойдут в экшен search стимулус-контроллера debounce на стороне браузера, а не на бэкенд -->
+<% end %>
+
+
+<!-- Блок куда будет рендериться результат из контроллера, тоесть паршал _search_results.html.erb со списком подходящих под поиск фильмов -->
+<div id="search_results"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  -->

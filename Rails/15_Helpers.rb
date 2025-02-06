@@ -245,11 +245,16 @@ f.collection_select :tag_ids, objcts, :id, :title, {}, multiple: true
 # {}             - пустые опции (?? отделяют основные и дополнительные опции хелпера ??)
 # multiple: true - ставит атрибут multiple в селектор (выбор множества вариантов через контрл)
 
-# f.check_box - вспомогательная функция для чекбокса
+# check_box - вспомогательная функция для чекбокса
 f.check_box :remember_me, class: 'form-check-input', value: '1'
 # value: '1' - задаем значение которое будет передавать чекбокс: '0' - галочка не поставлена, '1' - галочка поставлена. Это можно посмотреть вернув render plain: params.to_yaml в экшене create, там среди прочего будет remember_me: '0'
 f.label :remember_me, 'some message', class: 'form-check-label'
 # 'some message' - подпись рядом с чекбоксом например запомнить на сколькото дней
+
+# search_field - вспомогательная функция для поля поиска ??
+form.search_field :title_search, oninput: "this.form.requestSubmit()"
+# :title_search - имя поля для params
+# oninput: "this.form.requestSubmit()" - чтобы отправка запроса (requestSubmit) происходила только по обработчику событий oninput, а не перманентно
 
 
 
@@ -299,6 +304,9 @@ debug(params)
 Time.current - password_reset_token_sent_at <= 60.minutes
 # days - метод создаёт объект ActiveSupport::Duration с количеством дней, умноженным на 24 часа
 Time.now - 1.days
+
+# highlight - хэлпер, который принимает 2 параметра-строки, выводит 1ю стрку и подсвечивает/выделяет при помощи CSS в ней вторую строку, если она входит в 1ю
+highlight(movie.title, params[:title_search])
 
 
 

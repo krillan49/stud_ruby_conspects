@@ -276,6 +276,9 @@ Barber.exists?
 # Чейнинг - запись методов подряд(но нужно чтобы возвращали то что подходит ??)
 Answer.where(question: @question).limit(2).order(created_at: :desc)
 
+# Запрос для поиска с LIKE
+@movies = Movie.where('title ILIKE ?', "%#{params[:title_search]}%")
+
 
 
 puts '                                    Вывод данных из БД в представления'
