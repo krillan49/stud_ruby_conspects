@@ -158,6 +158,38 @@ p Result.failure('Pidor') #=> {:success=>false, :data=>"Pidor"}
 
 
 
+puts '                                    Алиас для статического метода'
+
+# В Ruby можно создать алиас для статического метода (метода класса) с помощью метода `alias_method`. Однако, так как `alias_method` работает только с методами экземпляра, для создания алиаса статического метода вам нужно использовать `singleton_class` объекта класса. Вот пример, как это можно сделать:
+class MyClass
+  def self.original_method
+    puts "Это оригинальный метод."
+  end
+end
+
+# Создание алиаса для статического метода
+class MyClass
+  singleton_class.send(:alias_method, :alias_method_name, :original_method)
+end
+
+# Вызов оригинального метода
+MyClass.original_method # => Это оригинальный метод.
+
+# Вызов метода через алиас
+MyClass.alias_method_name # => Это оригинальный метод.
+
+# В этом примере мы создали класс `MyClass`, определили в нём статический метод `original_method`, а затем создали для него алиас `alias_method_name`, используя `singleton_class.send(:alias_method, ...)`. Теперь оба метода, оригинальный и алиас, могут быть использованы для вызова одного и того же кода.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
