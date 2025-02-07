@@ -256,7 +256,15 @@ attach_file('podcast[photo]', Rails.root.join('spec/fixtures/files/sample_image.
 attach_file('podcast[audio]', Rails.root.join('spec/fixtures/files/sample_audio.mp3'))
 
 # click_button - нажимаем на кнопку
-click_button(id: "subscribe_button") # выбираем кнопку по id
+click_button 'Submit'                # Нажимает на кнопку с текстом "Submit"
+click_button(id: "subscribe_button") # Нажимает на кнопку с id "subscribe_button"
+click_button name: 'submit'          # Нажимает на кнопку с name "submit"
+click_button value: 'Continue'       # Нажимает на кнопку со значением атрибута value "Continue"
+click_button class: 'btn-primary'    # Нажимает на кнопку с классом "btn-primary"
+click_button 'Login', class: 'btn'   # Можно комбинировать разные атрибуты
+
+# Альтернатива для click_button - можно использовать `find` для более сложных выборок и затем нажать на кнопку
+find('button.submit').click  # Нажимает на кнопку с селектором CSS "button.submit"
 
 
 
