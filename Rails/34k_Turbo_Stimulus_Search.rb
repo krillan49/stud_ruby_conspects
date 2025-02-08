@@ -89,6 +89,46 @@ puts "                                           Добавление Stimulus"
 
 
 
+puts '                                         Особенности тестирования'
+
+# 1. Убедиться, что Capybara и RSpec правильно настроены для работы с JavaScript, особенно в контексте использования Turbo:
+
+# В Gemfile должны быть следующие гемы:
+group :test do
+  gem 'rspec-rails'
+  gem 'capybara'
+  gem 'selenium-webdriver' # Для работы с JavaScript
+  gem 'webdrivers'         # Для автоматического управления драйверами браузеров (Не использовал)
+end
+
+# (Не добавлял) spec/rails_helper.rb добавьте следующие настройки для Capybara:
+require 'capybara/rspec'
+Capybara.configure do |config|
+  config.default_driver = :selenium_chrome    # или :selenium_chrome_headless для безголового режима
+  config.javascript_driver = :selenium_chrome # Убедитесь, что JavaScript работает
+  config.app_host = 'http://localhost:3000'   # Укажите базовый URL вашего приложения
+end
+
+
+# 2. Создание теста с поддержкой JavaScript. Чтобы тесты нормально работали с JavaScript, нужно использовать "js: true" для сценариев, которые требуют выполнения JavaScript. Например:
+RSpec.feature "Movie search", type: :feature, js: true do # js: true - добавляем эту опцию
+  scenario "User searches for movies" do
+    Movie.create!(title: "Inception")
+    Movie.create!(title: "Interstellar")
+    Movie.create!(title: "The Dark Knight")
+
+    visit root_path
+
+    fill_in 'title_search', with: 'Inception'
+    click_button 'Search' # Если есть кнопка для отправки формы (В нашем примере нет, тк отправляет само скриптом)
+
+    expect(page).to have_selector('#search_results', wait: 0.6)
+    # wait: 0.6 - подождать (в секундах) перед выполнением этого матчера, если в скрипте есть таймаут, достаточно подожать в 1м матчере
+    expect(page).to have_content('Inception')
+    expect(page).not_to have_content('Interstellar')
+    expect(page).not_to have_content('The Dark Knight')
+  end
+end
 
 
 

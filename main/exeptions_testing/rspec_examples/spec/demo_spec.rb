@@ -1,3 +1,4 @@
+# подключаем юнит:
 # require_relative '../demo'
 
 RSpec.describe 'this is a testing suite' do
