@@ -56,6 +56,15 @@ Rails.application.routes.draw do
 
   resources :tags, only: :index # можно задавать без массива, если одно значение
 
+  # Добавить маршруты нестандартного экшена search в контроллере movies
+  resources :movies do
+    collection do
+      # collection - ??? нужно чтобы добавить маршрут к стандартным resources маршрутам к новому нестандартному экшену контроллера movies ???
+      post :search # тоесть маршрут /movies/search(.:format) для POST запроса к экшену search
+    end
+  end
+  # Так же закрепился хэлпер search_movies_path для /movies/search ЮРЛ экшена search контроллера movies
+
 
   # 4. Можно прописать маршруты и отдельно вручную, в том числе и REST. resources / resource - это не более чем просто синтаксический сахар. Нет никакой разницы между написаннным выше и такой конструкцией:
 
@@ -91,6 +100,9 @@ Rails.application.routes.draw do
   # Все маршруты для любого уровня вложенности чтоб их принимал один контроллер?
   get '/*pages/', to: 'pages#show'
   # И в параметрах приходит условно { pages: 'page1/страница2/.../страница4' }
+
+  # Добавить какие-то изменяемые доп параметиры в маршрут (:query)
+  get 'search/:query', to: 'search#search', as: 'search_entities'
 
 end
 

@@ -223,9 +223,12 @@ form_with url: questions_path, method: :get do |f|
 end
 
 
-# Текстовое поле с аттрибутами валидации на стороне браузера
+# text_field - генерирует текстовое поле с аттрибутами валидации на стороне браузера
 f.text_field :title, required: true, minlength: 2, placeholder: 'Title'
 # required: true, minlength: 2  - атрибуты required="required" minlength="2" будут добавлены в тег, при помощи них браузер будет проводить дополнительную валидацию поля на стороне клиента
+
+# hidden_field - генерирует скрытое текстовое поле
+form.hidden_field :your_hidden_attribute, value: "значение передаваемое на сервер"
 
 # email_field - генерирует поля для ввода имэйла с базовой провекой на соответсвие текста имэйлу
 f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-lg'

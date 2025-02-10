@@ -32,7 +32,8 @@ puts "                                            Создание поиска"
 resources :movies do
   collection do
     # collection - ??? нужно чтобы добавить маршрут к стандартным resources маршрутам к новому нестандартному экшену контроллера movies ???
-    post :search # тоесть маршрут /movies/search(.:format) для POST запроса к экшену search. POST лучше для турбостримов, при обычном вароике можно GET
+    post :search # тоесть маршрут /movies/search(.:format) для POST запроса к экшену search.
+    # POST лучше для турбостримов(тк с гет какието проблемы могут быть), при обычном вароике можно GET
   end
 end
 # Так же закрепился хэлпер search_movies_path для /movies/search ЮРЛ экшена search контроллера movies
@@ -86,6 +87,39 @@ puts "                                           Добавление Stimulus"
 
 
 # 2. _search_form.html.erb - изменим форму поиска, чтобы она передавала запросы в javascript/controllers/debounce_controller.js а не на бэкенд
+
+
+
+puts '                      Вариант того же но отдельным контроллером и вьюхами для поиска'
+
+# Назвать контроллер можно `SearchesController`, во множественном числе если тк может быть несколько методов для поиска.
+class SearchesController < ApplicationController
+  def index
+    # для отображения формы поиска и вывода результатов (тут не нужен тк Турбо)
+  end
+
+  # для обработки поисковых запросов. Это может быть методом, который будет принимать параметры для различных сущностей
+  def search
+    @query = params[:query]
+    # Логика поиска по Podcast, Movie, Song и т.д.
+    @podcasts = Podcast.where('title LIKE ?', "%#{@query}%")
+    @movies = Movie.where('title LIKE ?', "%#{@query}%")
+    @songs = Song.where('title LIKE ?', "%#{@query}%")
+  end
+end
+
+
+# Маршруты вариант 1: для одной сущности
+Rails.application.routes.draw do
+  get 'search', to: 'search#index', as: 'search' # `GET /search` - для отображения формы поиска (тут не нужен тк Турбо)
+  post 'searches/results', to: 'searches#search', as: 'search_results' #`POST /search/results` - для обработки запроса и вывода результатов.
+end
+
+# Маршруты вариант 2: для многих сущностей. Если делать более RESTful подход к поиску, можено использовать пути с параметрами
+Rails.application.routes.draw do
+  get 'searches/:query', to: 'searches#search', as: 'search_entities' # только post для Турбо
+end
+# В этом случае, URL может выглядеть так: `/search/podcast`, `/search/movie`, `/search/song`, и в контроллере можно обрабатывать различные типы сущностей основываясь на переданном параметре.
 
 
 
