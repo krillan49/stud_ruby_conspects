@@ -61,8 +61,8 @@ end
 
 # В модели User добавим ассоциации и дополнительные методы для подписки на подкаст:
 class User < ApplicationRecord
-  has_many :podcasts           # Один пользователь может иметь много подкастов
-  has_many :subscriptions      # Связь с промежуточной таблицей подписок
+  has_many :podcasts, dependent: :destroy           # Один пользователь может иметь много подкастов
+  has_many :subscriptions, dependent: :destroy      # Связь с промежуточной таблицей подписок
   has_many :subscribed_podcasts, through: :subscriptions, source: :podcast # Подкасты на которые подписан юзер
 
   # Метод для подписки на подкаст(?? чето сомнительный не проще ли писать в контроллере)
@@ -78,8 +78,8 @@ end
 
 # В модели Podcast добавим ассоциации и дополнительный метод для колличества подписчиков подкаста:
 class Podcast < ApplicationRecord
-  belongs_to :user             # Каждый подкаст принадлежит одному пользователю
-  has_many :subscriptions      # Связь с промежуточной таблицей подписок
+  belongs_to :user                                  # Каждый подкаст принадлежит одному пользователю
+  has_many :subscriptions, dependent: :destroy      # Связь с промежуточной таблицей подписок
   has_many :subscribers, through: :subscriptions, source: :user # Подписчики подкаста
 
   # Метод для получения всех подписчиков подкаста(?? чето сомнительный не проще ли писать subscribers.count)
