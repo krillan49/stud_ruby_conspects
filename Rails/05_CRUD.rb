@@ -62,6 +62,9 @@ class ArticlesController < ApplicationController
     render json: some
     # не нужно представление some/index.json тк это просто рендер json на страницу
 
+    # Рендер обычного текста
+    render text: "Some text"
+
     # по умолчанию(если сами не пропишем render) рэндерит представление с именем данного экщена из директории с именем данного контроллера, тоесть тут create.html.erb
   end
 end
@@ -77,6 +80,9 @@ class ContactsController < ApplicationController
   end
 
   def create # принимает данные, введенные пользователем в форму
+    # можно в принципе принимать в столик или хэш как в синатре с АР и это норм сработает
+    @contact = Contact.create(params[:contact][:email], params[:contact][:message])
+
     @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
 
     # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого создадим приватный метод contact_params:
@@ -112,7 +118,7 @@ def create
   @contact = Contact.new(contact_params)
   if @contact.valid? # это можно не писать и тут сразу написать @contact.save
     @contact.save # содается сущность и строка в БД(создастся до возврата вида)
-    # по умолчанию(если сами не пропишем render) рэндерит представление с именем данного экщена из директории с именем данного контроллера, тоесть create.html.erb
+    # по умолчанию(если сами не пропишем render) рэндерит представление с именем данного экщена из директории с именем данного контроллера, тоесть create.html.erb, либо выдает ошибку если его нет
   else
     # а если не валидно отрендерим/вернем нашу форму new.html.erb(но уже на URL /contacts) при помощи render, с переменными уже из данного экшена create, а не из new:
     render 'new'
@@ -200,7 +206,7 @@ class ArticlesController < ApplicationController
     @article = Article.new(article_params)
     if @article.save
       redirect_to @article  # перенаправляет на GET /article/id articles#show. Тогда вид create.html.erb будет уже не нужен.
-      # redirect_to получает сущность из @article и делает редирект по ее айди(те посылает браузеру указание перейти на другую страницу). Редирект происходит на стороне браузера, те новый get-запрос.
+      # redirect_to получает сущность из @article и делает редирект по ее айди(те посылает браузеру указание (с кодом 302) перейти на другую страницу). Редирект происходит на стороне браузера, те новый get-запрос.
       # Так же аргументами redirect_to можно использовать хэлперы путей или сами URL адреса
     else
       render action: 'new'

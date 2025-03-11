@@ -1,13 +1,13 @@
-# стандартная конфигурация по умолчанию(sqlite3)
+# стандартная конфигурация по умолчанию
 default: &default
-  adapter: sqlite3
+  adapter: sqlite3 # опция, которая говорит Рельсам использовать в качестве СУБД sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>   # колличество потоков
   timeout: 5000                                       # таймаут на подключение
 
 # как будут работать БД в режиме/среде development
 development:
   <<: *default                      # за основу берется default конфиг(тот что описан выше)
-  database: db/development.sqlite3  # расположение, название и расширение для БД
+  database: db/development.sqlite3  # задает расположение, название и расширение для конкретной БД
 
 test:
   <<: *default

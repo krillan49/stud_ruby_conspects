@@ -71,7 +71,11 @@ Rails.application.routes.draw do
   get '/questions', to: 'questions#index'
   get '/questions/new', to: 'questions#new'
   post '/questions', to: 'questions#create'
+  get '/questions/:id', to: 'questions#show'
   get '/questions/:id/edit', to: 'questions#edit'
+  patch '/questions/:id', to: "questions#update"
+  delete '/questions/:id', to: "questions#destroy"
+  # :id - в Рэилс работает так, что все что идет начиная от этого символа(тут после questions/) и до следующего "/" будет доступно по этому ключу (тут :id) в объекте params
 
   # или такой (?? адреса через хэлперы ??):
   get "semester" => "semesters#show"
