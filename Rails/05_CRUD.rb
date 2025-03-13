@@ -80,13 +80,15 @@ class ContactsController < ApplicationController
   end
 
   def create # принимает данные, введенные пользователем в форму
-    # можно в принципе принимать в столик или хэш как в синатре с АР и это норм сработает
+    # можно в принципе принимать в столбик или хэш как в синатре с АР и это норм сработает, но так никто не делает
     @contact = Contact.create(params[:contact][:email], params[:contact][:message])
 
-    @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create.
+    # Вместо этого можно передать весь хэш params[:contact] сразу, тк выше один фиг хэш
+    @contact = Contact.new(params[:contact]) # Но если принимать параметры так, то при нажатии кнопки формы вылезет ошибка: ActiveModel::ForbiddenAttributesError in ContactsController#create, тк это не безопасно, тк там могут быть всякие параметры отправленные злоумышоенниками, а мы их не заметим тк не прописываем вручную
 
-    # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого создадим приватный метод contact_params:
+    # Атрибуты params[:some] по умолчанию запрещены и их нужно разрешить, для этого создадим приватный метод contact_params, но можно былоб прописать и тут:
     @contact = Contact.new(contact_params) # вместо params[:contact] вызываем наш разрешающий метод
+    @contact = Contact.new(params.require(:contact).permit(:email, :message)) # либо прописываем тут
 
     @contact.save
   end

@@ -48,7 +48,11 @@ end
 
 puts '                         Встроенные routes хэлперы(для URL) - именнованные маршруты'
 
+# (??  Перенести в Routes ??)
+
 # Уже сгенерированные для данного приложения именнованные маршруты можно посмотреть в routes, или открыв несуществующий URL, или по адресу http://localhost:3000/rails/info.
+
+# Хэлперы динамически создаются как только мы прописываем соответсвующие пути в routes.rb
 
 # Именнованные маршруты удобно использовать с хелпером link_to, чтобы строить теги <a> для навигации внутри приложения.
 
@@ -73,7 +77,9 @@ url_for edit_password_reset_url(user: {password_reset_token: @user.password_rese
 # 1. URL-хэлперы могут генерировать маршруты с айдмшниками определенных сущьностей
 
 # Маршрут для определенной сущности:
-question_path(@question) # Получим URL /questions/2
+question_path(id: @question.id) # Получим URL /questions/2
+question_path(@question.id)     # Получим URL /questions/2
+question_path(@question)        # Получим URL /questions/2
 
 # Маршрут из 2х сущьностей, например для one-to-many. передаем 2 параметра тк для URL нам нужны оба айдишника, важно сохранить порядок чтоб обладающая сущность стояла первой:
 question_answer_path(@question, answer) # Получим URL /questions/2/answers/2
@@ -173,6 +179,7 @@ link_to "Sign In", new_user_session_path
 # new_user_session_path  - URL адрес ссылки, тоесть значение атрибута href
 
 # URL можно прописать харлкодом
+link_to "Q1", '/questions/1'
 link_to "Sign In", '#'
 # '#' - URL для ссылки в виде строки
 
@@ -207,6 +214,8 @@ form_with model: @item, data: {'turbo': false} do |f|
 end
 # model: @item           - задает URL адрес и метод, чтобы форма была отправлена в нужный контроллер с нужным экшеном
 # data: {'turbo': false} - отключаем турбо если это нужно
+# Если объект был пустой, типа Item.new, тогда форма будет иметь пустые поля (Метод и URL по умолчанию POST и /items), если объект имеет поля, тоесть эта сущьность уже есть в БД, то поля формы будут заполнены значениями объекта (Метод и URL по умолчанию PATCH/PUT и /items/:id). 
+# Генерит объект класса ФрмБилдер и передает его в переменную блока, от которой можно будет вызывать его методы для создания полей и кнопок, ктторые будут соответсвовать(name, id) объекту из model:
 
 # Ассинхронная/синхронная форма - Атрибут local для формы form_with:
 form_with model: @question, local: false
@@ -237,7 +246,7 @@ f.email_field :email, placeholder: 'E-mail', class: 'form-control form-control-l
 f.file_field :archive, class: 'form-control'
 
 # text_area - хэлпер генерирует поле текстареа
-f.text_area :body, required: true, minlength: 2
+f.text_area :body, required: true, minlength: 2, rows: 5
 
 # collection_select - хэлпер селектора, который может принимать коллекцию сущностей и подставлять ее свойства
 f.collection_select :tag_ids, objcts, :id, :title, {}, multiple: true
