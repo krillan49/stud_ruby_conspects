@@ -12,7 +12,7 @@
     <!-- иконка -->
     <%= favicon_link_tag 'favicon.png' %>
 
-    <!-- стили -->
+    <!-- стили из application.css или application.scss, (?Если исользуется Sprockets Assets Pipeline то эти фаилы называются манифестами тк можно в них подключить другие css-фаилы?) -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
