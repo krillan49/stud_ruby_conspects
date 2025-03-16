@@ -7,13 +7,14 @@
 
 <%= form_with url: session_path do |f| %>
 <!-- url: session_path  - используем URL так как никакой таблицы, модели и соотв объекта у нас нет, соответсвенно и значения атрибутов name будут простыми а не хэшем -->
+<!-- scope: :session  - можно добавить если нужно чтобы name имело стандартный вид, например "session[email]", тк без него без объекта будкт просто "email" -->
 
   <!-- Будем делать аутотентификацию пользователя при помощи имэйла и пароля -->
 
   <div>
     <%= f.label :email %>
     <%= f.email_field :email, value: params[:email], placeholder: 'E-mail', class: 'form-control form-control-lg' %>
-    <!-- value: params[:email]  - значение поля, чтоб не вводить заново, если при входе ввели неправильный пароль -->
+    <!-- value: params[:email]  - значение поля, чтоб не вводить заново, если при входе ввели неправильный пароль, потому что нет объекто и само не добавляется -->
     <!-- <input placeholder="E-mail" class="form-control form-control-lg" type="email" name="email" id="email" /> -->
   </div>
 
