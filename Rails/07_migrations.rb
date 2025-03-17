@@ -111,6 +111,12 @@ end
 # > rake db:migrate
 
 
+# Чтобы автоматически сгенерилась миграция с кодом можно написать в генераии например
+# > rails g migration add_username_to_users username:string
+# Тогда создаст миграцию сразу с полем
+add_column :users, :username, :string
+
+
 
 puts '                                         add_reference'
 

@@ -189,6 +189,9 @@ link_to "Q1", '/questions/1'
 link_to "Sign In", '#'
 # '#' - URL для ссылки в виде строки
 
+# :back - этот параметр, поставленный вместо пути укажет что ссылка должна при помощи ЖС отправлять на предыдущую страницу с которой переши на данную
+link_to "Go Back", :back
+
 # target: '_blank' - для открытия на другой вкладке
 link_to 'Reset my password', edit_password_reset_url, target: '_blank'
 

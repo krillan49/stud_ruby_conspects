@@ -30,6 +30,8 @@
   <%= link_to "Destroy", article_path(article), data: {turbo_method: :delete, turbo_confirm: 'Действительно удалить?'} %>
   <!-- Альтернативный вариант использовать хэлпер button_to вместо link_to, но тогда будет тег кнопки а не ссылки -->
   <%= button_to "Destroy", article_path(article), method: :delete, data: { confirm: 'Действительно удалить?'} %>
+  <!-- Альтернативный вариант 2: ?? form создает форму, в которой жс обработчик спрашивает а алерт сообщении ?? -->
+  <%= button_to "Destroy", article_path(article), method: :delete, form: { data: { turbo_confirm: 'Действительно удалить?'} } %>
 
     <!-- Ссылка выглядит так(не добавляет форму (?? в Рэилс 7 ??)): -->
       <a data-confirm="Действительно удалить?" rel="nofollow" data-method="delete" href="/articles/1">Destroy article</a>

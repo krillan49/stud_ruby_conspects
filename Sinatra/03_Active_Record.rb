@@ -388,11 +388,23 @@ class Client < ActiveRecord::Base
   validates :password, length: { in: 6..20 }          # in - допустимая длинна находится в интервале
   validates :registration_number, length: { is: 6 }   # is - точное указание длинны
 
-  # inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
-  validates :size, inclusion: { in: %w(small medium large), message: "%{value} is not a valid size" }
+  # uniqueness - проверка на уникальность, что такого имэйла нет в БД, АР отправит в базу запрос и проверит
+  validates :email, uniqueness: true
 
   # numericality - проверка, введены ли в поле числа
   validates :some, numericality: true
+
+  # confirmation - проверка на совпадение 2х полей в фрме (тут password и password_confirmation)
+  validates :password, confirmation: true
+
+  # inclusion - проверяем по наличию необходимой подстроки(имэил лучше всего проверять по наличию '@')
+  validates :size, inclusion: { in: %w(small medium large), message: "%{value} is not a valid size" }
+
+  # format - проверка на соответсвие регулярному выражению
+  validates :nickname, format: { with: /\A[a-z_]+\z/ }
+
+  # можно много условий в одно поле сразу, например
+  validates :email, presence: true, uniqueness: true, email: true
 end
 # если больше ничего не добавлять для валидации в программе, то будет просто не сохранять в БД, если проверка не пройдена, те метод вернул false, но чтобы ошибка както отображалась, нужно это дополнительно проверить.
 
