@@ -198,6 +198,23 @@ end
 
 
 
+puts '                                 Последовательность вызова колбеков'
+
+# before_validation
+# ... 1я валидация ...
+# after_validation
+# before_validation
+# ... 2я валидация ...
+# after_validation
+# before_save
+# before_create / before_update
+# --- создание / изменение строки в БД ---
+# after_create / after_update
+# after_save
+
+
+
+
 puts '                           Пример колбека для перевода ника в нижний регистр'
 
 class User < ApplicationRecord

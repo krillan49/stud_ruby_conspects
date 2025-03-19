@@ -88,10 +88,13 @@ p fizz #=> false
 puts '                                             NilClass'
 
 # Тип данных Nil - пустое значение переменной
-ni = nil
+# nil - ничто, пустой объект
+
+n = nil
 puts n #=>
 p n #=> nil
 
+p nil.class #=> NilClass
 p nil.to_i #=> 0
 
 

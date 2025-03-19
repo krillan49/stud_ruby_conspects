@@ -154,6 +154,11 @@ t.integer "user_id"
 t.index ["user_id"], name: "index_articles_on_user_id"
 
 
+# Можно сразу прописать связь в генераторе, что не писать ее руками в миграции
+# $ rails g migration AddUserToQuestion user:references
+add_reference :questions, :user, index: true, foregin_key: true
+
+
 
 puts '                                 Методы up, down и change_column_default'
 

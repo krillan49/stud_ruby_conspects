@@ -242,6 +242,12 @@ b.update :name => 'Vasya'
 # destroy - далить строку
 b.destroy
 
+# destroy_all - очищает всю таблицу
+Barber.destroy_all
+
+# reload - обновитт у объекта значения всех свойств взяв их из БД
+b.reload
+
 
 # 2. Методы модели(методы класса) для SELECT забросов (Read - тоесть R в CRUD):
 
@@ -281,6 +287,10 @@ Answer.where(question: @question).limit(2).order(created_at: :desc)
 
 # Запрос для поиска с LIKE
 @movies = Movie.where('title ILIKE ?', "%#{params[:title_search]}%")
+
+
+# Можно применять и обывчный рубикод, например
+User.all.map(&:username) #=> ['Rick', 'Roy', 'Lisa']
 
 
 
@@ -405,6 +415,10 @@ class Client < ActiveRecord::Base
 
   # можно много условий в одно поле сразу, например
   validates :email, presence: true, uniqueness: true, email: true
+
+  # можно много полей записать в 1 validates, если проверяеи их все по одинаковым условиям, тоесть логика наоборот - один метод для одного(?) условия и многих полей (?? Только старые версии ??)
+  validates :email, :nickname, presence: true
+  validates :email, :nickname, uniqueness: true
 end
 # если больше ничего не добавлять для валидации в программе, то будет просто не сохранять в БД, если проверка не пройдена, те метод вернул false, но чтобы ошибка както отображалась, нужно это дополнительно проверить.
 

@@ -48,6 +48,8 @@ end
 class Comment < ApplicationRecord
   belongs_to :article # модель создалась с ассоциацией article. Тоесть комментарии принадлежат статье. Можно добавлять вручную если в генераторе не указать article:references
   # Comment.find(id).article - теперь можно обращаться от любого коммента к статье, которой он пренадлежит, через метод article
+
+  validates :article, presence: true # можно провалидировать, что нельзя создать коммент у которого нет айди статьи
 end
 # > rails db:migrate
 
@@ -104,6 +106,10 @@ a = q.answers.build body: "My first answer" # создание методом bu
 a.save #=> true #->
 # INSERT INTO "answers" ("body", "question_id", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["body", "My first answer"], ["question_id", 2], ["created_at", "2023-11-01 08:29:29.370745"], ["updated_at", "2023-11-01 08:29:29.370745"]]
 q.answers #=> [ #<Answer:0x0000024c7358dc90 id: 1, body: "My first answer", question_id: 2, created_at: Wed, 01 Nov 2023 08:29:29.370745000 UTC +00:00, updated_at: Wed, 01 Nov 2023 08:29:29.370745000 UTC +00:00>]
+
+# Изменим значение поля question_id у первого ответа в коллекции
+q.answers[1].question = Question.first
+q.answers[1].save
 
 
 # build и new работают с ассоциациями одинаково ?? Для рельсов 2.2 и более поздних версий new и build делают то же самое для отношений has_many и has_and_belongs_to_many.
