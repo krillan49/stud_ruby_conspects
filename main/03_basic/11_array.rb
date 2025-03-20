@@ -2,7 +2,7 @@ puts '                                           Array (Массивы)'
 
 # Массивы используются для представления последовательности данных, элементов идущих по-порядку
 
-# Массивы Ruby представляют собой упорядоченные коллекции(наборы) объектов любого типа с целочисленным индексом. Каждый элемент массива связан с индексом и ссылается на него. Сам массив как и все в Руби объект.
+# Массивы Ruby - это объекты, представляют собой упорядоченные коллекции(наборы) объектов любого типа с целочисленным индексом. Каждый элемент массива связан с индексом и ссылается на него.
 
 
 
@@ -278,6 +278,8 @@ p default_arr   #=> [5, [4, [3, [2, [1]]]]]
 
 puts '                                         replace(изменение на месте)'
 
+# ?? Это только массив или все объекты ??
+
 matrix = [[1, 2],[3, 4]]
 matrix.replace(matrix.reverse.transpose)
 p matrix #=> [[3, 1], [4, 2]]
@@ -289,6 +291,32 @@ end
 matrix = [[1, 2],[3, 4]]
 izm_na_meste(matrix)
 p matrix #=> [[3, 1], [4, 2]]
+
+
+# replace. способы изменения(изменение на месте)
+class Array
+  def transpose!
+    replace(transpose) # self не обязательны, тк у Array есть методы экземпляра replace и transpose
+    # Альтернаривы: 1. self.replace(self.transpose) 2. self[0..-1] = transpose
+  end
+  # define_method(:transpose!) { replace(transpose) }
+
+  def exchange_with!(arr)
+    clone = arr.clone
+    arr.replace(self.reverse)
+    self.replace(clone.reverse)
+  end
+end
+
+a = [[1, 2, 7], [3, 5, 6]]
+a.transpose!
+p a #=> [[1, 3], [2, 5], [7, 6]]
+
+room_a = ["1", "2", "3", "4", "5", "6", "7"]
+room_b = ["a", "b", "c"]
+room_a.exchange_with!(room_b)
+p room_a# ["c", "b", "a"]
+p room_b# ["7", "6", "5", "4", "3", "2", "1"]
 
 
 
