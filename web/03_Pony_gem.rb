@@ -1,4 +1,4 @@
-puts '                                    Pony gem. send email in Ruby'
+puts '                                              Pony gem'
 
 # https://github.com/benprew/pony/
 # https://www.rubydoc.info/gems/pony/1.12

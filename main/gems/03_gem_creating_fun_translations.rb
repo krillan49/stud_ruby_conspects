@@ -1,4 +1,4 @@
-puts '                                     Создание своего гема'
+puts '                                      Создание своего гема'
 
 # Создадим гем fun_translations - клиент по взаимодействию с API https://api.funtranslations.com/ которое отвечает на запросы по определенным URL для каждого типа переводов, например отправляем текст на https://api.funtranslations.com/translate/yoda.json и получаем в ответ перевод на слэнге Йоды
 
