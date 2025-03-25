@@ -1,12 +1,12 @@
 puts '                                   CRUD. Формы. Валидация. Паршалы'
 
-# CRUD - аббревиатура обозначающая основыные операции:
+# CRUD(L) - аббревиатура обозначающая основыные операции:
 # Create - (new)              .create; .new.save
 # Read   - (index | show)     .where; .find(3); .all
 # Update - (update)
 # Delete - (destroy)
+# List   - (index)            .where; .all                      (иногда добавляется в аббревиатуру отдельно)
 
-# https://github.com/rails/strong_parameters
 # https://guides.rubyonrails.org/action_controller_overview.html#more-examples
 
 
@@ -73,6 +73,8 @@ end
 
 
 puts '                             Запись в БД. Разрешение на использование атрибутов'
+
+# https://github.com/rails/strong_parameters
 
 # /app/controllers/contacts_controller.rb
 class ContactsController < ApplicationController
@@ -320,6 +322,9 @@ class QuestionsController < ApplicationController
   # ...
   def new
     @question = Question.new # создаем пустую сущность в памяти для генерации формы при помощи form_with
+
+    # Но ничто не мещает создать новый заполненный объект, например чтобы подставить данные в форму или еще както его использовать, например:
+    @question = Question.new(title: 'some', body: 'some')
   end
   # ...
   def edit
