@@ -36,6 +36,20 @@ gem "sprockets-rails"
 
 
 
+puts '                                             app/assets'
+
+# app/assets - директория с ассетами в Рэилс
+
+# app/assets/images - директория для картинок
+
+# asset_path - хэлпер возвращает путь к фаилу из директории app/assets/, например чтобы вставить его в какой-то хелпер, ?? по типу фаила определит, что тут надо искать в app/assets/images ??
+asset_path 'avatar.jpg'
+
+# app/assets/stylesheets - директория для css-стилей
+# app/assets/stylesheets/application.css - главный фаил стилей, обычно его и другие css-фаилы называют манифестами (там можно посмотреть синтаксис Sprockets Assets Pipeline подключения css-фаилов в другие css-фаилы)
+
+
+
 puts '                                            package.json'
 
 # package.json - отвечает за решения связанные с фронтэндом, также как Gemfile отвечает за решения связанные с бэкэндом

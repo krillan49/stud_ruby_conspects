@@ -173,8 +173,9 @@ tag.time datetime: question.formatted_created_at do
   # .... какой-то тег например <small><%= question.formatted_created_at %></small>
 end
 
-# image_tag - хэлпер для генерации тега <img ...>
-image_tag "https://www.gravatar.com/avatar.jpg", class: "rounded", alt: 'some'
+# image_tag - хэлпер для генерации тега img, 1м параметром принимает URL картинки, остальные атрибуты передаются хешем
+image_tag "https://www.gravatar.com/avatar.jpg", alt: 'some', class: "rounded"
+image_tag @user.avatar_url, alt: 'some'
 image_tag @podcast.photo
 
 
@@ -333,6 +334,27 @@ Time.now - 1.days
 
 # highlight - хэлпер, который принимает 2 параметра-строки, выводит 1ю стрку и подсвечивает/выделяет при помощи CSS в ней вторую строку, если она входит в 1ю
 highlight(movie.title, params[:title_search])
+
+
+
+puts '                                          Простой кастомный хэлпер'
+
+# Сделаем простой кастомный хелпер, возвращающий URL, чтобы отображать какую-то аватарку пользователя если он не ввел URL на свою аватарку (для какого-то приложения в котором юзер имеет свойство с URL аватарки)
+module ApplicationHelper
+
+  def user_avatar(user)
+    # user - объкт юзера
+    if user.avatar_url.present? # если у юзера есть заполненное свойство с URL аватарки
+      user.avatar_url
+    else
+      asset_path 'avatar.jpg' # вернет URL какой-то базовой аватари из app/assets/images
+    end
+  end
+
+end
+
+# Теперь в представлениях можем использовать этот хелпер и подставлять URL, например в тег img
+image_tag user_avatar(@user), alt: 'some'
 
 
 
