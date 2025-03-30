@@ -4,12 +4,53 @@ puts '                               Monkey-patching(Изменение суще
 
 # Можно переоткрыть существующий класс(в том числе встроенный) и переопределять методы и что угодно в них
 
+
+# Пример 1: встроенный класс String
 class String
-  def downcase # переопределяем метод strip класса String
+  def downcase # переопределяем метод strip класса String, весь остальной класс не изменится
     self[0]
   end
 end
-
 str = 'abc  '
 p str.downcase #=> "a"
 p str.strip  #=> "abc"   # при этом другие методы не переопределяются
+
+
+# Пример 2: Дополнение кастомного класса
+class Some
+  def initialize(n)
+    @n = n
+  end
+end
+# Дополним этот класс добавив в него новые методы
+class Some
+  attr_reader :n
+
+  def plus_1
+    @n += 1
+  end
+end
+some = Some.new(0)
+p some.n    #=> 0
+some.plus_1
+p some.n    #=> 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#

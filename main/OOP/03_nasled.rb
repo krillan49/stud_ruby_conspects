@@ -10,6 +10,10 @@ class Transport # материнский класс
   def say_bip # метод унаследуется
     puts "BipBip"
   end
+
+  def self.some
+    'static'
+  end
 end
 
 class Car < Transport # "<" обозначает, что класс слева (Car) наследует от класса справа (Transport)
@@ -41,6 +45,10 @@ mers.say_bip         #=> "Тыц Тыц"      # унаследованный м�
 # superclass - метод принимает константу класса и возвращает константу его материнского класса
 mers.class.superclass #=> Transport
 mers.class #=> Moto
+
+# Статические методы
+Car.some   #=> "static"
+Moto.some  #=> "static"
 
 
 
@@ -230,6 +238,10 @@ class Song
   def to_info_S
     "Song: #{@name} - #{@artist} (#{@duration}sec)"
   end
+
+  def self.some
+    "static"
+  end
 end
 
 class KaraokeSong < Song
@@ -244,6 +256,11 @@ class KaraokeSong < Song
 
   def to_info_S # метод подкласса с тем же названием что и метод суперкласса может использовать super для передачи к возвращаемого методом суперкласса значения
     "#{super}. Text: #{@lyrics}" # вызываем одноименный метод суперкласса и используем его возврат как значение
+  end
+
+  # В статических методах все точно так же
+  def self.some
+    super + ' karaoke'
   end
 end
 
@@ -267,6 +284,9 @@ p bsong.to_info_S #=> "Song: 225 - My Way (Sinatrasec)"
 
 hsong = HardcodeSong.new("My Way", 225)
 p hsong.to_info_S #=> "Song: My Way - Kroker (225sec)"
+
+# Статический метод
+p KaraokeSong.some #=> "static karaoke"
 
 
 
