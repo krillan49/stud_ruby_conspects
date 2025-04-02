@@ -196,6 +196,9 @@ link_to "Go Back", :back
 # target: '_blank' - для открытия на другой вкладке
 link_to 'Reset my password', edit_password_reset_url, target: '_blank'
 
+# Ссылка содержащая друго тег - просто добавить этот тек в параметр контента
+link_to image_tag("https://www.gravatar.com/avatar.jpg", alt: 'some', class: "rounded"), user_path(@user)
+
 # Ссылка с блоком для тела, которое содержит несколько объектов, которые будут обрамлены тегом ссылки
 link_to questions_path(obj_ids: obj), class: 'nav-link px-2 dropdown-toggle', data: {"bs-toggle": 'dropdown'} do
   tag.div '', class: "flag #{I18n.locale}-flag mt-1"
