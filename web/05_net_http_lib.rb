@@ -4,25 +4,42 @@ puts '                                         Библиотека Net::HTTP'
 
 
 
+puts '                                            Библиотека uri'
+
+# https://ruby-doc.org/stdlib-2.7.0/libdoc/uri/rdoc/URI/Escape.html
+
+require 'uri'
+
+# escape и unescape почемуто выдают ошибку (? проверить на Линукс ?)
+
+URI.escape("http://example.com/?a=\11\15") #=> "http://example.com/?a=%09%0D"
+
+URI.unescape("http://example.com/?a=%09%0D") #=> "http://example.com/?a=\t\r"
+
+
+
 puts '                                              Get запрос'
 
 # Получить страницу по URL адресу и вывести ее на экран:
 
 
 # Вариант1 - со стеками параметров(тут 'fighttime.ru', '/news.html')
-require 'net/http'  # загрузка библиотеки(модуля) Net::HTTP
+require 'net/http'  # загрузка библиотеки(модуля) Net::HTTP  (библиотека отправляющая запросы)
 page = Net::HTTP.get('fighttime.ru', '/news.html') # от модуля Net обращаемся к классу HTTP и его методу get, который принимает 2 параметра - название домена и путь по которому расположена сама страница
-puts page #=> <!DOCTYPE html><html lang=en><meta charset=utf-8><meta ...  # Выводим HTML код запрашиваемой страницы
+puts page #=> <!DOCTYPE html><html lang=en><meta charset=utf-8><meta ...  # Выводим HTML код(так же можно получать XML и JSON итд) запрашиваемой страницы
 
 
 # Вариант 2 - со ссылкой, тк не очень удобно выводить длинные строки параметров
 require 'net/http'
-require 'uri'
+require 'uri' # библиотека чтобы правильно формировать адреса
 # URI - универсальный идентификатор ресурса / Universal Resource Identifier. Он называется так потому, что содержит в себе("http://localhost:4567/login﻿") 4 составляющих: протокол (http), имя хоста (localhost), порт (4567), путь (/login)
 uri = URI.parse "https://fighttime.ru/news.html" # помещаем в переменную новый объект созданный статическим методом
 p uri #=> #<URI::HTTPS https://fighttime.ru/news.html>
 response = Net::HTTP.get(uri) # теперь этот объект мы может задать как параметр
 puts response  #=>  <!DOCTYPE html> <html prefix="og: ... # Ответ почемуто немного другой(изза https ??)
+
+# get_response - ? альтернатива методу get ??
+response = Net::HTTP.get_response(uri)
 
 
 

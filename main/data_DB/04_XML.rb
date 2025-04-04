@@ -42,6 +42,13 @@ doc.elements.each("expenses/expense") do |item|
   amount_by_day[loss_date] += loss_sum  # добавили трату за этот день
 end
 
+# Можно вытаскивать точечно без итерации например так (на другом примере)
+some.root.elements['REPORT/TOWN'].attributes["date"]
+# some - объект REXML::Document, построенный из открытого XML файла
+# root - метод берет от корня XML-документа, ?? тоесть точечно юзаем как дерево, тоесть elements теперь вытягивает только элементы от корня и уже ключем передаем цепочку дальше к конкретному элементу, а итерация тупо все теги ??
+el = some.root.elements['REPORT/TOWN'].elements.to_a[0] # а тут берем не атрибуты и все теги этого уровня и 1й их них ?? вернется объект к которому тоже можно применить elements и attributes
+el.elements['SOME'].attributes["wtf"]
+
 file.close
 
 # сделаем хэш, в который соберем сумму расходов за каждый месяц
