@@ -87,7 +87,7 @@ puts '                                          spec_helper.rb'
 
 puts '                                           Метод describe'
 
-# describe - (описывать) - метод опционально может принимать аргумент строку или константу для названия/описания блока тестов и  блок, который содержит в себе набор тестов (it или specify). Тоесть describe это как бы контейнер для группировки разных тестов в рамках какой-то обощающей их темы
+# describe - (описывать) - метод опционально может принимать аргумент строку или константу для названия/описания блока тестов и  блок, который содержит в себе набор тестов (it или specify). Тоесть describe это как бы контейнер для группировки разных тестов в рамках какой-то обощающей их темы, так же называемый "сценарий"
 
 # spec/demo_spec.rb:
 RSpec.describe 'this is a testing suite' do # 'this is a testing suite' - описание, может быть любым(строка, константа)
@@ -500,6 +500,17 @@ describe Hero do
       @hero.power_up
       expect(@hero.power_up).to eq 120
     end
+  end
+end
+
+
+
+puts '                                             Фишечки'
+
+# Можно генерить в тестах проверки циклами
+it 'should do ok for KROKODILOV - SPECIAL' do
+  [10, 11, 12, 13, 14, 111, 312, 1013, 2414].each do |i|
+    expect("#{i} #{Sklonjator.sklonenie(i, 'krokodil', 'krokodila', 'krokodilov')}").to eq "#{i} krokodilov"
   end
 end
 
