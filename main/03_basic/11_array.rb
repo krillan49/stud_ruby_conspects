@@ -34,11 +34,13 @@ Array(0..9)                        #=> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 arr = :a, "b", 3
 arr #=> [:a, "b", 3]
 
-# Специальный синтаксис для массивов строк(%w) и символов() без необходимости написания кавычек и двоеточий
-%w[Roman 32 Mike]           #=> ["Roman", "32", "Mike"]
-%w(one two three four five) #=> ["one", "two", "three", "four", "five"]
-%i[en ru ua]                #=> [:en, :ru, :ua]
-%i(pzdc dungeon)            #=> [:pzdc, :dungeon]
+# Специальный синтаксис для массивов строк(%w|%W) и символов(%i|%I) без необходимости написания кавычек и двоеточий. При использовании заглавной буквы в массив можно интерполировать значения, например переменные. Число пробелов между элементоми может быть любым
+%w[Roman 32    Mike]               #=> ["Roman", "32", "Mike"]
+%w(one two three four five)        #=> ["one", "two", "three", "four", "five"]
+%W(one #{100} two three four five) #=> ["one", "100", "two", "three", "four", "five"]
+%i[en ru ua]                       #=> [:en, :ru, :ua]
+%i(pzdc dungeon)                   #=> [:pzdc, :dungeon]
+%I[pzdc dungeon #{2}]            #=> [:pzdc, :dungeon, :"2"]
 
 # Создание через eval
 arr = eval("[1,[2,[3]]]") #=> [1, [2, [3]]]

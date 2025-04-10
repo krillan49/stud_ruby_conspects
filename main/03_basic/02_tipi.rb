@@ -94,8 +94,10 @@ n = nil
 puts n #=>
 p n #=> nil
 
+p nil.nil?   #=> true
 p nil.class #=> NilClass
 p nil.to_i #=> 0
+p nil.to_s   #=> ""
 
 
 
@@ -138,7 +140,7 @@ p 5.class                       #=> Integer
 p 5.class.superclass            #=> Numeric
 p 5.class.superclass.superclass #=> Object
 
-# methods - метод, который отображает все методы, которые можно применить к применяемому типу данных
+# methods - метод, который отображает все методы экземпляра, которые можно применить к этому объекту (этого класса)
 "x".methods  # Выведет все доступные операторы методов функций для string
 2.0.methods  # для float
 
