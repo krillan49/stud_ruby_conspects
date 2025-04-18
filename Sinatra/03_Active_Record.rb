@@ -425,7 +425,7 @@ end
 # Если мы проверим незаполненного клиента в tux то:
 c = Client.new     #=> #<Client id: nil, name: nil, phone: nil, datestamp: nil, barber: nil, color: nil, created_at: nil, updated_at: nil>
 c.valid?           #=> false
-# Все ошибки можно выводить на экран при помощи специального массива errors:
+# Все ошибки можно выводить на экран при помощи специального массива, который является значением свойства errors, объекта класса модели (сущности):
 c.errors.count     #=> 4 - выводит число незаполненных полей(ошибок)
 c.errors.messages  #=> {:name=>["can't be blank"], :phone=>["can't be blank"], :datestamp=>["can't be blank"], :color=>["can't be blank"]} - выводит сообщения об ошибках, мы можем использовать ее для вывода
 # Так же можем использовать эти свойства в обработчиках и методах основной программы.
