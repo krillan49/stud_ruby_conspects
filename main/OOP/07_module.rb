@@ -1,9 +1,3 @@
-# ?? class Admin::UsersController < ApplicationController  ?? хз что это
-
-# В модулях тоже можно создавать приватные методы
-
-
-
 puts '                                        Module / namespace'
 
 # Модуль / namespace / пространство имён — это способ группировки методов, классов и констант; новый уровень логического разделения программы после классов и методов. Модуль может содержать любое количество методов, классов и других модулей.
@@ -123,52 +117,59 @@ p MyModule2.aaa         #=> 'x'
 
 
 
-puts '                                       Статические методы модуля'
+puts '                                        Статические методы модуля'
 
-# Статические методы модуля определяются точно так же, как статические методы класса.
-# Статические методы модуля внутри себя вызывают по умолчанию только статические методы модуля так же как и классы
+# Статические методы модуля определяются точно так же, как статические методы класса. Статические методы модуля внутри себя вызывают по умолчанию только статические методы модуля так же как и классы
 
-# Методы определенные в модуле как статические при помощи префикса не могут запускаться без префикса модуля, но им не нужно подключение через "include", а методы определенные при помощи module_function ? объединяют свойства статических и не статических методов, и потому могут запускаться от префикса без "include" и как с префиксом так и без при подключении черех "include"
+# Методы определенные в модуле как статические при помощи префикса не могут запускаться без префикса модуля, но им не нужно подключение через "include"
 
 module MyModule3
   # 1. Название статических методов должно иметь префикс с именем модуля, аналогично методам класса.
   def MyModule3.module_meth1(par)
     par - 1
   end
-
   # 2. Название статических методов должно иметь префикс с self, аналогично методам класса.
   def self.module_meth2(par)
     par - 5
   end
-
-  # 3. module_function - делает методы модуля доступными как private методы экземпляра и как статические методы модуля. Создает копию указанного метода (или методов, если указано несколько) и вставляет её как *private* метод экземпляра модуля. Оставляет исходный метод как статический метод модуля.
-
-  # если module_function не принмает параметров, то определяет все нижестоящие методы
-  module_function
-
-  def shout(whatever)
-    whatever.upcase
-  end
-
-  # если module_function принмает параметры, то определяет методы одноименные параметрам
-  def some_method
-    puts "MyModule.static_method called"
-  end
-  
-  module_function :some_method
 end
 
 # Вызов статических методов из модуля осуществляется без подключения через include, от константы модуля
 p MyModule3.module_meth1(5)  #=> 4
 p MyModule3.module_meth2(20) #=> 15
-p MyModule3.shout('Hello')   #=> "HELLO"
 
 # Статические методы определенные с префиксом  нельзя вызвать без префикса вне зависимости от того подключен модуль или нет
-p module_meth2(20)         #=> undefined method `module_meth2' for main:Object (NoMethodError)
-p shout('Hello')           #=> undefined method `shout' for main:Object (NoMethodError)
 include MyModule3
-p shout('Hello')           #=> "HELLO"
 p module_meth2(20)         #=> undefined method `module_meth2' for main:Object (NoMethodError)
+
+
+
+puts '                                           module_function'
+
+# module_function - делает методы модуля доступными как private методы экземпляра и как статические методы модуля. Создает копию указанного метода (или методов, если указано несколько) и вставляет её как *private* метод экземпляра модуля. Оставляет исходный метод как статический метод модуля.
+
+module MyModule4
+  def some_method
+    "MyModule.static_method called"
+  end
+
+  # 1. Если module_function принмает параметры, то определяет методы одноименные этим параметрам
+  module_function :some_method
+
+  # 2. Если module_function не принмает параметров, то определяет все нижестоящие методы
+  module_function
+
+  def shout(whatever)
+    whatever.upcase
+  end
+end
+
+p MyModule4.shout('Hello')   #=> "HELLO"
+p MyModule4.some_method      #=> "MyModule.static_method called"
+
+# p shout('Hello')           #=> undefined method `shout' for main:Object (NoMethodError)
+include MyModule4
+p shout('Hello')             #=> "HELLO"
 
 
 
@@ -249,12 +250,11 @@ puts '                                     include, prepend и extend'
 # a) Операторы include, prepend или extend прописываются в теле класса
 # b) При помощи синтаксиса ClassName.include ModuleName, ClassName.prepend ModuleName или Class.extend ModuleName записанного под классом или модулем в который подключаем модуль
 
-# include, prepend и extend сами по себе не позволяют напрямую переносить статические методы модуля в статические методы класса (способы обхода этого ниже), они переносят в классы только костанты (include, prepend) и методы экземпляра модуля (все) как методы экземпляра класса (include, prepend) или как статические методы класса (extend)
+# include, prepend и extend не позволяют напрямую переносить статические методы модуля в статические методы класса (тк это бессмысленно и статические методы модуля можно вызвать и от модуля, либо стоит создавать в модуле инстанс методы), они переносят в классы только костанты (include, prepend) и методы экземпляра модуля (все) как методы экземпляра класса (include, prepend) или как статические методы класса (extend)
 
 # include и extend можно подключить в рамках одного класса, тогда создаст и методы экземпляра и методы класса, но обычно так не делают
 
 
-# Модуль подключим далее в классы
 module MyModule
   K = 'k'
   def meth
@@ -271,7 +271,7 @@ end
 
 # 1. include(*modules) - включает указанные модули (`modules`) в текущий модуль или класс. Иерархия наследования обновляется (модули добавляются в список предков).
 # a) Константы модуля становятся доступными как константы класса (или модуля), в который включается (как если бы они были определены непосредственно в нем)
-# b) Методы экземпляра становятся модуля доступными как методы экземпляра класса (или модуля), в который включается (как если бы они были определены непосредственно в нем).
+# b) Методы экземпляра модуля становятся доступными как методы экземпляра класса (или модуля), в который включается (как если бы они были определены непосредственно в нем).
 # c) Не делает статические методы модуля доступными ни как статические методы класса ни как методы экземпляра класса
 
 class ClassI
@@ -280,9 +280,15 @@ class ClassI
   def hello # тк модуль подключен через include то одноименный метод и модуля будет переопределен данным
     "Hello ClassI"
   end
+
+  def some_k
+    "k = #{K}" # Константа модуля вызвана в методе класса
+  end
 end
 
-p ClassI::K #=> "k"
+p MyModule::K       #=> "k"
+p ClassI::K         #=> "k"
+p ClassI.new.some_k #=> "k = k"     # Метод с константой подключенной из модуля
 
 obj = ClassI.new
 p obj.meth  #=> "aaa"
@@ -291,7 +297,6 @@ p obj.hello #=> "Hello ClassI"
 # p ClassI.meth      #=> undefined method `meth' for ClassI:Class (NoMethodError)
 # p ClassI.meth2     #=> undefined method `meth2' for ClassI:Class (NoMethodError)
 # p obj.meth2        #=> undefined method `meth2' for #<ClassI:0x0000027d09280978> (NoMethodError)
-
 
 
 # 2. prepend(*modules) - полностью аналогичен `include`, но вставляет модули перед текущим модулем/классом в цепочке поиска методов. Это полезно для переопределения или расширения методов существующего класса/модуля без изменения исходного кода.
@@ -307,7 +312,7 @@ end
 p ClassP.new.hello  #=> "Hello MyModule"
 
 
-# 3. extend(*modules) - делает методы экземпляра подключаемого модуля доступными как статические методы класса (или модуля), в который включается. Не делает статические методы модуля доступным как статические методы класса. Не делаент константы модуля доступными как константы класса
+# 3. extend(*modules) - делает методы экземпляра подключаемого модуля доступными как статические методы класса (или модуля), в который включается. Не делает статические методы модуля доступным как статические методы класса. Не делает константы модуля доступными как константы класса
 
 class ClassE
 end
@@ -319,6 +324,17 @@ p ClassE.meth   #=> 'aaa'
 # p ClassE::K       #=> uninitialized constant ClassE::K (NameError)
 # p ClassE.new.meth #=> undefined method `meth' for #<ClassE:0x0000021d059099e8> (NoMethodError)
 # p ClassE.meth2    #=> undefined method `meth2' for ClassE:Class (NoMethodError)
+
+
+
+puts '                           Плюсы подключения через include, prepend и extend'
+
+# Удобно как альтернатива наследованию, если есть классы в которох будет совсем немного общего функционала или классы, которые уже наследуют у каких-то классов и в них надо добавить функционал
+
+# Подключение модуля в класс удобно для добавления функциональности во встроенные классы
+Array.include SomeModule
+
+# Миксины в значительной степени устраняют необходимость в множественном наследовании, которое не поддерживается Руби
 
 
 
@@ -334,98 +350,36 @@ puts '                          Минусы подключения через i
 
 
 
-puts '                            Подключение статических методов модуля в класс'
+puts '                                          Приватные методы'
 
-# `include`, `prepend` и `extend` сами по себе не позволяют напрямую переносить статические методы модуля в статические методы класса. Для достижения этой цели, необходимо использовать `class << self` для открытия singleton class или использовать `Module#module_function` в сочетании с `extend`.
+# В модулях тоже можно создавать приватные методы
 
-# Для Ruby 2.0+ можно просто использовать синтаксис "module_function" в сочетании с подключением через extend
-# module_function - делает методы модуля доступными как методы экземпляра и как private методы модуля. Потом можно включить модуль как обычно.
 module MyModule
-  def static_method
-    puts "MyModule.static_method called"
+  private
+  def meth
+    'aaa'
   end
-  module_function :static_method
 end
 
 class MyClass
+  include MyModule
   extend MyModule
-end
-
-MyClass.static_method # => "MyModule.static_method called"
-
-
-# Явное включение статических методов через `class << self` обычно более предпочтительно, так как это делает намерения более ясными.
-module MyModule
-  def self.static_method
-    puts "MyModule.static_method called"
+  def m
+    meth
   end
-
-  def instance_method
-    puts "MyModule#instance_method called"
+  def self.m
+    self.meth
   end
 end
 
-# class << self открывает singleton class (или eigenclass) экземпляра `self`. Внутри класса `MyClass`, `self` относится к классу `MyClass` (объекту класса).  Следовательно, `class << self` открывает класс, представляющий сам класс `MyClass`. Методы, добавленные в этот singleton class, становятся методами класса (статическими методами).
-class MyClass
-
-  class << self  # Open the singleton class of MyClass
-    include MyModule
-  end
-
-  # Можно также определить метод-контейнер, чтобы связать функциональность без прямого включения:
-  def self.another_static_method
-    MyModule.static_method
-  end
-end
-
-MyModule.static_method  #=> "MyModule.static_method called"
-MyClass.static_method  #=> "MyModule.static_method called"
-# MyClass.new.instance_method # => NoMethodError: undefined method `instance_method' for #<MyClass:0x00007fc78a88c368>
+p MyClass.new.meth #=> private method `meth' called for #<MyClass:0x000001eb225e2e00> (NoMethodError)
+p MyClass.new.m    #=> "aaa"
+p MyClass.meth     #=> private method `meth' called for MyClass:Class (NoMethodError)
+p MyClass.m        #=> "aaa"
 
 
 
-puts '                                     Подключение модуля в класс'
-
-# Удобно как альтернатива наследованию, если есть классы в которох будет совсем немного общего функционала или классы, которые уже наследуют у каких-то классов и в них надо добавить функционал
-
-
-# Подключение модуля в класс вне тела класса Так же удобно для добавления функциональности во встроенные классы
-Array.include SelfInject
-
-
-# Константы и статические методы модуля подключенные в класс
-module Week
-  FIRST_DAY = "Sunday"
-
-  def Week.weeks_in_month
-    "You have four weeks in a month"
-  end
-end
-
-class Decade
-  include Week # Подключаем модуль в теле класса, теперь все что содержит модуль доступно в классе
-
-  def no_of_months
-    "120 months from #{FIRST_DAY}" # Константа модуля вызвана в методе класса
-  end
-  def weeks_in_month  # Так можно вызвать метод модуля от объекта
-    Week.weeks_in_month
-  end
-end
-
-d = Decade.new
-
-# Константу можно вызвать и от модуля и от класса в который он подключен:
-p Week::FIRST_DAY   #=> "Sunday"
-p Decade::FIRST_DAY #=> "Sunday"
-p d.no_of_months    #=> "120 months from Sunday"     # Метод класса с константой подключенной из модуля:
-
-# Метод модуля с префиксом нельзя вызвать от объекта класса или как метод класса, а можно только от модуля или обернув вызов этого метода модуля в метод класса:
-p d.weeks_in_month      #=> undefined method `weeks_in_6_month' for #<Decade:0x000001f507519660> (NoMethodError)
-p Decade.weeks_in_month #=> undefined method `weeks_in_6_month' for Decade:Class (NoMethodError)
-p Week.weeks_in_month   #=> "You have four weeks in a month"
-p d.weeks_in_month      #=> "You have four weeks in a month"    # вызываем метод класса который вызывает одноименный метод модуля
-
+puts '                          Подключение конструктора и свойств из модуля в класс'
 
 # В модуль можно помещать attr_ ... и конструктор и подключить их потом в класс
 module MyModule
@@ -446,7 +400,7 @@ end
 class Dog
   include MyModule # Теперь класс получает все методы, конструктор и атрибуты из модуля
 
-  def left # Можно переопределить методы модуля для данного класса
+  def left  # Можно переопределить методы модуля для данного класса
   end
 
   def label # Собственный метод класса
@@ -455,9 +409,11 @@ class Dog
 end
 
 dog = Dog.new(10)
+
 # Используем атрибуты и конструктор из модуля
 p dog.x     #=> 10
-p dog.x = 7 #=> 7
+dog.x = 7
+
 # Используем методы из модуля
 p dog.right #=> 8
 p dog.left  #=> nil # Метод переопределен в классе и значение переменной y не меняется
@@ -465,11 +421,10 @@ p dog.x     #=> 8   # Значение y осталось прежним
 
 
 
-puts '                                  Mix-ins/Примеси(Подключение 2+ модуля в класс)'
+puts '                                                Mix-ins'
 
-# Миксины в значительной степени устраняют необходимость в множественном наследовании, которое не поддерживается Руби
+# Миксины/Примеси(Подключение 2+ модуля в класс) в значительной степени устраняют необходимость в множественном наследовании, которое не поддерживается Руби
 
-# Класс Sample может одновремено испльзовать методы из модулей A и B, соответсвенно можно сказать, что класс Sample показывает множественное наследование или примесь:
 module A
   def a1
     puts 'a1'
@@ -482,6 +437,7 @@ module B
   end
 end
 
+# Класс Sample может одновремено испльзовать методы из модулей A и B, соответсвенно можно сказать, что класс Sample показывает множественное наследование или примесь:
 class Sample
   include A # Подключаем 1й модуль в класс
   include B # Подключаем 2й модуль в класс
@@ -496,8 +452,10 @@ samp.b1 #=> "b1"  # Вызов объектом метода из модуля B
 samp.s1 #=> "s1"
 
 
-puts
-puts '                                        Наследование класса из модуля'
+
+puts '                                   Наследование класса из модуля'
+
+# ?? class Admin::UsersController < ApplicationController  ?? хз что это
 
 # Наследуем у класса Base из модуля ActiveRecord
 class Client < ActiveRecord::Base
@@ -505,7 +463,7 @@ end
 
 
 
-puts '                             Методы для получения информации о модуле'
+puts '                               Методы для получения информации о модуле'
 
 # name - возвращает строку, содержащую имя модуля.
 module MyModule

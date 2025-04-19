@@ -2,6 +2,12 @@ puts '                                        Вложенные классы и
 
 # В Ruby вложенность может влиять на область действия констант и классов. Если класс или модуль определен внутри другого класса или модуля, он является вложенным, и его область действия ограничивается включающим его классом или модулем. Это означает, что доступ к нему возможен только из класса или модуля, в который он вложен.
 
+
+
+puts '                                         Класс вложенный в класс'
+
+# Можно вложить один ксласс в другой так же как в модуль
+
 class Lottery
   attr_reader :tickets
 
@@ -9,23 +15,22 @@ class Lottery
     @tickets = Array.new(n) { Ticket.new(size).list }
   end
 
+  # Вложенный класс
   class Ticket
+    attr_reader :list
+    
     def initialize(size)
-      @all = Array.new(size) { rand(99) }
+      @list = Array.new(size) { rand(99) }
     end
-
-    def list = @all
   end
-
 end
-
-lottery =  Lottery.new(5, 3)
-p lottery.tickets #=> [[51, 9, 23], [17, 49, 60], [67, 76, 72], [62, 40, 29], [53, 3, 79]]
 
 # Вложенный класс вызывается от внешнего так же как и от модуля
 ticket = Lottery::Ticket.new(4)
 p ticket.list #=> [44, 56, 19, 42]
 
+lottery = Lottery.new(5, 3)
+p lottery.tickets #=> [[51, 9, 23], [17, 49, 60], [67, 76, 72], [62, 40, 29], [53, 3, 79]]
 
 
 
