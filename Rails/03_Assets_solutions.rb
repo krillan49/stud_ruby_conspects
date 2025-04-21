@@ -136,6 +136,12 @@ puts '                                               ESBuild'
 
 
 
+puts '                                               Vite Ruby'
+
+# https://github.com/ElMassimo/vite_ruby
+
+
+
 puts '                               Переход с webpacker и webpack на ESBuild'
 
 # https://www.youtube.com/watch?v=RG5mIXF_LP0   - c 10-21 переход с webpacker на esbuild
