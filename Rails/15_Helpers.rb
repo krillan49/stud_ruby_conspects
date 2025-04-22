@@ -250,6 +250,19 @@ end
 # scope: :session  - можно добавить если нужно чтобы name имело стандартный вид, например "session[email]", тк без него без объекта будкт просто "email"
 
 
+# (? Старые версии Рэилс ?) Форма не создающая объект формы просто для URL и теги полей без приаязки к объекту
+form_for sessions_path do
+
+  label_tag :email, 'Email', class: 'form-label'
+  text_field_tag :email, params[:mail], class: 'form-text-field'
+
+  label_tag :password, 'Password', class: 'form-label'
+  password_field_tag :password, '', class: 'form-text-field'
+
+  submit_tag 'Submit', class: 'button button-dark'
+end
+
+
 # text_field - генерирует текстовое поле с аттрибутами валидации на стороне браузера
 f.text_field :title, required: true, minlength: 2, placeholder: 'Title'
 # required: true, minlength: 2  - атрибуты required="required" minlength="2" будут добавлены в тег, при помощи них браузер будет проводить дополнительную валидацию поля на стороне клиента
