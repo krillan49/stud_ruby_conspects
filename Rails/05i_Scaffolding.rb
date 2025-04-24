@@ -9,6 +9,9 @@ puts '                                          Scaffolding'
 # 2. Нет аутонтификации по умолчанию
 # 3. Тесты по умолчанию только самые примитивные
 
+# scaffold_controller - генератор создает контроллер, указанные экшены, маршруты, представления, тесты по REST resourses.
+# $ rails g scaffold_controller Questions create destroy
+
 
 # Scaffolding на примере сильно упрощенного блога из 2х моделей User 1 - * Micropost:
 

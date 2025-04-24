@@ -48,7 +48,7 @@
   <!-- ===== Devise User 1 - * Article. Возможность удалить и редактировать только автору ===== -->
   <p>
     <%= current_user.username %> <!-- вместо лэйбла -->
-    <%= f.hidden_field :user_id, value: current_user.id %>
+    <%= f.hidden_field :user_id, value: current_user.id %> <!-- Тк значение этого поля можно изменить через инструменты разработчика браузера, то можно сделать дополнительную проверку в контроллере -->
     <!-- это будет: -->
     <input value="2" autocomplete="off" type="hidden" name="article[user_id]" id="article_user_id" />
   </p>
