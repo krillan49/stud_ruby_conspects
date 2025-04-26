@@ -20,7 +20,7 @@ linked_list = Node.new(0, Node.new(1, Node.new(4, Node.new(9, Node.new(16)))))
 p stringify(linked_list)# "0 -> 1 -> 4 -> 9 -> 16 -> nil"
 
 
-puts
+
 # пример2 (соединение двух списков: конца 1го и начала 2го)
 class Node
   attr_accessor :data, :next
@@ -43,7 +43,7 @@ list_b = Node.new(2, Node.new(3))
 p append(list_a, list_b) #=> #<Node:0x000002b0a1c495b0 @data=0, @next=#<Node:0x000002b0a1c49628 @data=1, @next=#<Node:0x000002b0a1c49510 @data=2, @next=#<Node:0x000002b0a1c49538 @data=3, @next=nil>>>>
 
 
-puts
+
 # пример3 (создание списков)
 class Node
 	attr_accessor :data, :next
@@ -80,7 +80,7 @@ build_one_two_three() #=> #<Node:0x00000299ebad1380 @data=1, @next=#<Node:0x0000
 build_list([1, 2, 3, 4, 5, 6, 7]) #=> #<Node:0x000002501e604058 @data=1, @next=#<Node:0x000002501e6040d0 @data=2, @next=#<Node:0x000002501e6040f8 @data=3, @next=#<Node:0x000002501e604120 @data=4, @next=#<Node:0x000002501e604148 @data=5, @next=#<Node:0x000002501e604198 @data=6, @next=#<Node:0x000002501e604350 @data=7, @next=nil>>>>>>>
 
 
-puts
+
 # пример4 (перемещение первого узла с одного списка на дрцугой) (класс списков и методы задействованы из пред примера)
 class Context
   attr_accessor :source, :dest
@@ -102,7 +102,7 @@ p move_node(build_one_two_three(), build_one_two_three())# Context.new(build_lis
 #=> #<Context:0x000001dfeaaabd58 @source=#<Node:0x000001dfeaaabe48 @data=2, @next=#<Node:0x000001dfeaaabe70 @data=3, @next=nil>>, @dest=#<Node:0x000001dfeaaabd80 @data=1, @next=#<Node:0x000001dfeaaabda8 @data=1, @next=#<Node:0x000001dfeaaabdd0 @data=2, @next=#<Node:0x000001dfeaaabdf8 @data=3, @next=nil>>>>>
 
 
-puts
+
 # пример5 (подсчет всх узлов и определенных по значениям) (класс списков и методы задействованы из пред примера3)
 def length(node)
 	return 0 if node == nil

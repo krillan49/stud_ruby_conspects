@@ -446,7 +446,7 @@ p error_from_server(400, 'some text') #=>
 # 	from E:/doc/ruby_exemples/test.rb:67:in `<main>'
 
 
-puts
+
 # (?? хз как работает ??)
 # Создаем наш класс исключений
 class FileSaveError < StandardError
