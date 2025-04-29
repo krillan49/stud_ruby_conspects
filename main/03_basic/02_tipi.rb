@@ -1,3 +1,8 @@
+puts '                                    Типы данных / Классы объектов'
+
+# В Ruby всё является объектом (экземпляром класса `Object` или его подкласса), включая числа, строки и даже `nil`
+
+
 puts '                                       Fixnum, Bignum, Integer'
 
 # Целые числа делятся на:
@@ -95,8 +100,8 @@ puts n #=>
 p n #=> nil
 
 p nil.nil?   #=> true
-p nil.class #=> NilClass
-p nil.to_i #=> 0
+p nil.class  #=> NilClass
+p nil.to_i   #=> 0
 p nil.to_s   #=> ""
 
 
@@ -121,13 +126,15 @@ puts '                                           Другие типы'
 
 puts '                                      Методы class, is_a и methods'
 
-# Object это тоже тип данных
-
-# is_a - метод проверяющий объект по типу данных
+# is_a? (псевдоним kind_of?) - метод проверяет, является ли объект экземпляром данного класса *или его подкласса*
 123.is_a?(Integer)     #=> true
 123.is_a?(String)      #=> false
 123.is_a?(Object)      #=> true
 "blabla".is_a?(Object) #=> true
+
+# instance_of? - метод проверяет только на *точное* соответствие классу
+"строка".instance_of?(String) #=> true
+"строка".instance_of?(Object) #=> false
 
 # class - метод проверки типа данных объекта(принадлежности к классу), возвращает константу класса
 2.class              #=> integer
@@ -135,10 +142,10 @@ puts '                                      Методы class, is_a и methods'
 2.0.class            #=> float
 
 # superclass - метод проверки накласса от константы класса, возвращает константу надкласса
-p String.superclass             #=> Object
-p 5.class                       #=> Integer
-p 5.class.superclass            #=> Numeric
-p 5.class.superclass.superclass #=> Object
+String.superclass             #=> Object
+5.class                       #=> Integer
+5.class.superclass            #=> Numeric
+5.class.superclass.superclass #=> Object
 
 # methods - метод, который отображает все методы экземпляра, которые можно применить к этому объекту (этого класса)
 "x".methods  # Выведет все доступные операторы методов функций для string

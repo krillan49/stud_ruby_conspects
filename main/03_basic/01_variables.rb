@@ -112,19 +112,28 @@ __LINE__ # номер текущей строки в исходном файле
 
 puts '                                           Оператор defined?'
 
-# defined? (определенный?) — это специальный оператор, который принимает форму вызова метода, чтобы узнать, определено ли переданное выражение. Он возвращает строку описания выражения или nil, если выражение не определено.
+# defined?  — это специальный оператор, который принимает форму вызова метода, чтобы узнать, определено ли переданное выражение и что это за выражение если оно определено. Он возвращает строку, описывающую тип выражения, если оно определено или nil, если выражение не определено.
 
-# Вернет тип переменной если она определена либо nil
+# Удобно проверять, определена ли переменная, константа или метод
+
+# Вернет тип переменной или константы если она определена либо nil
 foo = 42
-p defined? foo    #=> "local-variable"
-p defined? $_     #=> "global-variable"
-p defined? bar    #=> nil
+CONSTANT = "constant"
+p defined? foo       #=> "local-variable"
+p defined?(CONSTANT) #=> "constant"
+p defined? $_        #=> "global-variable"
+p defined? bar       #=> nil                        # variable не определена
 
 # Вернет "method" если метод и переданные в него параметры определены иначе nil
+def method; 1 end
+p defined?(method)     #=> "method"
+p defined? some()      #=> nil
 p defined? puts        #=> "method"
 p defined? puts(foo)   #=> "method"
-p defined? puts(bar)   #=> nil
-p defined? some()      #=> nil
+p defined? puts(bar)   #=> nil       # тк переменная bar не определена
+
+# ???
+p defined?(1 + 1) #=> "method"
 
 # Использование 3
 p defined? super # True if a method exists that can be called with super user
