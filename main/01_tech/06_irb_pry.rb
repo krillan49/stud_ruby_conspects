@@ -47,7 +47,7 @@ puts '                                             pry'
 #you can add "Pry.config.windows_console_warning = false" to your pryrc.
 
 
-puts
+
 # Важный момент в pry — конфигурация. Gem это, грубо говоря, плагин для языка(или экосистемы) руби. Но и для «плагина» pry существует свое множество плагинов:
 
 # awesome print - Gem который содержит в себе библиотеку кода, плагин для pry, плагин для irb.
