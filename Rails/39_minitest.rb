@@ -162,7 +162,17 @@ end
 # Finished in 0.040609s, 49.2500 runs/s, 24.6250 assertions/s.
 # 2 runs, 1 assertions, 0 failures, 1 errors, 0 skips
 
-# E - обозначает тест с ошибкой. Зеленая точка над линией «Finished» обозначает прохождение теста
+# .  - Тест пройден
+# F  - Ошибка (failure): assert не прошёл
+# E  - Ошибка (error): исключение/краш
+# S  - Пропущенный тест (skip)
+
+# 12 runs, 24 assertions, 0 failures, 0 errors, 0 skips:
+# 12 runs       - всего было 12 тестов (test методов)
+# 24 assertions - всего было 24 проверок (assert, refute, и т.п.)
+# 0 failures    - 0 тестов упали, потому что assert не прошёл
+# 0 errors      - 0 тестов крашнулись (например, NoMethodError или nil.cabinet)
+# 0 skips       - ни один тест не был помечен как skip
 
 # Выполнение каждого метода теста останавливается, как только обнаруживается какая-либо ошибка или сбой утверждения и тестовый набор продолжается со следующим методом. 
 # Все методы теста выполняются в случайном порядке. Опция `config.active_support.test_order` может использоваться для настройки порядка теста
@@ -359,7 +369,10 @@ assert_no_queries_match(pattern, &block)
 # &block не генерирует SQL-запросов, соответствующих шаблону
 
 assert_permit(context, record, :action) # проверяет, что разрешено.
+assert_permit({user: @seller}, @record, :create?)
+
 assert_forbid(context, record, :action) # проверяет, что запрещено.
+assert_forbid({user: @manager}, @record, :create?)
 
 
 
