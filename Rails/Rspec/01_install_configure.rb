@@ -25,6 +25,29 @@ end
 
 
 
+puts '                                           Раное'
+
+# Убедись, что файл начинается с `require 'rails_helper'`
+
+# Не забудь про `rails db:test:prepare` или использовать `DatabaseCleaner/transactional fixtures` для чистой базы
+
+# Добавь в `.rspec` флаг `--format documentation` для более читаемого вывода
+# .rspec:
+# --require spec_helper
+# --format documentation
+
+
+
+puts '                                       Частые проблемы'
+
+# uninitialized constant RSpec - убедись, что `rspec-rails` установлен и `rspec:install` был запущен
+
+# Тесты не видят классы/модели - убедись, что в файле `rails_helper` правильные `require`
+
+# Фикстуры не загружаются - используй `FactoryBot` или убедись, что `config.use_transactional_fixtures = true`
+
+
+
 
 
 
