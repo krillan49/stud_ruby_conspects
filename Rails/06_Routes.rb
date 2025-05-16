@@ -263,6 +263,16 @@ end
 
 
 
+puts '                                     Нэйминг именованных маршрутов'
+
+# Именованные маршруты формируются в Rails по шаблону: 
+
+# [namespace_]resource[_action]_path
+
+# Если ты используешь as: :cell_update внутри resources :cabinets, внутри namespace :workspace, то результат идёт как workspace_cabinet_cell_update_path
+
+
+
 
 
 
