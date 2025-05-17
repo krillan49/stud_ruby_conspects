@@ -3,7 +3,62 @@ puts '                                          Minitest'
 # Minitest - встроенная в Ruby библиотека для тестирования. В Rails она уже настроена по умолчанию и не требует дополнительных гемов
 
 
+# Сравнение с RSpec:
+
+# Тест модели RSpec:
+describe User do
+  it "is invalid without email" do
+    expect(User.new(email: nil)).to_not be_valid
+  end
+end
+
+# Тест модкли Minitest:
+require 'test_helper'
+
+class UserTest < ActiveSupport::TestCase
+  test "invalid without email" do
+    user = User.new(email: nil)
+    assert_not user.valid?
+  end
+end
+
+
+
+puts '                                   Подготовка среды Minitest'
+
+# Если Minitest не установлен или удален
+
+
+# 1. Gemfile
+group :test do
+  gem 'minitest'
+  gem 'minitest-rails'
+  gem 'minitest-reporters'
+end
+# $ bundle install
+# $ rails generate minitest:install
+
+
+# 2. Настройка формата вывода и тестовую среду
+
+# test/test_helper.rb
+require "minitest/reporters"
+Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
+
+
+# 3. Если используются генераторы scaffold/controller, нужно переключить тест-фреймворк на Minitest:
+
+# config/application.rb
+config.generators do |g|
+  g.test_framework :minitest, spec: true, fixture: true
+end
+
+
+
+puts '                                  Файловая структура в Rails'
+
 # Rails создает test-каталог, как только cоздаетcя проект Rails с помощью `bin/rails new application_name`, в котором находятся:
+
 # * helpers/                        - тесты для хэлперов
 # * mailers/                        - тесты для почтовых программ
 # * models/                         - тесты для моделей 
@@ -13,6 +68,7 @@ puts '                                          Minitest'
 # * system/                         - системные тесты, которые используются для полного тестирования приложения в браузере (UI). Системные тесты позволяют тестировать приложение так, как его видят ваши пользователи, а также помогают тестировать JavaScript. Системные тесты наследуются от Capybara и выполняют внутрибраузерные тесты для приложения.
 # * fixtures/                       - fixtures/фикстуры (если не используется FactoryBot) это способ создания макетов данных для использования в тестах, чтобы не приходилось использовать «реальные» данные
 # * При первом создании задания jobs также будет создан каталог для ваших тестовых заданий
+
 # * test_helper.rb                  - содержит конфигурацию по умолчанию для запуска тестов. Все методы, добавленные в этот файл, также доступны в тестах, когда этот файл подключен. Используется для подключения FactoryBot, очистки базы и других настроек
 # * application_system_test_case.rb - конфигурация по умолчанию для system тестов, нужно ее подключить в системные тесты
 
@@ -36,10 +92,20 @@ class ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
 end
 
-# Теперь ты можно применять:
+# Теперь можно применять:
 user = create(:user)
 
-build_stubbed # используется так же, как и в RSpec, с FactoryBot.
+build_stubbed # используется так же, как и в RSpec, с FactoryBot
+
+
+# Обычно при переходе с RSpec на Minitest переписывать фабрики FactoryBot не нужно, нужно просто убедиться, что они правильно подключены в окружении тестов.
+
+# Но может понадобиться небольшая настройка если раньше использовался только RSpec.configure для подключения FactoryBot:
+RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+end
+# Тогда тебе нужно добавить в test_helper.rb или minitest_helper.rb:
+include FactoryBot::Syntax::Methods
 
 
 
@@ -56,15 +122,15 @@ require "test_helper"
 # Вместо describe, context, it (как в RSpec) - просто class и test:
 class ArticleTest < ActiveSupport::TestCase # это называется тестовым случаем, ArticleTest класс наследует от ActiveSupport::TestCase, соответсвенно имеет все методы из него. ActiveSupport::TestCase наследует от Minitest::Test
 
-  # Rails добавляет метод `test`, который принимает имя теста и блок. Он генерирует стандартный Minitest::Unit тест с переданным именем с префиксом `test_`, что удобно:
-  test "the truth" do # Имя метода генерируется путем замены пробелов на подчеркивания
-    assert true # эта часть теста называется «утверждение» она оценивает объект (или выражение) на предмет ожидаемых результатов. Каждый тест может содержать сколько угодно утверждений. Тест считается пройденным только в том случае, если все утверждения будут успешными
+  # test - метод, добавленный Rails, который принимает имя теста и блок. Он генерирует стандартный Minitest::Unit тест с переданным именем с префиксом `test_`:
+  test "the truth" do # имя метода генерируется путем замены пробелов на подчеркивания
+    assert true # проверка называется «утверждение» она оценивает объект (или выражение) на предмет ожидаемых результатов. Каждый тест может содержать сколько угодно утверждений. Тест считается пройденным только в том случае, если все утверждения будут успешными
   end
   # Это примерно то же самое, что:
   def test_the_truth
     assert true
   end
-  # Можно использовать и такие обычные определения методов
+  # Можно использовать оба синтаксиса определения методов
 
   test "price must be positive" do
     article = Article.new(price: -10)
@@ -89,7 +155,7 @@ puts '                                          Вывод тестов'
 # 0 errors         - 0 тестов крашнулись (например, NoMethodError или nil.cabinet)
 # 0 skips          - ни один тест не был помечен как skip
 
-# Выполнение каждого метода теста останавливается, как только обнаруживается какая-либо ошибка или сбой утверждения и тестовый набор продолжается со следующим методом
+# Выполнение каждого метода теста останавливается, как только обнаруживается ошибка или сбой утверждения и тестовый набор продолжается со следующим методом
 
 # Все методы теста выполняются в случайном порядке. Опция `config.active_support.test_order` может использоваться для настройки порядка теста
 
@@ -97,7 +163,7 @@ puts '                                          Вывод тестов'
 
 puts '                                     Проваленый тест (Failure)'
 
-# Статья не будет сохранена без соответствия определенным критериям; следовательно, если статья будет успешно сохранена, тест провалится
+# Статья не должна быть сохранена без соответствия определенным критериям (валидации), тоесть если статья пройдет то нет валидаций
 require "test_helper"
 
 class ArticleTest < ActiveSupport::TestCase
@@ -107,7 +173,6 @@ class ArticleTest < ActiveSupport::TestCase
   end
 end
 
-# Результат запуска этого теста:
 # $ bin/rails test test/models/article_test.rb
 #=>
 # Running 1 tests in a single process (parallelization threshold is 50)
@@ -121,7 +186,8 @@ end
 # Finished in 0.023918s, 41.8090 runs/s, 41.8090 assertions/s.
 # 1 runs, 1 assertions, 1 failures, 0 errors, 0 skips
 
-# В выходных данных F указывает на сбой теста. Раздел ниже Failure включает имя сбойного теста, за которым следует трассировка стека и сообщение, показывающее фактическое значение и ожидаемое значение из утверждения
+# F указывает на не прохождение теста. Раздел ниже Failure включает имя сбойного теста, за которым следует трассировка стека и сообщение, показывающее фактическое значение и ожидаемое значение из утверждения
+
 
 # Каждое утверждение допускает необязательный параметр дополнительного сообщения, которое будет в выводе если тест не прошел:
 test "should not save article without title" do
@@ -148,11 +214,11 @@ end
 # Finished in 0.027476s, 36.3952 runs/s, 36.3952 assertions/s.
 # 1 runs, 1 assertions, 0 failures, 0 errors, 0 skips
 
-# Зеленая точка на экране означает, что тест пройден успешно
+# .  - Зеленая точка на экране означает, что тест пройден успешно
 
 
 
-puts '                          Сообщение об ошибках (Error). Утверждение наличия ошибки'
+puts '                          Сообщение об ошибках (Error). Утверждение для наличия ошибки'
 
 # Тест, содержащий ошибку:
 test "should report error" do
@@ -385,7 +451,13 @@ ActiveJob::TestCase
 ActionDispatch::Integration::Session
 ActionDispatch::SystemTestCase
 Rails::Generators::TestCase
-# Каждый из этих классов включает Minitest::Assertions, что позволяет использовать все основные утверждения в ваших тестах
+# Каждый из этих классов включает Minitest::Assertions, что позволяет использовать все основные утверждения в тестах
+
+# Контроллеры и запросы
+# Используй ActionDispatch::IntegrationTest или ActionController::TestCase
+
+# Фичи / Системные тесты
+# Используй ApplicationSystemTestCase (Capybara тоже можно подключить)
 
 
 

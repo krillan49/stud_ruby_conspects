@@ -11,9 +11,6 @@ class ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
   include ActionPolicy::TestHelper
 
-  # Run tests in parallel with specified workers
-  # parallelize(number_of_workers: :number_of_processors)
-
   # fixtures :all — включай, если пользуешься fixtures, иначе можно убрать
 end
 
