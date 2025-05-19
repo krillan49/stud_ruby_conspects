@@ -334,6 +334,7 @@ puts '                                         Утверждения минит
 
 assert(test, [msg])	                                      # проверяет, что выражение test вернет true
 assert_not(test, [msg])	                                  # проверяет, что выражение test вернет false
+assert_not duplicate.valid?                               # (пример)
 
 assert_equal(expected, actual, [msg])	                    # проверяет равенство. expected == actual это true
 assert_not_equal(expected, actual, [msg])	                # expected != actual это правда.
@@ -350,7 +351,8 @@ assert_not_empty(obj, [msg])	                            # obj не empty?.
 assert_match(regexp, string, [msg])	                      # строка соответствует регулярному выражению.
 assert_no_match(regexp, string, [msg])	                  # строка не соответствует регулярному выражению.
 
-assert_includes(collection, obj, [msg])	                  # obj находится в collection.
+assert_includes(collection, obj, [msg])	                  # obj находится в collection
+assert_includes duplicate.errors[:sku], "уже существует"  # (пример) проверяет, что в ошибках валидации по полю :sku есть сообщение "уже существует" (локализованное сообщение для validates_uniqueness_of)
 assert_not_includes(collection, obj, [msg])	              # obj не находится в collection.
 
 assert_in_delta(expected, actual, [delta], [msg])	        # числа expected и actual находятся в пределах delta друг друга.
@@ -368,7 +370,8 @@ assert_not_instance_of(class, obj, [msg])	                # obj это не эк
 assert_kind_of(class, obj, [msg])	                        # obj является экземпляром class или происходит от него
 assert_not_kind_of(class, obj, [msg])	                    # obj не является экземпляром class и не происходит от него
 
-assert_respond_to(obj, symbol, [msg])	                    # obj реагирует на symbol
+assert_respond_to(obj, :method, [msg])	                  # obj реагирует на symbol
+assert_respond_to barcode, :cabinet                       # (пример) объект реализует указанный метод (в данном случае — геттер ассоциации)
 assert_not_respond_to(obj, symbol, [msg])	                # obj не реагирует на symbol
 
 assert_operator(obj1, operator, [obj2], [msg])	          # obj1.operator(obj2) это правда.
