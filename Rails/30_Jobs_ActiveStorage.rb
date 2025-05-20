@@ -17,7 +17,7 @@ module Admin
     # ...
     def create
       if params[:archive].present?
-        # UserBulkService.call params[:archive] - раньше так вызывали сервисный объект services/user_bulk_service.rb, теперь будем вызывать задачу:
+        # UserBulkService.call params[:archive] - раньше так вызывали сервисный объект services/user_bulk_service.rb, теперь будем вызывать задачу, а секрвис будет вызван уже в задаче:
         UserBulkImportJob.perform_later() # но мы не можем просто сюда как параметр передать params[:archive] или даже params[:archive].path потому что это временный фаил, существующий только в памяти и когда задача начнет выполняться его может уже не быть
         # perform_later - (?? генерится от метода perform UserBulkImportJob) поставит задачу в очередь и сделает ее в фоне (в отличие от простого perform)
         flash[:success] = t '.success'
@@ -32,7 +32,7 @@ end
 
 puts '                                  ActiveStorage. Импорт ZIP в background'
 
-# Так как мы не сможем нормально воспользоваться загруженным архивом из params[:archive] для передачи его в метод perform_later джоба user_bulk_import_job.rb, тк это временный архив и может уже удалиться до момента передачи. Нам нужно сделать этот архив не временным, тоесть нам нужно его гдето сохранить, на время его обработки, не во временной папке, а гдето в постоянном хранилище.
+# Так как мы не сможем нормально воспользоваться загруженным архивом из params[:archive] для передачи его в метод perform_later джоба user_bulk_import_job.rb, тк это временный архив и может уже удалиться до момента передачи. Нам нужно сделать этот архив не временным, тоесть нам нужно его где-то сохранить, на время его обработки, не во временной папке, а где-то в постоянном хранилище.
 
 # Можно использовать облачные(например Амазон) и локальные хранилища, можно написать собственный скрипт, который берет этот архив и помещает в другую папку, но проще задействовать ActiveStorage.
 
@@ -101,9 +101,9 @@ class UserBulkImportJob < ApplicationJob
     Admin::UserMailer.with(user: initiator, error: e).bulk_import_fail.deliver_now
   else
     Admin::UserMailer.with(user: initiator).bulk_import_done.deliver_now
-    # user: initiator - передавем в мэйлер admin/user_mailer.rb пользователя, которому отправляем
+    # user: initiator  - передавем в мэйлер admin/user_mailer.rb пользователя, которому отправляем
     # bulk_import_done - метод мэйлера admin/user_mailer.rb
-    # deliver_now - тут именно доставить сейчас а не deliver_later, так мы тут и так уже находимся в бэкграунде
+    # deliver_now      - тут именно доставить сейчас а не deliver_later, так мы тут и так уже находимся в бэкграунде
   end
 end
 

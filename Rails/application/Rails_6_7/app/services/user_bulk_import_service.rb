@@ -6,10 +6,11 @@ class UserBulkImportService < ApplicationService
     @service = ActiveStorage::Blob.service # сохраняем ссылку на сервис ActiveStorage для обращения к БД, чтобы получить из нее по ключу путь к фаилу в хранилище. ??
   end
 
-  def call # этот метод меняем тк со старым, при считывании фаилов из архива, они криво закрываются и потом нельзя удалить архив
+  def call 
+    # этот метод меняем тк со старым, при считывании фаилов из архива, они криво закрываются и потом нельзя удалить архив
     read_zip_entries do |entry| # read_zip_entries - вызываем наш новый метод(код ниже), передаем в тего блок, где entry - каждый фаил из архива
       entry.get_input_stream do |f| # get_input_stream - читает содержание фаила, метод гема rubyzip возвращает последовательность бит.
-        User.import users_from(f.read), ignore: true # собственно создаем оптимизированный запрос для добавления всех пользователей сразу при помощи гема activerecord-import (Admin_Exel_Zip)
+        User.import users_from(f.read), ignore: true # создаем оптимизированный запрос к БД для добавления всех пользователей сразу при помощи гема activerecord-import (Admin_Exel_Zip)
         # f.read - добавляем фаил(или строку??) в режиме чтения
         f.close
       end
@@ -47,9 +48,9 @@ class UserBulkImportService < ApplicationService
     sheet = RubyXL::Parser.parse_buffer(data)[0] # соотв парсим тоже данные
     sheet.map do |row|
       cells = row.cells[0..2].map { |c| c&.value.to_s }
-      User.new name: cells[0],
-               email: cells[1],
-               password: cells[2],
+      User.new name:                  cells[0],
+               email:                 cells[1],
+               password:              cells[2],
                password_confirmation: cells[2]
     end
   end

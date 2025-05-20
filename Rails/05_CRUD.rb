@@ -66,6 +66,12 @@ class ArticlesController < ApplicationController
     render text: "Some text"
 
     # по умолчанию(если сами не пропишем render) рэндерит представление с именем данного экщена из директории с именем данного контроллера, тоесть тут create.html.erb
+
+
+    send_data compressed_filestream.read, filename: 'users.zip'
+    # send_data - стандартный метод Рэилс, который пересылает фаилы пользователю
+    # compressed_filestream.read - параметр метода send_data - фаил архива который передаем с методом read(читать)
+    # filename: 'users.zip' - имя передаваемого фаила архива
   end
 end
 # На данный момент страницу /articles пользователь не сможет открыть вручную, тк для нее сейчас есть только POST-обработчик(create), но нет GET-обработчика(index)

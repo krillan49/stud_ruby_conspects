@@ -31,6 +31,12 @@ puts '                                    движки/адаптеры/бэке
 
 
 
+puts '                                           kafka'
+
+# kafka
+
+
+
 puts '                                          Sidekiq'
 
 # Sidekiq использует Redis для хранения и обработки фоновых задач. Он поддерживает многопоточность, что позволяет обрабатывать несколько задач одновременно.
@@ -73,6 +79,45 @@ puts '                                         Solidus Que'
 # Недостатки:
 # 1. Может быть менее гибким и универсальным для других типов приложений
 # 2. Меньшая экосистема по сравнению с Sidekiq
+
+
+
+puts '                           Узнать, какой адаптер используется в проекте'
+
+# 1. Проверь config/application.rb обычно адаптер указывается явно:
+
+# config/application.rb
+module YourApp
+  class Application < Rails::Application
+    # ...
+    config.active_job.queue_adapter = :que  # или :sidekiq, :delayed_job итд
+  end
+end
+
+
+# 2. Проверь config/environments/*.rb. Иногда адаптер задают по-разному для dev/test/prod:
+
+# config/environments/production.rb
+Rails.application.configure do
+  config.active_job.queue_adapter = :sidekiq
+end
+
+
+# 3. Выведи адаптер в консоли Rails. Открой Rails console и выполни:
+Rails.application.config.active_job.queue_adapter
+# Примеры вывода:
+# => :que
+# или
+# => ActiveJob::QueueAdapters::SidekiqAdapter
+
+
+# 4. Поиск по коду. Можно найти все упоминания queue_adapter:
+# $ grep -rn "queue_adapter" config/
+
+
+# 5. Проверь загруженные гемы. Иногда по Gemfile.lock можно догадаться:
+# $ grep que Gemfile.lock
+# $ grep sidekiq Gemfile.lock
 
 
 
