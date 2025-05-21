@@ -57,15 +57,6 @@ worker: bundle exec que ./config/environment.rb
 
 
 
-
-# Посмотреть задания:
-# $ bin/rails solid_queue:list
-
-# Удалить старые:
-# $ bin/rails solid_queue:prune
-
-
-
 puts '                                           Пример использования'
 
 # Как работает solid_queue?
