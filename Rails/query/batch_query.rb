@@ -1,29 +1,35 @@
-puts '                         Запросы вставки и обновления париями вместо одиночных'
+puts '                     Запросы вставки, обновления, удаления партиями вместо одиночных'
 
 # https://www.postgresql.org/docs/current/sql-merge.html
 
 # Имеет смысл вставлять записи батчами, что значительно улучшит производительность по сравнению с вставкой по одной записи. Использование в сочетании с массивами позволяет значительно ускорить процесс.
 
-# Рельсы уже предоставляют из коробки методы insert_all и upsert_all для этого.
+# Рельсы уже предоставляют из коробки методы insert_all, upsert_all, destroy_all итд
 
 # Если нужно обновлять существующие записи или выполнять более сложные операции вставки/обновления (с условием?), можно использовать SQL-оператор MERGE (или эквивалентный ON CONFLICT для PostgreSQL), который позволяет вставлять или обновлять записи в одном запросе
 
 
 
-puts '                                      insert_all и upsert_all'
+puts '                               [insert|upsert|update|touch|delete]_all'
 
 # https://api.rubyonrails.org/classes/ActiveRecord/Relation.html#method-i-insert_all
 
-# insert_all и upsert_all - методы, которые добавлены в добавленный в ActiveRecord 6.0. Это стандартные и эффективные способы для массовой вставки и оновления записей в Rails, и они подходят для большинства сценариев.
+# insert_all и upsert_all - методы, которые добавлены в добавленный в ActiveRecord 6+ Это стандартные и эффективные способы для массовой вставки и оновления записей в Rails, и они подходят для большинства сценариев.
 
 # Поддерживаемые СУБД только: PostgreSQL, SQLite, MySQL 8+ (Старые версии MySQL и другие базы не поддерживают). При этом в PostgreSQL наиболее мощная и полная поддержка этих фич.
 
 # Оба метода не запускают валидации или callbacks
 
-# Метод       Вставка  Обновление при конфликте  Использует callbacks/валидации
-# create        да                нет                         да
-# insert_all    да                нет                         нет
-# upsert_all    да                да                          нет
+# Метод       Вставка  Обновление при конфликте  callbacks/валидации
+# create        да                нет                    да
+# insert_all    да                нет                    нет
+# upsert_all    да                да                     нет
+
+# Метод       callbacks/валидации  SQL один запрос
+# destroy_all         да                 нет (много DELETE)  Удаление с логикой, зависимостями
+# delete_all          нет                да  Быстрое удаление без логики
+# update_all          нет                да  Массовое обновление
+# touch_all           нет                да  Массовое обновление updated_at
 
 
 
@@ -73,7 +79,33 @@ SQL
 
 
 
-puts '                                           upsert_all'
+puts '                                     Отличия insert_all и insert_all!'
+
+# Когда использовать:
+# Надёжный импорт, с контролем ошибок       -  insert_all!
+# Быстрая вставка, ошибки не критичны       -  insert_all
+# Внутри транзакции, где нужна атомарность  -  insert_all! предпочтительнее
+
+
+# insert_all -  "Мягкий" вариант. Не выбрасывает исключение, если вставка не удалась (например, из-за нарушения ограничения NOT NULL или уникальности). Вместо этого просто пропускает невалидные записи (если ошибка возникает внутри PostgreSQL — весь батч может не вставиться, но исключения не будет в Ruby)
+# Возвращает объект ActiveRecord::Result, но его сложно использовать для отслеживания ошибок.
+Purchase.insert_all([
+  { name: "Item A", price: 100 },
+  { name: nil, price: 200 } # допустим name не может быть nil
+])
+# Не вызовет исключение, но ничего не вставит (или только первую строку, в зависимости от БД)
+
+
+# insert_all! - "Жёсткий" вариант. Выбрасывает исключение (ActiveRecord::RecordNotUnique, PG::NotNullViolation и т.п.), если хотя бы одна запись не может быть вставлена.
+Purchase.insert_all!([
+  { name: "Item A", price: 100 },
+  { name: nil, price: 200 } # NOT NULL constraint
+])
+# Вызовет исключение и откатит всю вставку
+
+
+
+puts '                                              upsert_all'
 
 # upsert_all - метод позволяет вставлять или обновлять сразу много записей отправляя один SQL-запрос, а не по одной (.update в цикле), используя механизм PostgreSQL ON CONFLICT, что в десятки и сотни раз быстрее при большом объеме данных. Работает так же как и insert_all, но с логикой: "если есть конфликт по уникальному ключу то обнови":
 # а) Если записи не существуют (по уникальному ключу) - они будут вставлены
@@ -147,3 +179,56 @@ SQL
 # Если нет уникального индекса по этим полям — будет исключение:
 # ArgumentError: Could not infer a unique index for :barcode_id and :purchase_date
 # Поэтому надежнее указывать unique_by: :index_name
+
+
+
+puts '                                               update_all'
+
+# update_all - метод для массового обновления колонок одним SQL-запросом, без валидаций и колбэков. Работает очень быстро. Не обновляет updated_at, если не указать явно
+
+# Пример:
+User.where(active: false).update_all(active: true)
+# SQL:
+<<-SQL UPDATE users SET active = TRUE WHERE active = FALSE; SQL
+
+
+
+puts '                                               touch_all'
+
+# Оtouch_all - обновляет только timestamp-колонку (updated_at) для найденных записей. Работает как update_all(updated_at: Time.current), но семантически понятнее. Не вызывает колбэки
+
+# Пример:
+User.where("last_seen < ?", 1.day.ago).touch_all
+# SQL:
+<<-SQL UPDATE users SET updated_at = '2025-05-23 10:00:00' WHERE last_seen < '2025-05-22 10:00:00'; SQL
+
+
+
+puts '                                               delete_all'
+
+# delete_all - метод удаляет записи напрямую через SQL, минуя callbacks и валидации. Работает очень быстро (один SQL-запрос). Не очищает dependent: :destroy ассоциации (может оставить «сирот»)
+
+# Пример:
+User.where(admin: false).delete_all
+# SQL:
+<<-SQL DELETE FROM users WHERE admin = FALSE; SQL
+
+# Стоит использовать, если нужно быстро удалить пачку данных без логики и зависимостей
+
+
+
+puts '                                               destroy_all'
+
+# destroy_all - метод удаляет записи через ActiveRecord по одной записи, вызывает все колбэки и валидации. Работает медленно изза удаления по 1й записи. Удаляет зависимые объекты (dependent: :destroy)
+
+# Пример:
+User.where(admin: false).destroy_all
+# Под капотом:
+User.where(admin: false).each(&:destroy)
+
+# Генерируемые SQL-запросы (примерно):
+<<-SQL
+SELECT * FROM users WHERE admin = FALSE; -- загружается в память
+DELETE FROM users WHERE id = 1;
+DELETE FROM users WHERE id = 2;
+SQL
