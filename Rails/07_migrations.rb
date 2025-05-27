@@ -117,6 +117,18 @@ end
 add_column :users, :username, :string
 
 
+# Пример индекса по множеству полей value, cabinet_id, category_type в таблице dictionaries:
+# $ bin/rails generate migration AddIndexToDictionariesOnValueCabinetAndCategory
+class AddIndexToDictionariesOnValueCabinetAndCategory < ActiveRecord::Migration[7.1]
+  def change
+    add_index :dictionaries, [:value, :cabinet_id, :category_type], name: "index_dictionaries_on_value_cabinet_and_category"
+  end
+end
+# $ bin/rails db:migrate
+# Такой индекс ускорит запросы вида:
+Dictionary.find_by(value:, cabinet_id:, category_type:)
+
+
 
 puts '                                         add_reference'
 

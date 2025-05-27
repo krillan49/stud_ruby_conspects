@@ -232,3 +232,11 @@ SELECT * FROM users WHERE admin = FALSE; -- загружается в памят
 DELETE FROM users WHERE id = 1;
 DELETE FROM users WHERE id = 2;
 SQL
+
+
+
+puts '                                                 Всякое'
+
+# returning
+products = Product.insert_all(new_products, returning: %w[id]) # PostgreSQL only
+# returning: %w[id] вернёт массив созданных id, которые ты сможешь привязать к barcodes
