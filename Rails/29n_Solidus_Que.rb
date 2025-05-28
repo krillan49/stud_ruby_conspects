@@ -33,6 +33,13 @@ gem 'solidus_que'   # solidus_que - адаптер Que для Solidus (опци�
 config.active_job.queue_adapter = :que
 
 
+# Пример из wb-a2:
+# прописать явно в config/enviroment/development
+config.active_job.queue_adapter = :solid_queue
+# запустить в отдельном терминале
+# $ rails solid_queue:start
+
+
 
 puts '                                           Запуск и другие команды'
 
@@ -43,10 +50,10 @@ puts '                                           Запуск и другие к
 # $ bin/rails solid_queue:prune
 
 
-# Требует явного запуска worker'а
+# Требует явного запуска worker'а:
+# $ rails solid_queue:start                         - варик 1
+# $ bundle exec que ./config/environment.rb         - варик 2 (Нужно запускать отдельный worker-процесс)
 
-# Нужно запускать отдельный worker-процесс:
-# $ bundle exec que ./config/environment.rb
 
 # Можно добавить solid_queue в Procfile.dev:
 web: bin/rails server

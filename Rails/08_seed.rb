@@ -39,6 +39,82 @@ end
 
 
 
+puts '                             Пример скрипта с очисткой БД перед заполнением'
+
+# Скрипт очищает БД и создает 1 продавца и 1 приглашенного им через кабинет и приглашение менеджера
+
+
+# db/seeds:
+require 'securerandom' # для генерации токенов
+
+puts  "Очистка данных..." # ?? чтобы выделять в логах и было видно что создается и после чего ошибки ??
+
+CabinetAccess.delete_all
+Invitation.delete_all
+Manager.delete_all
+Cabinet.delete_all
+Seller.delete_all
+
+# Сброс последовательностей ID (PostgreSQL) ??ключи и индексы, которые не удаляютмя и так??
+%w[cabinet_accesses invitations managers cabinets sellers].each do |table|
+  ActiveRecord::Base.connection.reset_pk_sequence!(table)
+end
+
+puts "Создание продавца..."
+
+seller = Seller.create!(
+  email: "seller@example.com",
+  password: "123456",
+  password_confirmation: "123456",
+  name: "Kroker",
+  phone: "+79991234567"
+)
+
+puts "Создание кабинета..."
+
+cabinet = Cabinet.create!(
+  name: "Главный кабинет",
+  wb_api_token: SecureRandom.hex(16),
+  seller: seller
+)
+
+puts "Создание приглашения..."
+
+manager_email = "manager@example.com"
+
+invitation = Invitation.create!(
+  email: manager_email,
+  token: SecureRandom.hex(10),
+  cabinet: cabinet,
+  seller: seller,
+  role: "admin"
+)
+
+puts "Создание менеджера..."
+
+manager = Manager.create!(
+  email: manager_email,
+  password: "123456",
+  password_confirmation: "123456",
+  name: "Gonzik",
+  phone: "+79997654321"
+)
+
+puts "Привязка менеджера к кабинету..."
+
+CabinetAccess.find_or_create_by!(
+  manager: manager,
+  cabinet: cabinet,
+  invitation: invitation
+)
+
+puts "Готово!"
+puts "  Seller: #{seller.email}"
+puts "  Cabinet: #{cabinet.name}"
+puts "  Manager: #{manager.email}"
+
+
+
 puts '                                               Faker'
 
 # https://github.com/faker-ruby/faker
