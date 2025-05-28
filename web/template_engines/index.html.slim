@@ -1,0 +1,13 @@
+h1 Список пользователей
+
+- if @users.any?
+  ul
+    - @users.each do |user|
+      li
+        strong = user.name
+        |  — 
+        = user.email
+        - if user.admin?
+          em (Администратор)
+- else
+  p Пользователи не найдены.

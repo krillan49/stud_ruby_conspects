@@ -1,0 +1,16 @@
+<h1>Список пользователей</h1>
+
+<% if @users.any? %>
+  <ul>
+    <% @users.each do |user| %>
+      <li>
+        <strong><%= user.name %></strong> — <%= user.email %>
+        <% if user.admin? %>
+          <em>(Администратор)</em>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Пользователи не найдены.</p>
+<% end %>
