@@ -38,6 +38,24 @@ some.to_i
 12345.digits(100) #=> [45, 23, 1]
 
 
+# Integer(value.to_s) и value.to_s.to_i оба приводят значение к целому числу, но отличаются по поведению:
+#                                      Integer(value)      value.to_i
+# Бросает исключение, если не число    Да (ArgumentError)  Нет (возвращает 0)
+# Обрабатывает только валидную строку  Да (строго)         Нет (пытается вытащить цифры в начале)
+# Подходит для валидации               Лучше               Нет
+# Пример "12abc"                       ArgumentError       12
+# Пример "abc"                         ArgumentError       0
+
+# Примеры:
+Integer("123abc") #=> ArgumentError (invalid value for Integer(): "123abc")
+"123abc".to_i     #=> 123
+
+Integer("abc")    #=> ArgumentError (invalid value for Integer(): "abc")
+"abc".to_i        #=> 0
+
+nil.to_i          #=> 0
+
+
 
 puts '                                             Float'
 

@@ -2,6 +2,7 @@ puts '                                         Rubocop'
 
 # https://docs.rubocop.org/rubocop/1.59/index.html
 
+
 # Установка для Рэилс: https://docs.rubocop.org/rubocop/1.59/installation.html
 group :development do
   gem 'rubocop', '~> 1.59', require: false
@@ -15,6 +16,9 @@ end
 # Сконфигурируем Рубокоп:
 # .rubocop.yml - создадим конфигурационный фаил с таким названием в корневой папрке проекта(создадим и заполним тут)
 
+
+
+puts '                               Запуск проверок и исправления'
 
 # Запуск проверки(в корневой директории проекта)
 # > rubocop                    # обычный
