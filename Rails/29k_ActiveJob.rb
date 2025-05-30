@@ -84,7 +84,7 @@ puts '                                         Solidus Que'
 
 puts '                           Узнать, какой адаптер используется в проекте'
 
-# 1. Проверь config/application.rb обычно адаптер указывается явно:
+# 1. Проверить config/application.rb обычно адаптер указывается явно:
 
 # config/application.rb
 module YourApp
@@ -95,39 +95,31 @@ module YourApp
 end
 
 
-# 2. Проверь config/environments/*.rb. Иногда адаптер задают по-разному для dev/test/prod:
+# 2. Проверить config/environments/*.rb. Иногда адаптер задают по-разному для dev/test/prod:
 
 # config/environments/production.rb
 Rails.application.configure do
   config.active_job.queue_adapter = :sidekiq
 end
 
+# Например здесь адаптер не задан явно, поэтому используется дефолтный, указанный в application.rb
+# config/environments/development.rb:
+config.active_job.verbose_enqueue_logs = true
 
-# 3. Выведи адаптер в консоли Rails. Открой Rails console и выполни:
-Rails.application.config.active_job.queue_adapter
-# Примеры вывода:
-# => :que
+
+# 3. Вывести адаптер в консоли Rails:
+# > Rails.application.config.active_job.queue_adapter
+#=> :que
 # или
-# => ActiveJob::QueueAdapters::SidekiqAdapter
+#=> ActiveJob::QueueAdapters::SidekiqAdapter
+# или
+#=> :async   #(Значит в development по умолчанию используется :async, который не использует фоновых воркеров)
 
 
-# 4. Поиск по коду. Можно найти все упоминания queue_adapter:
+# 4. Поиск по коду. Можно найти все упоминания например queue_adapter:
 # $ grep -rn "queue_adapter" config/
 
 
-# 5. Проверь загруженные гемы. Иногда по Gemfile.lock можно догадаться:
+# 5. Проверить загруженные гемы. Иногда по Gemfile.lock можно догадаться:
 # $ grep que Gemfile.lock
 # $ grep sidekiq Gemfile.lock
-
-
-
-
-
-
-
-
-
-
-
-
-#
