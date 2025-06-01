@@ -1,0 +1,149 @@
+puts '                                               enum'
+
+# Если нужно добавить сложную логику (например, переходы между статусами), можно использовать гемы вроде `aasm` или `statesman`, но для простых случаев `enum` вполне достаточно
+
+# в PostgreSQL есть свои enum со спец типом данных для БД:
+# https://naturaily.com/blog/ruby-on-rails-enum
+
+# enum - перечисления это удобный способ работы с атрибутами, которые могут принимать ограниченный набор значений. В Rails позволяет представить строковые или числовые значения из поля в БД как символические значения в объектах AR, которые мы назначим конкретным значениям из БД (типа псевдонимы реальных значений). Так же предоставляет различные методы для этих полей: геттеры, сеттеры, методы проверки значения
+
+# enum корркутно использовать, для полей вроде: status, role, state, kind итд. Тоесть для тех полей, которые могут содержать ограниченное число значений, которые по тем или иным причинам мы не хотим выносить в отдельную таблицу.
+
+# enum бывает 2х видов: числовой и строковый
+enum status: { enabled: 0, disabled: 1 }             # числовой (даем псевдонимы числовым значениям в колонке БД)
+enum :status, { sold: "Продано", return: "Возврат" } # строковый, только для PostgreSQL (даем псевдонимы строковым значениям в колонке БД)
+
+# В БД строки ищутся по реальным значениям
+<<-SQL SELECT * FROM sellers WHERE status = 0; SQL
+<<-SQL SELECT * FROM purchases WHERE status = 'Продано'; SQL
+
+# Если нужно добавить новые значения, потребуется новая миграция
+
+# Зачем это нужно?
+# Читаемость кода: Вместо чисел например (0, 1) - понятные символы
+# Безопасность: Нельзя записать произвольное значение, только из enum
+# Удобство: Автоматические методы для работы со статусами
+
+
+
+puts '                                           Числовой enum'
+
+# Числовой enum - значения в поле в БД, к которым применен enum, должны иметь тип integer
+
+
+# Пример миграции для создания колонки(если ее еще нет) к которой применим числовой enum:
+class AddRoleToUsers < ActiveRecord::Migration[7.0]
+  def change
+    add_column :users, :role, :integer, default: 0, null: false # тоесть создаем колонку role с типом integer и значением по умолчанию 0
+    # default: 0, null: false - добавим значение по умолчанию для роли - 0 и невозможность пустой роли (не обязательно)
+    add_index :users, :role # так же логично добавить индекс для данной колонки, тк выборка по нему скорее всего будет частой
+  end
+end
+
+# Пример модели где применяем числовой вид enum к полю role, при посмощи его оператора
+class User < ApplicationRecord
+  # Синтаксис 1. Хэш со всеми возможными значениями (любым количеством) из БД и именами-псевдонимами для них в виде символов
+  enum role: { basic: 0, moderator: 1, admin: 2 }, _suffix: :role
+  # basic: 0, moderator: 1, admin: 2 - хэш с любым количеством любых имен ролей с привязкой к номерам из БД
+  # _suffix: :role - необязательный суффикс (тут "role") который добавится к именам методов с `?`
+end
+# Теперь в объектах модели значение поля role равное 0 будет иметь псевдоним :basic, значение 1 будет иметь псевдоним :moderator, а значение 2 будет иметь псевдоним :admin
+# Допустимые значения для role - :category, :basic, :moderator, :admin
+
+# Rails автоматически создаёт методы для проверки и изменения значений. Проверим (например в консоли Рэилс $ rails c):
+
+# Метод класса модели имя которого это имя колонки с `s` - получаеn от enum хэш всех возможных ролей:
+User.roles      #=> { basic: 0, moderator: 1, admin: 2 }
+
+# Методы класса (scope) для поиска всех строк с определенным значением в enum-поле:
+User.admin  #=> ActiveRecord::Relation
+# аналог для:
+User.where(role: :admin)
+
+# При создании экземпляра, enum автоматически конвертирует цифру из БД в заданное нами значение (тут 0 в "basic") и поместит его в соответсвующее свойство экземпляра:
+u = User.first                  #=> #<User:0x000001cd7ed4adf8 id: 1, ... , role: "basic">
+u2 = User.new                   #=> #<User:0x000001cd7ed4adf8 id: 25, ... , role: "basic">
+u3 = User.new(role: :moderator) #=> #<User:0x000001cd7ed4adf8 id: 26, ... , role: "moderator">
+
+# Проверка допустимых значений
+u.role = :invalid
+u.valid?  #=> false       (так как :invalid нет в enum)
+
+# Сеттер и геттер с именем свойства использующие "псевдоним", возвращает значение из enum, в сооответсвии с числом из БД:
+u.role             #=> "basic"
+u.role = :admin
+u.role             #=> "admin"
+# При пременении геттера чтобы изменить значение в БД нужно потом сохранять, например через save
+
+# Для каждого значения генерируется метод с `?` для проверки текущего значения (Предикаты). Имя генерируемых методов собирается из заданных в enum значений поля и настраиваемого суффикса если он добавлен(если нет суффикса было бы просто basic?, admin? итд)
+u.basic_role?   #=> true
+u.admin_role?   #=> false
+
+# Для каждого значения генерируется метод-переключатель с `!` для изменения значения. Переключатели, меняют значение свойства на значение одноименное методу:
+u.moderator! # устанавливает u.role = :moderator
+u.role       #=> :moderator
+
+# ..._before_type_cast - метод возвращает "сырое" текушее значение, которое хранится в БД. Используется внутри Rails для преобразования типов
+u.role_before_type_cast #=> 0
+
+
+# Пример модели с синтаксисом через массив и без суффикса (так можно создать только числовой enum)
+class Dictionary < ApplicationRecord
+  enum :category_type, %i[category status provider status_value]
+  # Значения в массиве соответсвуют числам своих индексов, это равнозначно:
+  # { category: 0, status: 1, provider: 2, status_value: 3 }
+end
+
+dict = Dictionary.new(category_type: :status)
+Dictionary.category_types #=> { "category" => 0, "status" => 1, "provider" => 2, "status_value" => 3 }
+dict.status?      #=> true
+dict.provider!
+dict.provider?    #=> true
+
+# Пример использования:
+dict = Dictionary.create(category_type: :provider) # Создание записи
+dict.update(category_type: :status_value)          # Обновление записи
+Dictionary.where(category_type: :status)           # Поиск по значению
+
+Dictionary.provider.each { |dict| puts dict.id }   # Все provider-ы
+
+
+
+puts '                                          Строковой enum'
+
+# Для PostgreSQL можно использовать строковые enum, тоесть где значения в БД - строки
+
+# По умолчанию enum использует Integer. Если нужно хранить строки, нужно указать это явно через синтаксис хэша
+enum :category_type, { category: "cat", status: "sts" }, default: "cat"
+
+# Пример миграции для строчного enum:
+add_column :purchases, :status, :string
+
+# Пример модели для строчного enum:
+class Purchase < ApplicationRecord
+  enum status: { sold: "Продано", return: "Возврат" }
+end
+
+purchase = Purchase.new
+purchase.status = :sold
+purchase.status #=> "sold"
+purchase.sold?  #=> true
+
+
+
+puts '                                        acts_as_tenant + enum'
+
+# Если модель с acts_as_tenant и enum, всё работает в комплексе:
+class Dictionary < ApplicationRecord
+  acts_as_tenant :cabinet
+  enum :category_type, %i[category status provider status_value]
+end
+
+ActsAsTenant.current_tenant = cabinet
+
+Dictionary.create!(
+  value: "Nike",
+  category_type: :provider,
+  author: current_seller
+)
+# Rails сам подставит cabinet_id, и сохранит category_type = 2, если :provider — третий в списке
