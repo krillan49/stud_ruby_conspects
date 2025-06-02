@@ -128,22 +128,3 @@ purchase = Purchase.new
 purchase.status = :sold
 purchase.status #=> "sold"
 purchase.sold?  #=> true
-
-
-
-puts '                                        acts_as_tenant + enum'
-
-# Если модель с acts_as_tenant и enum, всё работает в комплексе:
-class Dictionary < ApplicationRecord
-  acts_as_tenant :cabinet
-  enum :category_type, %i[category status provider status_value]
-end
-
-ActsAsTenant.current_tenant = cabinet
-
-Dictionary.create!(
-  value: "Nike",
-  category_type: :provider,
-  author: current_seller
-)
-# Rails сам подставит cabinet_id, и сохранит category_type = 2, если :provider — третий в списке

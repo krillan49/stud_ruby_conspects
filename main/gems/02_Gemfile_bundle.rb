@@ -52,9 +52,11 @@ gem "letter_opener", group: :development # вариант поместить в 
 # > bundle i            - алиас bundle install
 # > bundle              - алиас bundle install, раньше этого не было
 
-# > bundle update       - обновит все гемы до максимально возможных версий
-# > bundle u            - алиас bundle update
+# > bundle update             - обновит все гемы до максимально возможных версий
+# > bundle u                  - алиас bundle update
+# $ bundle update stringio    - обновит конкретный геи (тут stringio)
 
+# outdated - проверяет, нет ли в вашем Gemfile.lock конфликтующих версий gems и какие версии стоит обновить
 # > bundle outdated     - проверить какие библиотеки в нашем приложении можно обновить
 # > bundle out          - алиас для outdated
 
