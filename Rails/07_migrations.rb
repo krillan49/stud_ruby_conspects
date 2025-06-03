@@ -44,6 +44,18 @@ t.belongs_to :article, null: false, foreign_key: true  # в таблице ук�
 
 
 
+puts '                                          drop_table'
+
+# drop_table - метод для удаления таблицы, принимает имя таблицы
+
+class DropDictionariesTable < ActiveRecord::Migration[7.0]
+  def change
+    drop_table :dictionaries
+  end
+end
+
+
+
 puts '                                       change_column_null'
 
 # change_column_null - метод, который вызывается в методе change, в классе миграции, он назначает/снимает ограничение NOT NULL в заданную переданным в него параметром колонку/поле таблицы (валидация на уровне БД). Применяется к одному полю одной таблицы, для другого поля нужно вызвать метод еще раз. При выполнении миграции с применением этого метода никакие данные потеряны не будут
@@ -209,6 +221,71 @@ class RemoveDefaultUserIdFromQuestionsAnswers < ActiveRecord::Migration[6.1]
   end
 
   # Все тоже самое можно было бы сделать и используя метод change, но тогда писать from: User.first.id, to: nil обязательно иначе будет неоткатываемо
+end
+
+
+
+puts '                     Изменения таблиц с кодом переноса данных прямо в миграции'
+
+# Старая таблица из схемы, которую нужно разбить по полю `category_type`, оно `enum` и на основе категорий таблица содежит в себе какбы подраблицы "обособленные" по значению этого поля 
+create_table "dictionaries", force: :cascade do |t|
+  t.bigint "cabinet_id", null: false
+  t.string "value", null: false
+  t.integer "category_type", null: false
+  t.string "author_type", null: false
+  t.bigint "author_id", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+  t.index ["author_type", "author_id"], name: "index_dictionaries_on_author"
+  t.index ["cabinet_id"], name: "index_dictionaries_on_cabinet_id"
+  t.index ["value", "cabinet_id", "category_type"], name: "index_dictionaries_on_value_cabinet_and_category"
+end
+
+# Создание новых таблиц (миграции)
+class SplitDictionaryTables < ActiveRecord::Migration[8.0]
+  def change
+    # 1. Создаем новые отдельные таблицы для каждого типа значений из поля `category_type` старой таблицы
+    create_table :category_dictionaries do |t|
+      t.bigint :cabinet_id, null: false
+      t.string :value, null: false
+      t.string :author_type, null: false
+      t.bigint :author_id, null: false
+      t.timestamps
+      t.index ["cabinet_id"], name: "index_category_dictionaries_on_cabinet_id"
+      t.index ["author_type", "author_id"], name: "index_category_dictionaries_on_author"
+    end
+
+    create_table :status_dictionaries do |t|
+      # аналогичная структура
+    end
+
+    create_table :provider_dictionaries do |t|
+      # аналогичная структура
+    end
+
+    create_table :status_value_dictionaries do |t|
+      # аналогичная структура
+    end
+
+    # 2. Перенос данных из dictionaries в новые таблицы
+    Dictionary.where(category_type: :category).find_each do |dict|
+      CategoryDictionary.create!(dict.attributes.except('id', 'category_type'))
+    end
+    # Повторить для других типов...
+
+    # 3. Обновляем внешние ключи в связанных таблицах
+    change_table :barcodes do |t|
+      t.rename :category_id, :category_dictionary_id
+      t.rename :status_value_id, :status_value_dictionary_id
+    end
+
+    change_table :products do |t|
+      t.rename :status_id, :status_dictionary_id
+    end
+
+    # 4. Удаляем старую таблицу (после проверки данных)
+    drop_table :dictionaries
+  end
 end
 
 
