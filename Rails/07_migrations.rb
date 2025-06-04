@@ -44,6 +44,43 @@ t.belongs_to :article, null: false, foreign_key: true  # в таблице ук�
 
 
 
+puts '                         Удаление старых и добавление новых внешних ключей'
+
+# db/migrate/20250530120100_update_foreign_keys_to_new_dictionaries.rb
+class UpdateForeignKeysToNewDictionaries < ActiveRecord::Migration[8.0]
+  def change
+    # Часть 1: Удаление старых foreign keys
+    remove_foreign_key :barcodes, column: :category_id if foreign_key_exists?(:barcodes, column: :category_id)
+    remove_foreign_key :barcodes, column: :status_value_id if foreign_key_exists?(:barcodes, column: :status_value_id)
+    remove_foreign_key :products, column: :status_id if foreign_key_exists?(:products, column: :status_id)
+    remove_foreign_key :purchases, column: :provider_id if foreign_key_exists?(:purchases, column: :provider_id)
+    # а) Удаляет существующие ограничения внешнего ключа, которые связывали:
+    # barcodes.category_id → dictionaries.id
+    # barcodes.status_value_id → dictionaries.id
+    # products.status_id → dictionaries.id
+    # purchases.provider_id → dictionaries.id
+    # б) Проверка if foreign_key_exists? делает миграцию идемпотентной (безопасной для повторного запуска)
+
+    # Часть 2: Создание новых foreign keys
+    add_foreign_key :barcodes, :category_dictionaries, column: :category_id
+    add_foreign_key :barcodes, :status_value_dictionaries, column: :status_value_id
+    add_foreign_key :products, :status_dictionaries, column: :status_id
+    add_foreign_key :purchases, :provider_dictionaries, column: :provider_id
+    # Создает новые ограничения, перенаправляя связи:
+    # barcodes.category_id → category_dictionaries.id
+    # barcodes.status_value_id → status_value_dictionaries.id
+    # products.status_id → status_dictionaries.id
+    # purchases.provider_id → provider_dictionaries.id
+  end
+end
+
+# Миграция работает в паре с предыдущей (CreateSeparateDictionariesTables), где:
+# Создаются новые таблицы (category_dictionaries, status_dictionaries и др. вместо 1й dictionaries с scoped association)
+# Данные из dictionaries распределяются по этим таблицам
+# Эта миграция обновляет связи, чтобы они указывали на новые таблицы
+
+
+
 puts '                                          drop_table'
 
 # drop_table - метод для удаления таблицы, принимает имя таблицы
@@ -290,15 +327,102 @@ end
 
 
 
+puts '                           Правильный синтаксис для связей в миграции'
+
+# Вариант 1 (отдельными полями):
+def change
+  create_table :category_dictionaries do |t|
+    t.bigint :cabinet_id, null: false
+    t.string :value, null: false
+    t.string :author_type, null: false
+    t.bigint :author_id, null: false
+
+    t.timestamps
+  end
+end
+
+
+# Вариант 2 (связями и внешними ключами):
+def change
+  create_table :category_dictionaries do |t|
+    t.references :cabinet, null: false, foreign_key: true # автоматически создает индекс
+    t.string :value, null: false
+    t.references :author, polymorphic: true, null: false
+
+    t.timestamps
+  end
+end
+# Современный синтаксис: 
+# Использование t.references вместо ручного указания bigint
+# Автоматическое добавление _id к именам полей
+# Явное указание foreign_key: true для связей
+
+
+# Для полиморфных связей предпочтительно:
+t.references :author, polymorphic: true, null: false
+# вместо
+t.string :author_type
+t.bigint :author_id
+
+
+# Foreign keys лучше добавлять сразу:
+t.references :cabinet, null: false, foreign_key: true
+# вместо
+t.bigint :cabinet_id
+add_foreign_key :category_dictionaries, :cabinets
 
 
 
+puts '                           Правильный синтаксис для индексов в миграции'
+
+# Каким синтаксисом лучше и корректнее пользоваться при создании индексов в миграциях из тех 2х вариантов:
+
+# Оба варианта корректны, но есть важные различия в удобстве и возможностях:
 
 
+# Вариант 1 (внутри блока создания таблицы):
+def change
+  create_table :category_dictionaries do |t|
+    t.references :cabinet, null: false, foreign_key: true
+    t.references :author, polymorphic: true, null: false
+    t.timestamps
+    t.index ["cabinet_id"], name: "index_category_dictionaries_on_cabinet_id"
+    t.index ["author_type", "author_id"], name: "index_category_dictionaries_on_author"
+  end
+end
+
+# Лучше подходит для простых индексов на одно поле:
+create_table :users do |t|
+  t.string :email, null: false
+  t.index [:email], unique: true  # Коротко и понятно
+end
+# Лучше, если важно явно контролировать имена индексов (?? почему это ??)
 
 
+# Вариант 2 (вне блока создания таблицы) - Оптимальный выбор:
+def change
+  create_table :category_dictionaries do |t|
+    t.references :cabinet, null: false, foreign_key: true
+    t.references :author, polymorphic: true, null: false
+    t.timestamps
+  end
+  # (на самом деле не нужно) Индекс для колонки с foreign_key: true создается автоматически
+  add_index :category_dictionaries, [:cabinet_id], unique: true
+  # (на самом деле не нужно) Индексы [:author_type, :author_id] создаются автоматически для полиморфных связей в современных версиях Rails. начиная с Rails 5.1, метод t.references :author, polymorphic: true по умолчанию добавляет составной индекс на поля author_type и author_id
+  add_index :category_dictionaries, [:author_type, :author_id], name: "idx_category_dicts_on_author"
+end
+
+# Лучшая читаемость:
+# Основная структура таблицы отделена от индексов
+# Сложные индексы (вроде уникальных) явно видны в конце
+
+# Автоматические имена индексов:
+# Rails сам сгенерирует корректные имена (например, index_category_dictionaries_on_author_type_and_author_id)
+# Можно переопределить через `name: "custom_name"` если нужно
+
+# Гибкость:
+# Для составных индексов с опциями (unique: true, where:) синтаксис вне блока чище
 
 
-
-
-#
+# Для уникальных индексов добавьте unique: true:
+add_index :category_dictionaries, [:value, :cabinet_id], unique: true
