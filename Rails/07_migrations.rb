@@ -108,6 +108,19 @@ class UpdateForeignKeysToNewDictionaries < ActiveRecord::Migration[8.0]
   end
 end
 
+add_foreign_key :barcodes, :barcode_withdrawals, column: :withdrawal_id
+# add_foreign_key не переименует колонку — он только добавляет внешний ключ к уже существующей колонке. То есть если у тебя нет колонки withdrawal_id в таблице barcodes, то эта команда вызовет ошибку
+
+
+
+puts '                                         rename_column'
+
+# rename_column - метод чтобы переименовать колонку
+rename_column :barcodes, :status_value_id, :withdrawal_id
+# :barcodes        - имя таблицы
+# :status_value_id - текущее (старое) имя колонки
+# :withdrawal_id   - новое имя колонки
+
 
 
 puts '                                          drop_table'
