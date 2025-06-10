@@ -1,4 +1,17 @@
-puts '                                     Система таблиц в кабинете'
+# tables/cabinets/purchase_list_table.rb
+# tables/cabinets/purchase_list_table/querry.rb
+
+# tables/cabinets/product_list_table.rb
+# tables/cabinets/product_list_table/querry.rb
+
+# servises/sell_editor/adapter.rb
+# servises/sell_editor/dictionary_adapter.rb
+# views/cabinets/sell_editor/_dict.html.erb
+
+
+
+
+puts '                                          Система таблиц'
 
 # Эта система предоставляет функциональность для отображения и управления таблицами, например таблицей продуктов в кабинете пользователя. Она состоит из нескольких взаимосвязанных классов, которые обеспечивают:
 
@@ -6,8 +19,6 @@ puts '                                     Система таблиц в каб
 # 2. Настройку отображения таблицы
 # 3. Сортировку и пагинацию
 # 4. Редактирование данных прямо в таблице
-
-# Эта система предоставляет гибкий и мощный инструмент для работы с табличными данными, с поддержкой сортировки, пагинации и inline-редактирования
 
 
 
@@ -34,27 +45,27 @@ class Cabinets::ProductsController < ApplicationController
   # ...
 end
 
-# Далее, например в show.html.slim рендерим через объект компонента, который принимает объект таблицы
+# Далее, например в show.html.slim рендерим таблицу при помощи объекта компонента, который принимает объект таблицы
 render DatatableComponent.new(table: @table)
 
-# Класс компонента, который возвращает свойства app/components/datatable_component.rb
+# app/components/datatable_component.rb - класс компонента, который возвращает свойства 
 
-# вью находится в той же директории что и компонент app/components/datatable_component.html.erb
+# app/components/datatable_component.html.erb - вью находится в той же директории что и компонент 
 
 # Использование таблицы
-items = @table.items # Загруженные и отформатированные данные из Query:
-#<=>
+items = @table.items # Загруженные и отформатированные данные из Query
+# items метод создает объект Query:
 query = Cabinets::ProductListTable::Query.new(123)
-products = query.with_context(context) # context содержит параметры пагинации и сортировки
+products = query.with_context(context) # context (Context) содержит параметры пагинации и сортировки
 
-# Получение информации о колонках
-table.meta.columns.each do |column|
-  puts "#{column.name}: sortable=#{column.sortable?}, editable=#{column.editable?}"
+# Получение информации о колонках при помощи созданных системой методов:
+@table.meta.columns.each do |column|
+  p [column.name, column.sortable?, column.editable?]
 end
 
 
 
-puts '                           Основной класс для работы с таблицей продуктов'
+puts '                           Основной класс для работы с конкретной таблицей'
 
 # Cabinets::ProductListTable - основной класс для работы с таблицей продуктов, наследуется от Table
 
@@ -67,8 +78,8 @@ module Cabinets
     # Метаданные (через DSL). Определяет колонки таблицы и их свойства
     meta do |m|
       #                                1. Базовые настройки таблицы:
-      m.entity_name :product # Устанавливает имя сущности для: Локализации заголовков колонок (будет искать переводы по пути entities.product.*) и использования в других частях системы для идентификации типа данных
-      m.sorting true # Активирует возможность сортировки для всей таблицы. Если false - сортировка будет отключена, даже если отдельные колонки помечены как sortable
+      m.entity_name :product # Устанавливает имя сущности
+      m.sorting true         # Активирует возможность сортировки для всей таблицы
 
       #                                2. Определения колонок:
       # а) Простые колонки (без дополнительных параметров)
@@ -95,7 +106,7 @@ module Cabinets
       # Параметры колонок:
       # sortable - можно ли сортировать по этой колонке
       # format   - формат отображения (:image, :date_format)
-      # editor   - настройки редактирования (тип поля, словарь для выбора и т.д.)
+      # editor   - настройки для редактирования колонки (тип поля, словарь для выбора и т.д.)
     end
 
     # Инициализация таблицы с параметрами и ID кабинета
@@ -105,19 +116,22 @@ module Cabinets
       @editor_url = "cell"
     end
 
-    # Возвращает элементы таблицы с применением пагинации и сортировки
+    # Геттер, возвращают (во вью например) элементы таблицы с применением пагинации и сортировки
     def items
       Query.new(@cabinet_id).with_context(context) 
       # context - экземпляр Context с параметрами запроса, геттер определенный в Table
     end
 
-    # Форматирует URL изображения в HTML-тег img
+
+    # Методы для применения в `meta`:
+
+    # Изпользуется в `meta` в виде `format: :image`. Форматирует URL изображения в HTML-тег img
     def image(product, column)
       url = product[column.name]
       "<img src='#{url}' class='w5 h5' style='max-height: 60px'>".html_safe if url.present?
     end
 
-    # Форматирует дату в строку
+    # Изпользуется в `meta` в виде `format: :date_format`. Форматирует дату в строку
     def date_format(product, column)
       product.send(column.name).try(:strftime, '%d-%m-%Y')
     end
@@ -125,22 +139,24 @@ module Cabinets
 end
 
 
-# Общая структура блока meta (Этот DSL предоставляет гибкий способ настройки таблицы без необходимости изменять HTML или JavaScript код.):
+#                                            Блок meta
+
+# Блок meta - этот DSL предоставляет способ настройки таблицы без необходимости изменять HTML или JavaScript:
 meta do |m|
   #                             1. Базовые настройки таблицы
 
   m.entity_name :product # Устанавливает имя сущности для:
-  # Локализации заголовков колонок (будет искать переводы по пути entities.product.*)
-  # Использования в других частях системы для идентификации типа данных
+  # а) Локализации заголовков колонок, например будет искать переводы по пути `entities.product.*`
+  # б) Использования в других частях системы для идентификации типа данных
 
-  m.sorting true # Активирует возможность сортировки для всей таблицы. Если false - сортировка будет отключена, даже если отдельные колонки помечены как sortable
+  m.sorting true # Активирует возможность сортировки для всей таблицы. Если значение будет false то сортировка будет отключена, даже если отдельные колонки помечены как sortable
   
 
   #                            2. Определения колонок
 
-  # m.column :column_name, options - шаблон
+  # m.column :column_name, options - шаблон определения колонок
 
-  # а) Базовые колонки, отображающие данные как есть (без дополнительных параметров) По умолчанию:
+  # а) Базовые колонки, просто отображающие данные как есть, без дополнительных параметров. Они по умолчанию:
   # sortable: true - можно сортировать
   # Нет специального форматирования
   # Не редактируемые
@@ -156,62 +172,68 @@ meta do |m|
   # б) Колонка с изображением
   m.column :big_photo_url, sortable: false, format: :image
   # sortable: false - отключает сортировку для этой колонки
-  # format: :image - специальное форматирование:
-  # Значение будет обработано методом image в классе таблицы
-  # Преобразует URL в HTML-тег <img>
-  # :image - обрабатывается методом image
+  # format: :image  - специальное форматирование при помощи обработки методом экземпляра этой таблицы `image` (Преобразует URL в HTML-тег <img>)
 
-  # в) Редактируемые колонки Общий синтаксис: m.column :field_name, editor: { options }
+  # в) Редактируемые колонки, редактирование задается опцией `editor: { options }`
 
   # Простое текстовое поле:
   m.column :user_title, editor: { field: :title, type: :string }
   # field: :title - указывает какое поле модели будет изменяться
   # type: :string - текстовый ввод
 
-  # Выбор из словаря:
-  m.column :status_value, editor: { 
-    field: :status_value_id, 
-    type: :dict, 
-    dictionary: :status_value 
-  }
-  # type: :dict               - выбор из предопределённых значений (словаря)
-  # dictionary: :status_value - имя словаря с вариантами выбора
+  # Выбор из словаря (описано ниже):
+  m.column :status_value, editor: { field: :status_value_id, type: :dict, dictionary: :status_value }
+  # type: :dict                - осуществляет выбор из предопределённых значений (селектор в HTML)
+  # dictionary: :status_value  - имя словаря с вариантами выбора (источник данных), где dictionary имя справочника
 
   # Денежное поле:
   m.column :ff_cost_price, editor: { field: :ff_cost_price, type: :money }
-  # type: :money - специальное поле для денежных значений
-  # Включает валидацию и форматирование
+  # type: :money - специальное поле для денежных значений (Включает валидацию и форматирование)
 
   # Поле даты:
   m.column :date_of_last_sale, editor: { type: :string }, format: :date_format
-  # Редактируется как строка
-  # Отображается с форматированием через метод date_format
-  # :date_format - обрабатывается методом date_format
+  # type: :string        - редактируется как строка
+  # format: :date_format - отображается с форматированием через обработку методом date_format
+
+  # Список возможных опций колонок
+  # sortable: false	            (Boolean)     Возможность/невозможность сортировки по колонке	                  
+  # format: :image	            (Symbol)	    Метод форматирования значения	                      
+  # caption: "SKU код"	        (String)	    Заголовок колонки (переопределяет автоматический)	  
+  # editor: {  }                (Hash)	      Настройки редактирования (см. ниже)	                
+  # * Параметры editor:
+  # type       - тип поля ввода (:string - текст, :dict - выбор из списка, :money - денежный)
+  # field	     - поле модели для сохранения (если отличается от имени колонки)
+  # dictionary - имя справочника для type: :dict
 
 end
 
-# Особые параметры редактора:
-# field      - если отличается от имени колонки
-# type       - тип поля ввода:
-# :string    - текст
-# :dict      - выбор из списка
-# :money     - денежная сумма
-# dictionary - имя справочника для типа :dict
-
-
-# Полный список параметров колонки
-# Параметр	Тип	        Описание	                                          Пример
-# sortable	Boolean	    Возможность сортировки по колонке	                  sortable: false
-# format	  Symbol	    Метод форматирования значения	                      format: :image
-# editor	  Hash	      Настройки редактирования (см. ниже)	                editor: { type: :string }
-# caption	  String	    Заголовок колонки (переопределяет автоматический)	  caption: "SKU код"
-
-# Параметры editor:
-# Ключ	      Значение	Описание
-# type	      Symbol	  Тип поля ввода (:string, :dict, :money)
-# field	      Symbol	  Поле модели для сохранения (если отличается от имени колонки)
-# dictionary	Symbol	  Имя справочника для type: :dict
-
+# Вариант из другой таблицы
+meta do |m|
+  m.entity_name :purchase
+  m.sorting true
+  m.column :big_photo_url, sortable: false, format: :image, caption: "Фото"
+  m.column :barcode, { caption: "Баркод" }
+  m.column :purchase_date, editor: { field: :purchase_date, type: :string }, caption: "Дата закупки",
+                          format: :date_format
+  m.column :nm_id, { caption: "Артикул ВБ" }
+  m.column :barcode_name, editor: { field: :barcode_name, type: :string }, caption: "Название баркода",
+                          format: :formatted_barcode_name
+  m.column :quantity, editor: { field: :quantity, type: :string }, caption: "Количество", format: :currency
+  m.column :provider_name, editor: { field: :provider_id, type: :dict, dictionary: :provider }, caption: "Поставщик"
+  m.column :price_per_unit, editor: { field: :price_per_unit, type: :string }, caption: "Цена за штуку",
+                            format: :currency
+  m.column :party_number, editor: { field: :party_number, type: :string }, caption: "№ партии", format: :currency
+  m.column :delivery_price_per_unit, editor: { field: :delivery_price_per_unit, type: :string },
+                                    caption: "Доставка на единицу от поставщика до ФФ/склада", format: :currency
+  m.column :marking_packaging_cost, editor: { field: :marking_packaging_cost, type: :string },
+                                    caption: "Стоимость маркировки и упаковки  на 1 шт (фф)", format: :currency
+  m.column :additional_packaging_cost, editor: { field: :additional_packaging_cost, type: :string },
+                                      caption: "Дополнительная упаковка", format: :currency
+  m.column :delivery_wb_cost, editor: { field: :delivery_wb_cost, type: :string },
+                              caption: "Отгрузка и доставка на ВБ с фф", format: :currency
+  m.column :comment, editor: { field: :comment, type: :string }, caption: "Комментарий",
+                    format: :truncate_column_value
+end
 
 # Как это работает в системе
 
@@ -232,24 +254,24 @@ end
 
 
 
+#                                Детальный разбор колонки status_value
 
-
-# Детальный разбор колонки status_value:
 m.column :status_value, editor: { 
   field: :status_value_id, 
   type: :dict, 
   dictionary: :status_value 
 }
 
+m.column :status_value # Колонка в таблице в HTML  отображается под именем `status_value`
+
 field: :status_value_id # Указывает какое поле в модели будет изменяться при редактировании
 # Когда пользователь редактирует значение в этой колонке, система будет обновлять поле `status_value_id` у записи. Сама колонка отображается как `status_value`, но редактируется через `status_value_id`
 
 type: :dict # Тип редактора - словарь (выпадающий список с фиксированными значениями)
-# В интерфейсе появится select (выпадающий список)
-# Пользователь сможет выбрать только из предопределённых значений
+# В интерфейсе появится select (выпадающий список) и пользователь сможет выбрать значение для редактирования только из предоставленных им значений
 
-dictionary: :status_value # Имя справочника, откуда брать варианты для выпадающего списка
-# Система ищет словарь с именем `status_value` в специально определённых местах. Точный источник зависит от реализации в вашем проекте, но обычно это::
+dictionary: :status_value # Имя справочника (источника), откуда будут взяты варианты для селектора
+# Система ищет словарь с именем `status_value` в специально определённых местах. Точный источник зависит от реализации в вашем проекте. Обычно это может быть:
 # a) Модель Dictionary::StatusValue или аналогичная:
 class Dictionary::StatusValue < ApplicationRecord
   # имеет поля :id, :name, :code и т.д.
@@ -258,7 +280,7 @@ end
 status_value:
   active: "Активный"
   inactive: "Неактивный"
-# c) Сервис, возвращающий список вариантов. Сервисный объект:
+# c) Сервисный объект, возвращающий список вариантов:
 class Dictionaries::StatusValuesService
   def self.options
     { 1 => "Active", 2 => "Inactive", 3 => "Pending" }
@@ -266,13 +288,13 @@ class Dictionaries::StatusValuesService
 end
 
 # Как работает в интерфейсе? 
-# 1. Отображение:
-# Таблица показывает человеко-читаемое значение (например "Активный")
-# Но в форме редактирования будет выпадающий список с вариантами
-# 2. Редактирование:
-# При клике на ячейку появится <select> с вариантами из словаря
-# При сохранении в БД запишется ID выбранного значения (в поле status_value_id)
-# 3. Преобразование данных. Система автоматически преобразует:
+# 1. Отображение: Ячейка показывает человеко-читаемое значение (например "Активный"), но в форме редактирования будет выпадающий список с вариантами
+# 2. Редактирование: При клике на ячейку появится <select> с вариантами из словаря. При сохранении в БД запишется ID выбранного значения (в поле status_value_id)
+<<-HTML
+<option value="1">Active</option>
+<option value="2">Inactive</option>
+HTML
+# 3. Система автоматически преобразует данные:
 # При отображении: ID → Текст (например 1 → "Active")
 # При сохранении: Текст → ID (например "Active" → 1)
 
@@ -294,31 +316,25 @@ end
 # | Inactive     |
 # | Active       |
 
-# При редактировании пользователь увидит выпадающий список с options:
-<<-HTML
-<option value="1">Active</option>
-<option value="2">Inactive</option>
-HTML
 
 
 # Как работает связь между колонкой таблицы status_value и моделью Dictionary в вашем проекте
 class Dictionary < ApplicationRecord
-  acts_as_tenant :cabinet # Каждая запись Dictionary привязана к конкретному кабинету (мультиарендность)
+  acts_as_tenant :cabinet
 
-  belongs_to :cabinet                   # принадлежит одному кабинету
-  belongs_to :author, polymorphic: true # Полиморфная связь: автором записи может быть как Seller, так и Manager
+  belongs_to :cabinet
+  belongs_to :author, polymorphic: true
 
   # category_type определяет тип словаря: категория, статус, поставщик итд
   enum :category_type, %i[category status provider status_value]
 
-  # Проверки: должны присутствовать значения value и category_type
-  validates :value, :category_type, presence: true
+  validates :value, :category_type, presence: true # должны присутствовать значения value и category_type
 end
 # Каждая запись имеет:
 # category_type (тип словаря, один из: category, status, provider, status_value)
 # value - собственно значение
 
-# Механизм работы. Когда в колонке указано dictionary: :status_value, система:
+# Механизм работы. Когда в колонке указано `dictionary: :status_value`, то система:
 # 1. Получает данные для выпадающего списка:
 Dictionary.where(category_type: :status_value).where(cabinet_id: current_cabinet.id).pluck(:id, :value)
 # Результат будет примерно таким:
@@ -349,17 +365,17 @@ HTML
 m.column :status_value, editor: { 
   field: :status_value_id, 
   type: :dict, 
-  dictionary: :status_value 
+  dictionary: :status_value # status_value - тут колонка из запроса Query, а не из таблицы
 }
-# 1. Источник данных:
-# Берется из barcodes.status_value_id (через JOIN в запросе ProductListTable::Query)
-# Связанная запись ищется в Dictionary.where(dictionary_type: :status_value)
+# 1. Источник данных(? Тоесть источник данных это сджойненный запрос из Query а не сами таблицы ?):
+# Берется из `barcodes.status_value_id` (через JOIN в запросе ProductListTable::Query)
+# Связанная запись ищется в `Dictionary.where(dictionary_type: :status_value)`
 # 2. Механизм выбора значений. При редактировании система:
-# а) Находит все записи в Dictionary с dictionary_type: :status_value
+# а) Находит все записи в `Dictionary` с `dictionary_type: :status_value`
 # б) Создает выпадающий список с этими вариантами
-# в) При сохранении обновляет barcodes.status_value_id
+# в) При сохранении обновляет `barcodes.status_value_id`
 # 3. Отображение значения:
-# Через JOIN в запросе получает dictionaries.value как status_value
+# Через JOIN в запросе получает `dictionaries.value` как `status_value`
 
 # Пример данных:
 
@@ -427,6 +443,7 @@ puts '                                    Класс для построения
 # Cabinets::ProductListTable::Query - класс для построения SQL-запроса для получения списка продуктов с возможностью сортировки
 
 # Query создается классом таблицы, например Cabinets::ProductListTable
+# Query использует Context для применения пагинации и сортировки
 
 module Cabinets
   class ProductListTable::Query
@@ -599,7 +616,7 @@ end
 
 
 
-puts '                                  Класс отдельной колонки таблицы'
+puts '                                  Класс отдельной колонки в таблице'
 
 # Column - описывает отдельную колонку таблицы.
 
@@ -684,7 +701,7 @@ end
 
 puts '                                Параметры редактирования для колонки'
 
-# Editor - описывает параметры редактирования для колонки
+# Editor - (редактор) нужен для настройки (описания) параметров редактирования для колонки
 
 # Типы редакторов:
 # :string - текстовое поле
