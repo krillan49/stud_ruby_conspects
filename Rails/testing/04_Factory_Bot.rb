@@ -1,8 +1,8 @@
-puts '                                         Factory Bot. Настройка'
+puts '                                             Factory Bot'
 
 # https://github.com/thoughtbot/factory_bot
 
-# Factory Bot - гем для создания фабрик при тестировании
+# FactoryBot - гем для удобного создания тестовых данных (создания фабрик и при помощи них данных). Он заменяет громоздкие конструкции вроде `User.create(...)` на простые и читаемые фабрики, которые можно переиспользовать в тестах.
 
 # Фабрика для тестирования - нужна чтобы не создавать в AR объекты для теста и тестовую БД, вместо этого создаётся фабрика, и она будет создавать нам объекты для теста. Это соотв принципу DRY тк не нужно создавать тестовую БД
 
@@ -12,6 +12,21 @@ puts '                                         Factory Bot. Настройка'
 # https://github.com/thoughtbot/factory_bot/blob/v4.9.0/UPGRADE_FROM_FACTORY_GIRL.md
 # https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md
 
+
+# Плюсы FactoryBot
+# 1. Уменьшает дублирование кода - один шаблон для всех тестов
+# 2. Делает тесты читаемыми - `create(:user)` вместо 10 строк `User.new(...)`
+# 3. Гибкость - traits, наследование, динамические значения.
+# 4. Интеграция с Faker - реалистичные тестовые данные.
+
+# Когда использовать?
+# Модельные тесты (RSpec, Minitest)
+# Интеграционные тесты (например, создание заказа с товарами)
+# Наполнение базы для разработки (через rails console)
+
+
+
+puts '                                         Установка и настройка'
 
 # Установка для Рэилс (Для Рэилс и без него разные подгемы и разная настройка):
 
@@ -79,6 +94,107 @@ describe Article do
   end
 end
 # > rake spec
+
+
+
+puts '                                    Как FactoryBot создает объекты'
+
+# 1. Варианты создания
+build(:user)          # создает объект в памяти (не сохраняет в БД)
+create(:user)         # создает и сохраняет в БД
+build_stubbed(:user)  # создает заглушку (fake-объект с ID, но без запроса к БД)
+attributes_for(:user) # возвращает хэш атрибутов (полезно для API-тестов)
+
+
+# 2. Жизненный цикл
+# Определение фабрики (один раз в spec/factories/*.rb)
+# Вызов в тестах (например, let(:user) { create(:user) })
+# Генерация данных (статически или через Faker)
+# Создание объекта (по выбранной стратегии: build/create)
+
+
+
+puts '                                        Основные концепции'
+
+# Фабрика (Factory) - это шаблон для создания объектов. Вместо ручного заполнения полей:
+user = User.create(name: "John", email: "john@example.com", admin: false)
+# Один раз описывается фабрика:
+FactoryBot.define do
+  factory :user do
+    name { "John" }
+    email { "john@example.com" }
+    admin { false }
+  end
+end
+# А затем в тестах просто вызывается:
+user = create(:user) # Создаст и сохранит в БД
+user = build(:user)  # Создаст объект в памяти (без сохранения)
+
+# Атрибуты (Attributes) - это поля объекта, которые можно:
+name { "John" }                 # зpадать статически
+email { Faker::Internet.email } # генерировать динамически
+# Поля могут зависить от других атрибутов (через ленивые вычисления)
+
+# Ассоциации (Associations) - позволяют автоматически создавать связанные объекты:
+factory :post do
+  title { "My Post" }
+  association :author, factory: :user # Создаст User и привяжет его к посту
+end
+# Эквивалентно:
+Post.create(title: "My Post", author: User.create(...))
+
+# Последовательности (Sequences) - генерация уникальных значений (например, для email или id):
+factory :user do
+  sequence(:email) { |n| "user#{n}@example.com" } #=> user1@..., user2@...
+end
+
+# Наследование (Traits и Inheritance)
+# Traits - дополнительные параметры для кастомизации:
+factory :user do
+  name { "John" }
+
+  trait :admin do
+    admin { true }
+  end
+end
+# Использование
+create(:user, :admin) # Пользователь с admin: true
+
+# Наследование фабрик:
+factory :user do
+  name { "John" }
+end
+
+factory :admin, parent: :user do
+  admin { true }
+end
+
+
+
+puts '                                       Примеры использования'
+
+# 1. Простая фабрика
+FactoryBot.define do
+  factory :product do
+    name { "Laptop" }
+    price { 999.99 }
+  end
+end
+# В тесте
+product = create(:product) # Product.create(name: "Laptop", price: 999.99)
+
+# 2. Фабрика с ассоциациями
+factory :order do
+  user
+  product
+end
+# Или с кастомизацией
+create(:order, user: create(:user, :admin), product: build(:product))
+
+# 3. Фабрика с последовательностью
+factory :user do
+  sequence(:username) { |n| "user_#{n}" } # user_1, user_2, ...
+end
 
 
 
@@ -203,7 +319,7 @@ FactoryBot.define do
     factory :article_with_comments do
       after :create do |article, evaluator|
       # after     - метод срабатывающий после чего либо.
-      # :create   - метод(в тесте) после которого сработает after. Те после создания article в тесте
+      # :create   - имя метода вызванного в тесте после которого сработает after. Те после создания article в тесте
       # article   - каждая статья (много если бы создавали с sequence)
       # evaluator - не обязательный параметр
         create_list :comment, 3, article: article # создаём список из 3-х комментариев(:comment из фабрики комментариев ??)
@@ -224,7 +340,7 @@ describe Article do
   describe "#last_comment" do
     it "returns the last comment" do
       article = create(:article_with_comments) # создаём статью с 3 комментариями
-      expect(article.last_comment.body).to eq "Comment body 3" # проверка: проверяем значение поля боди последнего коммента(тк у нас их 3 то и в значении будет 3)
+      expect(article.last_comment.body).to eq "Comment body 3" # проверка: проверяем значение поля боди последнего коммента(тк у нас их 3, то и в значении будет 3)
     end
   end
 end
@@ -235,13 +351,67 @@ end
 
 
 
+FactoryBot.define do
+  factory :product do
+    sequence(:nm_id)      { |n| n }
+    sequence(:imt_id)     { |n| n }
+    brand                 { "Sample Brand" }
+    title                 { "Sample Product Title" }
+    description           { "This is a sample product description." }
+    big_photo_url         { "https://picsum.photos/500" }
+    small_photo_url       { "https://picsum.photos/100" }
+    color                 { "Red" }
+    vendor_code           { "ADC987654" }
+
+    association :status,   factory: :dictionary
+    association :category, factory: :product_category
+    cabinet
+  end
+end
+
+association :status,   factory: :dictionary
+association :category, factory: :product_category
+# Эти строки в фабрике Product определяют ассоциации (связи) с другими моделями через FactoryBot
 
 
+association :status, factory: :dictionary # Создает связь между Product и моделью Dictionary (предположительно, справочник статусов товаров)
+# :status              - имя ассоциации в модели Product (например, belongs_to :status).
+# factory: :dictionary - указывает, что для создания связанного объекта нужно использовать фабрику :dictionary.
+
+# Аналог без association:
+status { create(:dictionary) }
+
+# Если у товара (Product) есть статус (например, "в наличии", "под заказ"), он хранится в отдельной таблице dictionaries. Эта строка автоматически создает запись в таблице dictionaries и связывает ее с товаром.
 
 
+association :category, factory: :product_category
+# Создает связь между Product и моделью ProductCategory (категория товара).
+# :category                  - имя ассоциации в модели Product (например, belongs_to :category).
+# factory: :product_category - использует фабрику :product_category для создания связанной категории.
+
+# Аналог без association:
+category { create(:product_category) }
+
+# Категории товаров обычно вынесены в отдельную таблицу. Эта строка создает категорию через фабрику :product_category и привязывает ее к товару.
 
 
+# association - метод, это "умная" версия create, который учитывает настройки ассоциаций в модели (например, optional: true) и  эффективнее работает в цепочках фабрик.
 
 
+# Если не указать `factory: :product_category`, то FactoryBot попытается найти фабрику с именем, как у ассоциации (тоесть :category). Указание factory нужно, если имя фабрики отличается от имени ассоциации.
 
-#
+# Как избежать создания лишних объектов?
+# Если тест не требует реальной категории/статуса, можно использовать build_stubbed (создает заглушку без сохранения в БД):
+association :status, factory: :dictionary, strategy: :build_stubbed
+
+
+# Пример в контексте модели Product. Предположим, модель выглядит так:
+class Product < ApplicationRecord
+  belongs_to :status, class_name: "Dictionary"
+  belongs_to :category, class_name: "ProductCategory"
+end
+# Тогда фабрика создаст:
+# Продукт (Product).
+# Отдельную запись в таблице dictionaries (через фабрику :dictionary)
+# Отдельную запись в таблице product_categories (через фабрику :product_category)
+# Все объекты будут автоматически связаны через внешние ключи (product.status_id и product.category_id).
