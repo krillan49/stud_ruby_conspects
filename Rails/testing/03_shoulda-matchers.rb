@@ -144,6 +144,10 @@ class Comment < ApplicationRecord
   belongs_to :user, optional: true, required: true
   # optional: true  - если это не добавить то при использовании Rails 5.1 и выше создание нового коммента и тесты этого свойства выдадут ошибку "User must exist"
   # required: true  - если не добавить возникнут ошибки с rspec тестирыванием этой ассоциации
+
+  # !!! Но вообще так нельзя и стоит выбрать одно из 2х, тк получается противоречие:
+  # optional: true - позволяет сохранять Post без пользователя
+  # required: true - требует наличия пользователя (валидация)
 end
 
 
